@@ -1,11 +1,15 @@
-import fastify from 'fastify';
+import fastify, {FastifyInstance} from 'fastify';
 import loaders from './loaders';
 import config from './config';
-const server = fastify({logger: true});
 
 
-const startServer = async () => {
+const serverSetting = async () : Promise <FastifyInstance> => {
+    const server = fastify({logger: true});
     await loaders(server);
+    return server;
+}
+
+const startServer = async (server : FastifyInstance ) => {
     try {
         await server.listen({port: config.port, host: '0.0.0.0'})
     } catch (err) {
@@ -14,4 +18,9 @@ const startServer = async () => {
     }
 }
 
-startServer();
+(async () => {
+    const settedServer:FastifyInstance = await serverSetting();
+    startServer(settedServer);
+})();
+
+export default serverSetting;
