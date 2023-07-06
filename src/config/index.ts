@@ -1,7 +1,13 @@
 import { config } from 'dotenv';
-process.env.NODE_ENV = process.env.NODE_ENV || 'development';
-config();
+export const initEnvFromDotEnv = (): void => {
+    process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+    config();
+}
+
+interface IConfig {
+    port: number;
+}
 
 export default {
-    port: process.env.PORT || 3000
-}
+    port: parseInt(process.env.PORT || '3000')
+} as IConfig;
