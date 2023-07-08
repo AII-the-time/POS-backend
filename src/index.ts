@@ -9,7 +9,7 @@ const serverSetting = async () : Promise <FastifyInstance> => {
     return server;
 }
 
-const startServer = async (server : FastifyInstance ) => {
+const startServer = async (server : FastifyInstance) => {
     try {
         await server.listen({port: config.port, host: '0.0.0.0'})
     } catch (err) {
