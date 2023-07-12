@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src src/index.ts",
-    "test": "jest --detectOpenHandles --forceExit"
+    "test": "jest --detectOpenHandles --forceExit",
+    "test-coverage": "jest --coverage --detectOpenHandles --forceExit"
   },
   "keywords": [],
   "author": "",
