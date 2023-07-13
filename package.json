@@ -7,7 +7,7 @@
     "dev": "tsx watch src src/index.ts",
     "test": "jest --detectOpenHandles --forceExit",
     "test-coverage": "jest --coverage --detectOpenHandles --forceExit",
-    "prisma": "cat prisma/schema.prisma src/models/*.prisma > prisma/schema.prisma && prisma migrate dev --name init --preview-feature"
+    "prisma": "./prisma/concat_schema.sh && prisma migrate dev --name init --preview-feature"
   },
   "keywords": [],
   "author": "",

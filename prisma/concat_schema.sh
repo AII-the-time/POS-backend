@@ -1,1 +1,2 @@
-cat prisma/config.prisma src/models/*.prisma > schema.prisma
+CUR_DIR=`dirname ${0}`
+cat ${CUR_DIR}/config.prisma ${CUR_DIR}/../src/models/*.prisma > ${CUR_DIR}/schema.prisma
