@@ -1,0 +1,8 @@
+model Menu {
+    id Int @id @default(autoincrement())
+    name String @unique
+    price Int
+    category String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
