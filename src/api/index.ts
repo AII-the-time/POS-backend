@@ -6,8 +6,10 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
         return {data:'pong'};
     });
     server.get('/menu', async (request, reply) => {
-        const menu = await menuService.getMenu();
+        const menu = await server.prisma.menu.findMany();
         return {data:menu};
+        // const menu = await menuService.getMenu();
+        // return {data:menu};
     });
 }
 

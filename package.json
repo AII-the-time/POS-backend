@@ -15,7 +15,8 @@
   "dependencies": {
     "@prisma/client": "^5.0.0",
     "dotenv": "^16.3.1",
-    "fastify": "^4.19.1"
+    "fastify": "^4.19.1",
+    "fastify-plugin": "^4.5.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.6.0",
