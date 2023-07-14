@@ -1,0 +1,9 @@
+model Order{
+    id Int @id @default(autoincrement())
+    count Int
+    price Int
+    menuId Int
+    menu Menu @relation(fields: [menuId], references: [id])
+    paymentId Int
+    payment Payment @relation(fields: [paymentId], references: [id])
+}
