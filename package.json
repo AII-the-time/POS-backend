@@ -7,7 +7,11 @@
     "dev": "tsx watch src src/index.ts",
     "test": "jest --detectOpenHandles --forceExit",
     "test-coverage": "jest --coverage --detectOpenHandles --forceExit",
-    "prisma": "./prisma/concat_schema.sh && prisma migrate dev --name init --preview-feature"
+    "prisma": "./prisma/concat_schema.sh && prisma migrate dev --name init --preview-feature",
+    "seed": "prisma db seed"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +29,7 @@
     "nodemon": "^2.0.22",
     "prisma": "^5.0.0",
     "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1",
     "tsx": "^3.12.7",
     "typescript": "^5.1.6"
   }

@@ -1,8 +1,12 @@
 model Payment{
     id Int @id @default(autoincrement())
+    paymentMethod String
+    paymentStatus String
+    totalPrice Int
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    deletedAt DateTime?
     storeId Int
     store Store @relation(fields: [storeId], references: [id])
-    order Order[]
+    orderitems OrderItem[]
 }
