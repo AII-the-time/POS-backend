@@ -1,4 +1,4 @@
-model Order{
+model OrderItem{
     id Int @id @default(autoincrement())
     count Int
     price Int
