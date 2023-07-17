@@ -1,6 +1,6 @@
 import server from '../src';
 import { FastifyInstance } from 'fastify';
-import {describe, expect, test} from '@jest/globals';
+import { describe, expect, test } from '@jest/globals';
 import { PrismaClient } from '@prisma/client';
 
 describe('api test', () => {
@@ -31,15 +31,32 @@ describe('api test', () => {
             method: 'GET',
             url: `/api/menu?storeId=${testStoreId}`
         });
+        expect(response.statusCode).toBe(200);
         const menu = JSON.parse(response.body).menus[0];
         expect(menu.name).toBe("아메리카노");
         expect(menu.price).toBe(1000);
         expect(menu.storeId).toBe(testStoreId);
         expect(menu.category).toBe("커피");
-        expect(response.statusCode).toBe(200);
-        await app.close();
-    });
 
-    test('order test', async () => {
+        const response2 = await app.inject({
+            method: 'POST',
+            url: `/api/payment/`,
+            payload: {
+                storeId: testStoreId,
+                menus: [
+                    {
+                        id: menu.id,
+                        count: 2
+                    }
+                ]
+            }
+        });
+        expect(response2.statusCode).toBe(200);
+        const payment = JSON.parse(response2.body);
+        expect(payment.paymentMethod).toBe("credit");
+        expect(payment.paymentStatus).toBe("paid");
+        expect(payment.totalPrice).toBe(2000);
+        
+        await app.close();
     });
 });
