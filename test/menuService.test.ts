@@ -72,6 +72,14 @@ describe('api test', () => {
         expect(payment.orderitems[1].price).toBe(2500);
         expect(payment.orderitems[1].count).toBe(1);
 
+        const response3 = await app.inject({
+            method: 'GET',
+            url: `/api/payment/${testStoreId}`
+        });
+        expect(response3.statusCode).toBe(200);
+        const payments = JSON.parse(response3.body);
+        expect(payments.find((pm: any) => pm.id === payment.id)).not.toBeUndefined();
+        expect(payments.find((pm: any) => pm.id === payment.id).orderitems.length).toBe(2);
 
         await app.close();
     });

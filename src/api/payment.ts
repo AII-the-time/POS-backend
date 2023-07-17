@@ -53,6 +53,38 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
         });
         reply.code(200).send(payment);
     });
+
+    server.get<{
+        Params: {
+            storeId: string;
+        },
+        Reply: {
+            menus: Array<Object>;
+        }
+    }>('/:storeId', async (request, reply) => {
+        const storeId = Number(request.params.storeId);
+        if(await server.prisma.store.findFirst({
+            where: {
+                id: storeId
+            }
+        }) === null) {
+            return reply
+                .code(404)
+                .send();
+        }
+
+        const payments = await server.prisma.payment.findMany({
+            where: {
+                storeId: storeId
+            },
+            include: {
+                orderitems: true
+            }
+        });
+        reply
+            .code(200)
+            .send(payments);
+    });
 }
 
 export default api;
