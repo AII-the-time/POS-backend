@@ -3,14 +3,14 @@ import menuService from "../services/menuService";
 
 const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
     server.get<{
-        Querystring: {
+        Params: {
             storeId: String;
         },
         Reply: {
             menus: Array<Object>;
         }
-    }>('/', async (request, reply) => {
-        const storeId = Number(request.query.storeId);
+    }>('/:storeId', async (request, reply) => {
+        const storeId = Number(request.params.storeId);
         const menus = await menuService.getMenus(server,storeId);
         if(menus.length === 0) {
             return reply
