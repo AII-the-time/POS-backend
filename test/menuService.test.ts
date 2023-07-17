@@ -22,7 +22,7 @@ describe('api test', () => {
         const prisma = new PrismaClient();
         const testStoreId = (await prisma.store.findFirst({
             where: {
-                name: 'test'
+                name: '소예다방'
             }
         }))?.id;
         const app: FastifyInstance = await server();
@@ -34,9 +34,15 @@ describe('api test', () => {
         expect(response.statusCode).toBe(200);
         const menu = JSON.parse(response.body).menus[0];
         expect(menu.name).toBe("아메리카노");
-        expect(menu.price).toBe(1000);
+        expect(menu.price).toBe(2000);
         expect(menu.storeId).toBe(testStoreId);
         expect(menu.category).toBe("커피");
+
+        const menu2 = JSON.parse(response.body).menus[1];
+        expect(menu2.name).toBe("아이스티");
+        expect(menu2.price).toBe(2500);
+        expect(menu2.storeId).toBe(testStoreId);
+        expect(menu2.category).toBe("티&에이드");
 
         const response2 = await app.inject({
             method: 'POST',
@@ -47,6 +53,10 @@ describe('api test', () => {
                     {
                         id: menu.id,
                         count: 2
+                    },
+                    {
+                        id: menu2.id,
+                        count: 1
                     }
                 ]
             }
@@ -55,8 +65,14 @@ describe('api test', () => {
         const payment = JSON.parse(response2.body);
         expect(payment.paymentMethod).toBe("credit");
         expect(payment.paymentStatus).toBe("paid");
-        expect(payment.totalPrice).toBe(2000);
-        
+        expect(payment.totalPrice).toBe(6500);
+        expect(payment.orderitems.length).toBe(2);
+        expect(payment.orderitems[0].price).toBe(2000);
+        expect(payment.orderitems[0].count).toBe(2);
+        expect(payment.orderitems[1].price).toBe(2500);
+        expect(payment.orderitems[1].count).toBe(1);
+
+
         await app.close();
     });
 });
