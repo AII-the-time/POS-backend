@@ -29,7 +29,7 @@ describe('api test', () => {
         await app.ready();
         const response = await app.inject({
             method: 'GET',
-            url: `/api/menu?storeId=${testStoreId}`
+            url: `/api/menu/${testStoreId}`
         });
         expect(response.statusCode).toBe(200);
         const menu = JSON.parse(response.body).menus[0];

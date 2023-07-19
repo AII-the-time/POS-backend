@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  db:
+    image: mariadb:10.9.7
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db
+    networks:
+      - my-network
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: reinpos
+    ports:
+      - 3000:3000
+    depends_on:
+      - db
+    networks:
+      - my-network
+    links:
+      - db
+  
+networks:
+  my-network:
