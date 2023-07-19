@@ -1,5 +1,5 @@
 echo "wait db server"
-dockerize -wait tcp://db:3306 -timeout 20s
+./wait-for-it.sh db:3306
 
 echo "start node server"
 npm run prisma

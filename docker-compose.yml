@@ -4,8 +4,6 @@ services:
   db:
     image: mariadb:10.9.7
     container_name: mariadb
-    ports:
-      - 3307:3306
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: db
@@ -17,7 +15,6 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: reinpos
-    restart: always
     ports:
       - 3000:3000
     depends_on:

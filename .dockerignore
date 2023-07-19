@@ -2,3 +2,8 @@
 node_modules
 .gitignore
 .git
+
+build
+coverage
+migrations
+schema.prisma
