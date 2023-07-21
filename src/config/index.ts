@@ -9,5 +9,5 @@ interface IConfig {
 }
 
 export default {
-    port: parseInt(process.env.PORT || '3000')
+    port: parseInt(process.env.NODE_ENV == 'test' ? '3001' : process.env.PORT || '3000')
 } as IConfig;

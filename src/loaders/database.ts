@@ -12,7 +12,7 @@ const database = fp(async (server: FastifyInstance) => {
     const prisma = new PrismaClient();
     server.decorate('prisma', prisma);
     server.addHook('onClose', async (fastifyInstance) => {
-        fastifyInstance.prisma.$disconnect();
+        await fastifyInstance.prisma.$disconnect();
     });
 });
 
