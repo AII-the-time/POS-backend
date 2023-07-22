@@ -36,7 +36,6 @@ describe('api test', () => {
             url: `/api/menu/${testStoreId}`
         });
         expect(response.statusCode).toBe(200);
-        
-        console.log("menu done");
+        await app.close();
     });
 });
