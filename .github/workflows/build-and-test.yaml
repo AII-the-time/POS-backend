@@ -40,7 +40,7 @@ jobs:
         uses: ArtiomTr/jest-coverage-report-action@v2
         id: coverage
         with:
-          test-script: npm run test:ci
+          test-script: npm run test
           output: report-markdown
       - name: Add a comment to the pull request
         if: ${{ github.event_name == 'pull_request' }}
