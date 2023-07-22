@@ -30,11 +30,10 @@ jobs:
       - name: Install Dependencies & db setup
         run: |
           npm install
-          ./wait-for-it.sh localhost:3306
+          echo DATABASE_URL=mysql://root:root@localhost:3306/db > .env
+          ls -al
           npm run prisma
           npm run seed
-        env:
-          DATABASE_URL: mysql://root:root@localhost:3306/db
       - name: Run Tests
         uses: ArtiomTr/jest-coverage-report-action@v2
         id: coverage
