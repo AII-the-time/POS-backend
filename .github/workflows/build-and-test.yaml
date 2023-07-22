@@ -30,7 +30,7 @@ jobs:
       - name: Install Dependencies & db setup
         run: |
           npm install
-          echo DATABASE_URL=mysql://root:root@localhost:3306/db > .env
+          echo DATABASE_URL=mysql://root:root@127.0.0.1:3306/db > .env
           ls -al
           npm run prisma
           npm run seed
