@@ -29,9 +29,9 @@ jobs:
           node-version: 18
       - name: Install Dependencies & db setup
         run: |
+          sudo service mysql start
           npm install
           echo DATABASE_URL=mysql://root:root@127.0.0.1:3306/db > .env
-          ls -al
           npm run prisma
           npm run seed
       - name: Run Tests
