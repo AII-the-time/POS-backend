@@ -9,13 +9,31 @@ jobs:
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: image: mariadb:10.9.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: db
+        ports:
+          - 3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           node-version: 18
-      - name: Install Dependencies
-        run: npm install
+      - name: Install Dependencies & db setup
+        run: |
+          npm install
+          npm run prisma
+          npm run seed
+        env:
+          DATABASE_URL: mysql://root:root@localhost:3306/db
       - name: Run Tests
         uses: ArtiomTr/jest-coverage-report-action@v2
         id: coverage
