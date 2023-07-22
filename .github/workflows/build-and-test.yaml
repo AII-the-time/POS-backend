@@ -30,6 +30,7 @@ jobs:
       - name: Install Dependencies & db setup
         run: |
           npm install
+          ./wait-for-it.sh localhost:3306
           npm run prisma
           npm run seed
         env:
