@@ -1,0 +1,53 @@
+name: build-and-test
+run-name: Build and Test
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+jobs:
+  build-and-test:
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: write
+    name: Build and Test
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mariadb:10.9.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: db
+        ports:
+          - 3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          node-version: 18
+      - name: start db & set .env
+        run: |
+          sudo service mysql start
+          echo DATABASE_URL=mysql://root:root@localhost:3306/db > .env
+      - name: Install Dependencies & db setup
+        run: |
+          npm install
+          npm run prisma
+          npm run seed
+      - name: Run Tests
+        uses: ArtiomTr/jest-coverage-report-action@v2
+        id: coverage
+        with:
+          test-script: npm run test
+          output: report-markdown
+      - name: Add a comment to the pull request
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: ${{ steps.coverage.outputs.report }}
