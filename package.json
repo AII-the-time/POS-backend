@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "tsx watch src src/index.ts",
     "test": "jest --detectOpenHandles --forceExit",
+    "test:ci": "jest --ci --json --coverage --testLocationInResults --outputFile=report.json --detectOpenHandles --forceExit",
     "test-coverage": "jest --coverage --detectOpenHandles --forceExit",
     "prisma": "./prisma/concat_schema.sh && prisma migrate dev --name init --preview-feature",
     "seed": "prisma db seed"
