@@ -11,7 +11,7 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
         }
     }>('/:storeId', async (request, reply) => {
         const storeId = Number(request.params.storeId);
-        const menus = await menuService.getMenus(server,storeId);
+        const menus = await menuService.getMenus(storeId);
         if(menus.length === 0) {
             return reply
                 .code(404)

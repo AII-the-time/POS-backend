@@ -14,7 +14,7 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
         const storeId = request.body.storeId;
         const menus: {id:number,count:number}[] = request.body.menus;
         try{
-            const payment = await orderService.orderMenus({server, storeId, menus});
+            const payment = await orderService.orderMenus({storeId, menus});
             reply.code(200).send(payment);
         } catch(e) {
             return reply
@@ -33,7 +33,7 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
     }>('/:storeId', async (request, reply) => {
         const storeId = Number(request.params.storeId);
         try{
-            const payments = await orderService.getPayments(server,storeId);
+            const payments = await orderService.getPayments(storeId);
             reply.code(200).send(payments);
         }
         catch(e) {

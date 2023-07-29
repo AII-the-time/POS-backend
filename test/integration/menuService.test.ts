@@ -1,6 +1,9 @@
 import server from '../../src';
 import { FastifyInstance } from 'fastify';
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 let app: FastifyInstance;
 
@@ -9,7 +12,6 @@ beforeAll( async () =>{
 });
 
 afterAll(async () =>{
-    await app.prisma.$disconnect();
     await app.close();
 });
 
@@ -26,7 +28,7 @@ describe('api test', () => {
     });
 
     test('menu test', async () => {
-        const testStoreId = (await app.prisma.store.findFirst({
+        const testStoreId = (await prisma.store.findFirst({
             where: {
                 name: '소예다방'
             }
