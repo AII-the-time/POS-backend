@@ -1,9 +1,10 @@
 model Store{
     id Int @id @default(autoincrement())
+    user User @relation(fields: [userId], references: [id])
+    userId Int
     name String
     address String
-    businessRegistrationNumber String
-    phone String
+    defaultOpeningHours Json
     menu Menu[]
     payment Payment[]
     createdAt DateTime @default(now())
