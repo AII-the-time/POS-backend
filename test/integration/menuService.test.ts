@@ -1,4 +1,4 @@
-import server from '../src';
+import server from '../../src';
 import { FastifyInstance } from 'fastify';
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
 

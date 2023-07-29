@@ -5,7 +5,7 @@ model Payment{
     totalPrice Int
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    deletedAt DateTime?
+    cancelledAt DateTime?
     storeId Int
     store Store @relation(fields: [storeId], references: [id])
     orderitems OrderItem[]
