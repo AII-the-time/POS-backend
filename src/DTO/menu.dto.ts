@@ -1,7 +1,7 @@
 import { Category, Menu } from "@prisma/client";
 type CategoryWithMenu = Category & { menu: Menu[] };
 
-export class MenuResponse {
+class MenuResponse {
     id: number;
     name: string;
     price: number;
