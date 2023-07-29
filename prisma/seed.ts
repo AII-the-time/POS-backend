@@ -29,13 +29,35 @@ async function main() {
             updatedAt: new Date(),
         },
     });
+
+
+    const category1 = await prisma.category.create({
+        data: {
+            name: '커피',
+            sort: 1,
+            storeId: store.id,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }
+    });
+
+    const category2 = await prisma.category.create({
+        data: {
+            name: '티&에이드',
+            sort: 2,
+            storeId: store.id,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }
+    });
+
     await Promise.all(
         [
             {
                 name: '아메리카노',
                 price: 2000,
                 storeId: store.id,
-                category: '커피',
+                categoryId: category1.id,
                 sort: 1,
                 createdAt: new Date(),
                 updatedAt: new Date(),
@@ -44,7 +66,7 @@ async function main() {
                 name: '카페라떼',
                 price: 3000,
                 storeId: store.id,
-                category: '커피',
+                categoryId: category1.id,
                 sort: 2,
                 createdAt: new Date(),
                 updatedAt: new Date(),
@@ -53,7 +75,7 @@ async function main() {
                 name: '아이스티',
                 price: 2500,
                 storeId: store.id,
-                category: '티&에이드',
+                categoryId: category2.id,
                 sort: 3,
                 createdAt: new Date(),
                 updatedAt: new Date(),
