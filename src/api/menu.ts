@@ -20,10 +20,16 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
         const storeId = Number(request.headers.storeid);
         const Authorization = request.headers.authorization;
 
-        const categories: MenuList = await menuService.getMenus(storeId);
-        reply
-            .code(200)
-            .send(categories);
+        try{
+            const categories: MenuList = await menuService.getMenus(storeId);
+            reply
+                .code(200)
+                .send(categories);
+        } catch(e) {
+            return reply
+                .code(404)
+                .send();
+        }
     });
 }
 
