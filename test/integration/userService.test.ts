@@ -15,19 +15,21 @@ afterAll(async () =>{
     await app.close();
 });
 
-describe('api test', () => {
-    test('ping test', async () => {
+//전화번호 인증을 위한 토큰
+let tokenForCertificatePhone: string;
+
+describe('login', () => {
+    test('send CertificationCode', async () => {
         const response = await app.inject({
-            method: 'GET',
-            url: '/api/ping'
+            method: 'POST',
+            url: '/api/user/phone',
+            payload: {
+                phone: '010-1234-5678'
+            }
         });
+        let body = JSON.parse(response.body);
+        tokenForCertificatePhone = body.tokenForCertificatePhone;
 
         expect(response.statusCode).toBe(200);
-        expect(JSON.parse(response.body)).toEqual({data: 'pong'});
-        console.log("ping done");
-    });
-
-    test('menu test', async () => {
-        
     });
 });
