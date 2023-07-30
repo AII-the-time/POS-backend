@@ -15,11 +15,14 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
                 .code(400)
                 .send();
         }
+        //TODO: 폰번호 형식 검사
+
         const result:responsePhone = await userService.sendCertificationCode(request.body);
         reply
             .code(200)
             .send(result);
     });
+    
 }
 
 export default api;

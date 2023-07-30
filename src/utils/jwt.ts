@@ -35,6 +35,7 @@ export class tokenForCertificatePhone{
             }
         }
         catch(err){
+            //TODO: 에러 타입마다 다른 처리
             return false;
         }
     }
