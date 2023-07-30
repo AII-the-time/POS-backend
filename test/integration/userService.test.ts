@@ -1,10 +1,7 @@
 import server from '../../src/server';
 import { FastifyInstance } from 'fastify';
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
-import { PrismaClient } from "@prisma/client";
 import * as User from "../../src/DTO/user.dto";
-
-const prisma = new PrismaClient();
 
 let app: FastifyInstance;
 

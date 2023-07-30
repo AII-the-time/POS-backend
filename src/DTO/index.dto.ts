@@ -1,4 +1,4 @@
 export interface StoreAuthorizationHeader {
-    "Authorization": string;
-    "StoreId": string;
+    "authorization": string;
+    "storeid": string;
 }
