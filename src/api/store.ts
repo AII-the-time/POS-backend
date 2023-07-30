@@ -28,6 +28,31 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
                 .send();
         }
     });
+
+    server.get<{
+        Headers: Store.requestStoreListHeader,
+        reply:{
+            200: Store.responseStoreList,
+            '4xx': undefined
+        }
+    }>('/', async (request, reply) => {
+        if(!request.headers.authorization){
+            return reply
+                .code(400)
+                .send();
+        }
+
+        try {
+            const result: Store.responseStoreList = await storeService.getStoreList(request.headers);
+            reply
+                .code(200)
+                .send(result);
+        } catch (e) {
+            return reply
+                .code(401)
+                .send();
+        }
+    });
 }
 
 export default api;

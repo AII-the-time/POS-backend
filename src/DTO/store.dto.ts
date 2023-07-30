@@ -18,3 +18,13 @@ export interface requestNewStore {
 export interface responseNewStore {
     storeId: number;
 }
+
+export interface requestStoreListHeader extends requestNewStoreHeader {}
+
+export interface responseStoreList {
+    stores: Array<{
+        storeId: number;
+        name: string;
+        address: string;
+    }>;
+}

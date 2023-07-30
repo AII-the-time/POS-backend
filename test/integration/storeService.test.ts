@@ -68,3 +68,27 @@ test('new store', async () => {
     expect(body).toHaveProperty('storeId');
     storeId = body.storeId;
 });
+
+test('get store list', async () => {
+    const response = await app.inject({
+        method: 'GET',
+        url: '/api/store',
+        headers: {
+            authorization: accessToken
+        }
+    });
+    expect(response.statusCode).toBe(200);
+
+    const body = JSON.parse(response.body) as Store.responseStoreList;
+    expect(body).toHaveProperty('stores');
+    expect(body.stores.length).toBeGreaterThan(0);
+    const lastStore = body.stores[body.stores.length - 1];
+    expect(lastStore).toHaveProperty('storeId');
+    expect(lastStore).toHaveProperty('name');
+    expect(lastStore).toHaveProperty('address');
+    expect(lastStore).toEqual({
+        storeId: storeId,
+        name: storeName,
+        address: storeAddress
+    });
+});
