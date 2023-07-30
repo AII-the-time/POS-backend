@@ -62,6 +62,29 @@ export default {
         const refreshToken = loginToken.signRefreshToken();
 
         return {accessToken, refreshToken};
+    },
+
+    async refresh({authorization}:User.requestRefreshHeader): Promise<User.responseLogin>{
+        authorization = authorization.replace("Bearer ", "");
+        let token: LoginToken;
+        try{
+            token = LoginToken.decode(authorization);
+        }catch(e){
+            throw new Error("토큰이 유효하지 않습니다.");
+        }
+        const user = await prisma.user.findUnique({
+            where: {
+                id: token.userId
+            }
+        });
+        if(!user){
+            throw new Error("존재하지 않는 유저입니다.");
+        }
+        const loginToken = new LoginToken(user.id);
+        const accessToken = loginToken.signAccessToken();
+        const refreshToken = loginToken.signRefreshToken();
+
+        return {accessToken, refreshToken};
     }
 }
 

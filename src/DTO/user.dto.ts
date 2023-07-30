@@ -28,3 +28,9 @@ export interface responseLogin{
     "accessToken": string;
     "refreshToken": string;
 }
+
+export interface requestRefreshHeader{
+    "authorization": string;
+}
+
+export interface responseRefresh extends responseLogin{}

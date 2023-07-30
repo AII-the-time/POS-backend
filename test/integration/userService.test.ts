@@ -109,4 +109,25 @@ describe('login', () => {
         accessToken = body.accessToken;
         refreshToken = body.refreshToken;
     });
+
+    test('refresh token', async () => {
+        //유효기간이 다른 accessToken을 발급받기 위해 1초 대기
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const response = await app.inject({
+            method: 'POST',
+            url: '/api/user/refresh',
+            headers: {
+                Authorization: `Bearer ${refreshToken}`
+            }
+        });
+        expect(response.statusCode).toBe(200);
+
+        const body = JSON.parse(response.body) as User.responseRefresh;
+        expect(body).toHaveProperty('accessToken');
+        expect(body).toHaveProperty('refreshToken');
+        expect(body.accessToken).not.toBe(accessToken);
+        expect(body.refreshToken).not.toBe(refreshToken);
+        accessToken = body.accessToken;
+        refreshToken = body.refreshToken;
+    });
 });

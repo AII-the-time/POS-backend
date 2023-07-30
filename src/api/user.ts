@@ -73,6 +73,31 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
                 .send();
         }
     });
+
+    server.post<{
+        Headers: User.requestRefreshHeader,
+        Reply: {
+            200: User.responseRefresh,
+            '4xx': undefined
+        }
+    }>('/refresh', async (request, reply) => {
+        if (!request.headers.authorization) {
+            return reply
+                .code(400)
+                .send();
+        }
+
+        try {
+            const result: User.responseRefresh = await userService.refresh(request.headers);
+            reply
+                .code(200)
+                .send(result);
+        } catch (e) {
+            return reply
+                .code(401)
+                .send();
+        }
+    });
 }
 
 export default api;
