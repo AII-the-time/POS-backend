@@ -17,11 +17,8 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
                 .send();
         }
 
-        const storeId = Number(request.headers.storeid);
-        const Authorization = request.headers.authorization;
-
         try{
-            const categories: MenuList = await menuService.getMenus(storeId);
+            const categories: MenuList = await menuService.getMenus(request.headers)
             reply
                 .code(200)
                 .send(categories);
