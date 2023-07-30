@@ -7,6 +7,6 @@ DATABASE_URL="mysql://root:root@db/db"
 ```
 3. 루트 디렉토리에서 아래 명령어 실행
 ```
-docker rmi pos-backend-server
+docker-compose down --rmi local
 docker-compose up -d
 ```
