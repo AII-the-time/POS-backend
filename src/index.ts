@@ -1,13 +1,8 @@
-import fastify, {FastifyInstance} from 'fastify';
-import loaders from './loaders';
+import {FastifyInstance} from 'fastify';
+import serverSetting from './server';
 import config from './config';
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
-
-const serverSetting = async () : Promise <FastifyInstance> => {
-    const server = fastify({logger: true});
-    await loaders(server);
-    return server;
-}
 
 const startServer = async (server : FastifyInstance) => {
     try {
@@ -22,5 +17,3 @@ const startServer = async (server : FastifyInstance) => {
     const settedServer:FastifyInstance = await serverSetting();
     startServer(settedServer);
 })();
-
-export default serverSetting;

@@ -1,9 +1,12 @@
 import { FastifyInstance } from "fastify";
 import { Menu } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export default {
-    async orderMenus({server, storeId, menus}:{server:FastifyInstance, storeId:number,menus:{id:number,count:number}[]}): Promise<any>{
-        const menusFromDatabase: Menu[] = await server.prisma.menu.findMany({
+    async orderMenus({storeId, menus}:{storeId:number,menus:{id:number,count:number}[]}): Promise<any>{
+        const menusFromDatabase: Menu[] = await prisma.menu.findMany({
             where: {
                 id: {
                     in: menus.map((menu) => menu.id)
@@ -23,7 +26,7 @@ export default {
         });
         const totalPrice = realMenus.reduce((acc, cur) => acc + cur.price * cur.count, 0);
 
-        const payment = await server.prisma.payment.create({
+        const payment = await prisma.payment.create({
             data: {
                 storeId: storeId,
                 paymentMethod: "credit",
@@ -41,8 +44,8 @@ export default {
         });
         return payment;
     },
-    async getPayments(server: FastifyInstance,storeId:number): Promise<any>{
-        if(await server.prisma.store.findFirst({
+    async getPayments(storeId:number): Promise<any>{
+        if(await prisma.store.findFirst({
             where: {
                 id: storeId
             }
@@ -50,7 +53,7 @@ export default {
             throw new Error("Store not found");
         }
 
-        const payments = await server.prisma.payment.findMany({
+        const payments = await prisma.payment.findMany({
             where: {
                 storeId: storeId
             },

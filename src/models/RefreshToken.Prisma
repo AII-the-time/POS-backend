@@ -1,0 +1,6 @@
+model RefreshToken{
+    refreshToken: String
+    userId: String
+    createdAt: String
+    expiresAt: String
+}

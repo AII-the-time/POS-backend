@@ -5,6 +5,7 @@ model Store{
     name String
     address String
     defaultOpeningHours Json
+    category Category[]
     menu Menu[]
     payment Payment[]
     createdAt DateTime @default(now())
