@@ -62,3 +62,29 @@ export class CertificatedPhoneToken{
         }
     }
 }
+
+export class LoginToken{
+    userId: number;
+
+    constructor(userId: number){
+        this.userId = userId;
+    }
+
+    signAccessToken(): string{
+        return jwt.sign({ ... this }, config.jwtSecretKey, { expiresIn: '1h' });
+    }
+
+    signRefreshToken(): string{
+        return jwt.sign({ ... this }, config.jwtSecretKey, { expiresIn: '14d' });
+    }
+
+    public static decode(token: string): LoginToken{
+        try{
+            const decoded = jwt.verify(token, config.jwtSecretKey) as LoginToken;
+            return decoded;
+        }
+        catch(err){
+            throw new Error("토큰이 유효하지 않습니다.");
+        }
+    }
+}

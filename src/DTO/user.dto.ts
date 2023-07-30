@@ -1,3 +1,6 @@
+import { User as prismaUser } from '@prisma/client';
+export type User = prismaUser;
+
 export interface requestPhone{
     "phone": string;
 }
@@ -14,4 +17,14 @@ export interface requestCertificatePhone{
 
 export interface responseCertificatePhone{
     "certificatedPhoneToken": string;
+}
+
+export interface requestLogin{
+    "businessRegistrationNumber": string;
+    "certificatedPhoneToken": string;
+}
+
+export interface responseLogin{
+    "accessToken": string;
+    "refreshToken": string;
 }

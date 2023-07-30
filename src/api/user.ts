@@ -49,6 +49,30 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
 
     });
 
+    server.post<{
+        Body: User.requestLogin,
+        Reply: {
+            200: User.responseLogin,
+            '4xx': undefined
+        }
+    }>('/login', async (request, reply) => {
+        if (!request.body.businessRegistrationNumber || !request.body.certificatedPhoneToken) {
+            return reply
+                .code(400)
+                .send();
+        }
+
+        try {
+            const result: User.responseLogin = await userService.login(request.body);
+            reply
+                .code(200)
+                .send(result);
+        } catch (e) {
+            return reply
+                .code(401)
+                .send();
+        }
+    });
 }
 
 export default api;
