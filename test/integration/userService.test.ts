@@ -32,4 +32,32 @@ describe('login', () => {
 
         expect(response.statusCode).toBe(200);
     });
+
+    test('certificate phone:success', async () => {
+        const response = await app.inject({
+            method: 'POST',
+            url: '/api/user/phone/certificationCode',
+            payload: {
+                phone: '010-1234-5678',
+                certificationCode: '123456',
+                phoneCertificationToken: tokenForCertificatePhone
+            }
+        });
+
+        expect(response.statusCode).toBe(200);
+    });
+
+    test('certificate phone:fail', async () => {
+        const response = await app.inject({
+            method: 'POST',
+            url: '/api/user/phone/certificationCode',
+            payload: {
+                phone: '010-1234-5678',
+                certificationCode: '111222',
+                phoneCertificationToken: tokenForCertificatePhone
+            }
+        });
+
+        expect(response.statusCode).toBe(401);
+    });
 });

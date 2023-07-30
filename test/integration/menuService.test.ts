@@ -24,7 +24,6 @@ describe('api test', () => {
 
         expect(response.statusCode).toBe(200);
         expect(JSON.parse(response.body)).toEqual({data: 'pong'});
-        console.log("ping done");
     });
 
     test('menu test', async () => {
