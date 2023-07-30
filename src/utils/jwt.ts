@@ -71,17 +71,17 @@ export class LoginToken{
     }
 
     signAccessToken(): string{
-        return jwt.sign({ ... this }, config.jwtSecretKey, { expiresIn: '1h' });
+        return jwt.sign({ ... this }, config.jwtSecretKey, { expiresIn: '1d' });
     }
 
     signRefreshToken(): string{
         return jwt.sign({ ... this }, config.jwtSecretKey, { expiresIn: '14d' });
     }
 
-    public static decode(token: string): LoginToken{
+    public static getUserId(token: string): number{
         try{
             const decoded = jwt.verify(token, config.jwtSecretKey) as LoginToken;
-            return decoded;
+            return decoded.userId;
         }
         catch(err){
             throw new Error("토큰이 유효하지 않습니다.");

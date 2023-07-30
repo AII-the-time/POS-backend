@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyPluginAsync, FastifyRequest, FastifyReply } from "fastify";
+import { FastifyInstance, FastifyPluginAsync } from "fastify";
 import userService from "../services/userService";
 import * as User from "../DTO/user.dto";
 
