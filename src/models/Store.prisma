@@ -7,7 +7,7 @@ model Store{
     defaultOpeningHours Json
     category Category[]
     menu Menu[]
-    payment Payment[]
+    order Order[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }

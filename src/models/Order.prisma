@@ -1,0 +1,12 @@
+model Order{
+    id Int @id @default(autoincrement())
+    paymentStatus String
+    totalPrice Int
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    cancelledAt DateTime?
+    storeId Int
+    store Store @relation(fields: [storeId], references: [id])
+    orderitems OrderItem[]
+    payment Payment[]
+}

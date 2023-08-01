@@ -4,6 +4,6 @@ model OrderItem{
     price Int
     menuId Int
     menu Menu @relation(fields: [menuId], references: [id])
-    paymentId Int
-    payment Payment @relation(fields: [paymentId], references: [id])
+    orderId Int
+    order Order @relation(fields: [orderId], references: [id])
 }
