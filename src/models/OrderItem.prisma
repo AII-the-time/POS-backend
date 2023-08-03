@@ -1,7 +1,6 @@
 model OrderItem{
     id Int @id @default(autoincrement())
     count Int
-    price Int
     menuId Int
     menu Menu @relation(fields: [menuId], references: [id])
     orderId Int

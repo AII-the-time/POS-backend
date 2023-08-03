@@ -1,0 +1,9 @@
+model Mileage{
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    phone String
+    storeId Int
+    store Store @relation(fields: [storeId], references: [id])
+    order Order[]
+}
