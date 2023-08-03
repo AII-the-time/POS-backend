@@ -1,66 +1,38 @@
-import { FastifyInstance } from "fastify";
-import { Menu } from '@prisma/client';
 import { PrismaClient } from "@prisma/client";
-
+import { StoreAuthorizationHeader } from "../DTO/index.dto";
+import { LoginToken } from "../utils/jwt";
+import * as Order from "../DTO/order.dto";
 const prisma = new PrismaClient();
 
 export default {
-    async orderMenus({storeId, menus}:{storeId:number,menus:{id:number,count:number}[]}): Promise<any>{
-        const menusFromDatabase: Menu[] = await prisma.menu.findMany({
-            where: {
-                id: {
-                    in: menus.map((menu) => menu.id)
-                }
-            }
-        });
-        if(menus.filter((menu) => menusFromDatabase.find((menuFromDatabase) => menuFromDatabase.id === menu.id) === undefined).length > 0) {
-            throw new Error("Menu not found");
+    async order({authorization, storeid}: StoreAuthorizationHeader, {totalPrice,mileageId, menus }: Order.requestOrder ): Promise<Order.responseOrder> {
+        authorization = authorization.replace("Bearer ", "");
+        let userId: number;
+        try{
+            userId = LoginToken.getUserId(authorization);
+        }catch(e){
+            throw new Error("토큰이 유효하지 않습니다.");
         }
 
-        const realMenus: {menuId:number, count:number, price:number}[] = menus.map((menu) => {
-            return {
-                menuId: menu.id,
-                count: menu.count,
-                price: Number(menusFromDatabase.find((menuFromDatabase) => menuFromDatabase.id === menu.id)?.price)
-            }
-        });
-        const totalPrice = realMenus.reduce((acc, cur) => acc + cur.price * cur.count, 0);
-
-        const payment = await prisma.payment.create({
+        const order = await prisma.order.create({
             data: {
-                storeId: storeId,
-                paymentMethod: "credit",
-                paymentStatus: "paid",
+                storeId: Number(storeid),
+                paymentStatus: "WAITING",
                 totalPrice: totalPrice,
-                createdAt: new Date(),
-                updatedAt: new Date(),
                 orderitems: {
-                    create: realMenus
-                }
-            },
-            include: {
-                orderitems: true
+                    createMany: {
+                        data: menus.map(menu => {
+                            return {
+                                count: menu.count,
+                                menuId: menu.id
+                            }
+                        })
+                    }
+                },
+                mileageId: mileageId,
             }
         });
-        return payment;
-    },
-    async getPayments(storeId:number): Promise<any>{
-        if(await prisma.store.findFirst({
-            where: {
-                id: storeId
-            }
-        }) === null) {
-            throw new Error("Store not found");
-        }
-
-        const payments = await prisma.payment.findMany({
-            where: {
-                storeId: storeId
-            },
-            include: {
-                orderitems: true
-            }
-        });
-        return payments;
+        return {orderId: order.id};
     }
+
 }

@@ -86,6 +86,16 @@ async function main() {
             });
         })
     );
+
+    await prisma.mileage.create({
+        data: {
+            storeId: store.id,
+            mileage: 0,
+            phone: '010-4321-8765',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }
+    });
 }
 
 main()
