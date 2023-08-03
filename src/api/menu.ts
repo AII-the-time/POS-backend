@@ -1,4 +1,4 @@
-import { FastifyInstance,FastifyPluginAsync, FastifyRequest,FastifyReply } from "fastify";
+import { FastifyInstance,FastifyPluginAsync } from "fastify";
 import menuService from "../services/menuService";
 import { StoreAuthorizationHeader } from "../DTO/index.dto";
 import { MenuList } from "../DTO/menu.dto";

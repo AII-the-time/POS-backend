@@ -1,4 +1,3 @@
-import { FastifyInstance } from "fastify";
 import { PrismaClient } from "@prisma/client";
 import * as User from "../DTO/user.dto";
 import { TokenForCertificatePhone, CertificatedPhoneToken, LoginToken } from "../utils/jwt";
