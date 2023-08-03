@@ -7,4 +7,5 @@ export interface requestGetMileage{
 
 export interface responseGetMileage{
     mileageId: number;
+    mileage: number;
 }

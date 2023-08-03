@@ -24,7 +24,7 @@ export default {
         if(!mileage) {
             throw new Error("해당하는 마일리지가 없습니다.");
         }
-        return {mileageId: mileage.id};
+        return {mileageId: mileage.id, mileage: mileage.mileage};
     }
 
 }
