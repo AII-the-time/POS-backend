@@ -5,4 +5,5 @@ model OrderItem{
     menu Menu @relation(fields: [menuId], references: [id])
     orderId Int
     order Order @relation(fields: [orderId], references: [id])
+    optionOrderItems OptionOrderItem[]
 }

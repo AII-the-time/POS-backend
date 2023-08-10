@@ -7,6 +7,7 @@ model Menu {
     name String
     price Int
     sort Int
+    optionMenu OptionMenu[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     orderitems OrderItem[]

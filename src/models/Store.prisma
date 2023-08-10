@@ -9,6 +9,7 @@ model Store{
     menu Menu[]
     order Order[]
     mileage Mileage[]
+    option Option[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }

@@ -1,0 +1,27 @@
+model Option{
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    optionName String
+    optionPrice Int
+    optionCategory String
+    storeId Int
+    store Store @relation(fields: [storeId], references: [id])
+    optionMenu OptionMenu[]
+    optionOrderItem OptionOrderItem[]
+}
+
+model OptionMenu{
+    id Int @id @default(autoincrement())
+    optionId Int
+    option Option @relation(fields: [optionId], references: [id])
+    menuId Int
+    menu Menu @relation(fields: [menuId], references: [id])   
+}
+
+model OptionOrderItem{
+    id Int @id @default(autoincrement())
+    optionId Int
+    option Option @relation(fields: [optionId], references: [id])
+    orderItemId Int
+    orderItem OrderItem @relation(fields: [orderItemId], references: [id])
+}
