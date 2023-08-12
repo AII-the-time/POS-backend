@@ -83,7 +83,7 @@ test('order', async () => {
     });
 
     expect(response.statusCode).toBe(200);
-    const body = JSON.parse(response.body) as Order.responseOrder;
+    const body = JSON.parse(response.body) as Order.responseNewOrder;
     orderId = body.orderId;
     expect(body.orderId).toBeDefined();
 });
@@ -125,3 +125,18 @@ test("pay", async () => {
     const body2 = JSON.parse(response2.body) as Order.responsePay;
     expect(body2.leftPrice).toEqual(0);
 });
+
+test("get order", async () => {
+    const response = await app.inject({
+        method: 'GET',
+        url: `/api/order/${orderId}`,
+        headers: {
+            authorization: `Bearer ${accessToken}`,
+            storeid: storeId.toString()
+        },
+    });
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.body) as Order.responseGetOrder;
+    expect(body.paymentStatus).toEqual("PAID");
+});
+
