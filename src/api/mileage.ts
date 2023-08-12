@@ -30,6 +30,33 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
                 .send();
         }
     });
+
+    server.post<{
+        Headers: StoreAuthorizationHeader,
+        Body: Mileage.requestRegisterMileage,
+        Reply: {
+            200: Mileage.responseRegisterMileage,
+            '4xx': undefined
+        }
+    }>('/register', async (request, reply) => {
+        if(!request.headers.storeid || !request.headers.authorization || !request.body.phone) {
+            return reply
+                .code(400)
+                .send();
+        }
+
+        try{
+            const result = await mileageService.registerMileage(request.headers, request.body);
+            reply
+                .code(200)
+                .send(result);
+        }
+        catch(e) {
+            return reply
+                .code(404)
+                .send();
+        }
+    });
 }
 
 export default api;

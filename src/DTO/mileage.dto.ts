@@ -9,3 +9,11 @@ export interface responseGetMileage{
     mileageId: number;
     mileage: number;
 }
+
+export interface requestRegisterMileage{
+    phone: string;
+}
+
+export interface responseRegisterMileage{
+    mileageId: number;
+}

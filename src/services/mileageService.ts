@@ -25,6 +25,25 @@ export default {
             throw new Error("해당하는 마일리지가 없습니다.");
         }
         return {mileageId: mileage.id, mileage: mileage.mileage};
-    }
+    },
 
+    async registerMileage({authorization, storeid}: StoreAuthorizationHeader, { phone }: Mileage.requestRegisterMileage ): Promise<Mileage.responseRegisterMileage> {
+        authorization = authorization.replace("Bearer ", "");
+        let userId: number;
+        try{
+            userId = LoginToken.getUserId(authorization);
+        }catch(e){
+            throw new Error("토큰이 유효하지 않습니다.");
+        }
+
+        const mileage = await prisma.mileage.create({
+            data: {
+                phone: phone,
+                mileage: 500,
+                storeId: Number(storeid),
+            }
+        });
+
+        return {mileageId: mileage.id};
+    }
 }
