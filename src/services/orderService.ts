@@ -172,5 +172,37 @@ export default {
 
         return {paymentStatus, totalPrice, createdAt, orderitems, pay};
 
+    },
+    async getOrderList({authorization, storeid}: StoreAuthorizationHeader, {page, count}: Order.requestGetOrderList): Promise<Order.responseGetOrderList> {
+        authorization = authorization.replace("Bearer ", "");
+        let userId: number;
+        try{
+            userId = LoginToken.getUserId(authorization);
+        }catch(e){
+            throw new Error("토큰이 유효하지 않습니다.");
+        }
+        page = Number(page || 1);
+        count = Number(count || 10);
+        const orders = await prisma.order.findMany({
+            where: {
+                storeId: Number(storeid)
+            },
+            orderBy: {
+                createdAt: "desc"
+            },
+            skip: (page - 1) * count,
+            take: count,
+            include: {
+                payment: true
+            }
+        });
+        const list = orders.map(order => {
+            const paymentStatus = order.paymentStatus as "WAITING" | "PAID" | "CANCELED";
+            const totalPrice = order.totalPrice;
+            const createdAt = order.createdAt;
+            const orderId = order.id;
+            return {paymentStatus, totalPrice, createdAt, orderId};
+        });
+        return {orders:list};
     }
 }

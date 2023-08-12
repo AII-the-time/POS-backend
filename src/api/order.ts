@@ -85,6 +85,33 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
                 .send();
         }
     });
+
+    server.get<{
+        Headers: StoreAuthorizationHeader,
+        Querystring: Order.requestGetOrderList,
+        Reply: {
+            200: Order.responseGetOrderList,
+            '4xx': undefined
+        }
+    }>('/', async (request, reply) => {
+        if(!request.headers.storeid || !request.headers.authorization || !request.query.page || !request.query.count) {
+            return reply
+                .code(400)
+                .send();
+        }
+
+        try{
+            const result = await orderService.getOrderList(request.headers, request.query);
+            reply
+                .code(200)
+                .send(result);
+        }
+        catch(e) {
+            return reply
+                .code(404)
+                .send();
+        }
+    });
 }
 
 export default api;

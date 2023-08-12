@@ -140,3 +140,16 @@ test("get order", async () => {
     expect(body.paymentStatus).toEqual("PAID");
 });
 
+test("get order list", async () => {
+    const response = await app.inject({
+        method: 'GET',
+        url: `/api/order?page=1&count=10`,
+        headers: {
+            authorization: `Bearer ${accessToken}`,
+            storeid: storeId.toString()
+        },
+    });
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.body) as Order.responseGetOrderList;
+    expect(body.orders.length).toBeGreaterThan(0);
+});
