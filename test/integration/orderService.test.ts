@@ -64,11 +64,19 @@ test('order', async () => {
             "menus": [
                 {
                     "id": menus[0].id,
-                    "count": 2
+                    "count": 2,
+                    "options": [
+                        menus[0].option[0].options[0].id,
+                        menus[0].option[1].options[1].id,
+                        menus[0].option[2].options[0].id
+                    ]
                 },
                 {
                     "id": menus[1].id,
-                    "count": 1
+                    "count": 1,
+                    "options": [
+                        menus[1].option[0].options[0].id,
+                    ]
                 }
             ]
         }
@@ -79,3 +87,4 @@ test('order', async () => {
     orderId = body.orderId;
     expect(body.orderId).toBeDefined();
 });
+

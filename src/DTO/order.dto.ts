@@ -7,6 +7,7 @@ export interface requestOrder{
     menus: Array<{
         id: number;
         count: number;
+        options: number[];
     }>;
 }
 

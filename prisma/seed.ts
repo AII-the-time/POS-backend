@@ -78,13 +78,7 @@ async function main() {
                 storeId: store.id,
             },
             {
-                optionName: "기본",
-                optionPrice: 0,
-                optionCategory: "샷",
-                storeId: store.id,
-            },
-            {
-                optionName: "추가",
+                optionName: "1샷 추가",
                 optionPrice: 500,
                 optionCategory: "샷",
                 storeId: store.id,

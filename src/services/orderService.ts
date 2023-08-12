@@ -20,14 +20,19 @@ export default {
                 paymentStatus: "WAITING",
                 totalPrice: totalPrice,
                 orderitems: {
-                    createMany: {
-                        data: menus.map(menu => {
+                    create: menus.map(menu => {
                             return {
                                 count: menu.count,
-                                menuId: menu.id
+                                menuId: menu.id,
+                                optionOrderItems: {
+                                    create: menu.options.map(option => {
+                                            return {
+                                                optionId: option
+                                            }
+                                        })
+                                }
                             }
                         })
-                    }
                 },
                 mileageId: mileageId,
             }
