@@ -38,7 +38,7 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
             200: Mileage.responseRegisterMileage,
             '4xx': undefined
         }
-    }>('/register', async (request, reply) => {
+    }>('/', async (request, reply) => {
         if(!request.headers.storeid || !request.headers.authorization || !request.body.phone) {
             return reply
                 .code(400)

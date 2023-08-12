@@ -48,7 +48,7 @@ test('mileage', async () => {
 test('register mileage', async () => {
     const response = await app.inject({
         method: 'POST',
-        url: `/api/mileage/register`,
+        url: `/api/mileage`,
         headers: {
             authorization: `Bearer ${accessToken}`,
             storeid: storeId.toString()
