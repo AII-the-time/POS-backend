@@ -39,11 +39,34 @@ export default {
         const mileage = await prisma.mileage.create({
             data: {
                 phone: phone,
-                mileage: 500,
+                mileage: 0,
                 storeId: Number(storeid),
             }
         });
 
         return {mileageId: mileage.id};
+    },
+
+    async saveMileage({authorization, storeid}: StoreAuthorizationHeader, { mileageId, mileage }: Mileage.requestSaveMileage ): Promise<Mileage.responseSaveMileage> {
+        authorization = authorization.replace("Bearer ", "");
+        let userId: number;
+        try{
+            userId = LoginToken.getUserId(authorization);
+        }catch(e){
+            throw new Error("토큰이 유효하지 않습니다.");
+        }
+
+        const savedMileage = await prisma.mileage.update({
+            where: {
+                id: mileageId,
+            },
+            data: {
+                mileage: {
+                    increment: mileage,
+                }
+            }
+        });
+
+        return {mileage: savedMileage.mileage};
     }
 }

@@ -17,3 +17,12 @@ export interface requestRegisterMileage{
 export interface responseRegisterMileage{
     mileageId: number;
 }
+
+export interface requestSaveMileage{
+    mileageId: number;
+    mileage: number;
+}
+
+export interface responseSaveMileage{
+    mileage: number;
+}

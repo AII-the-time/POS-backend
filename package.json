@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src src/index.ts",
-    "test": "prisma migrate reset && jest --detectOpenHandles --forceExit",
-    "test-coverage": "jest --coverage --detectOpenHandles --forceExit",
+    "test": "prisma migrate reset -y && jest --detectOpenHandles --forceExit",
+    "test-coverage": "prisma migrate reset -y && jest --coverage --detectOpenHandles --forceExit",
     "prisma": "./prisma/concat_schema.sh && prisma migrate dev --name init --preview-feature",
     "seed": "prisma db seed"
   },
