@@ -153,6 +153,7 @@ export default {
 
         const paymentStatus = order.paymentStatus as "WAITING" | "PAID" | "CANCELED";
         const totalPrice = order.totalPrice;
+        const createdAt = order.createdAt;
         const orderitems = order.orderitems.map(orderitem => {
             return {
                 count: orderitem.count,
@@ -169,7 +170,7 @@ export default {
             }
         });
 
-        return {paymentStatus, totalPrice, orderitems, pay};
+        return {paymentStatus, totalPrice, createdAt, orderitems, pay};
 
     }
 }

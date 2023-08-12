@@ -22,6 +22,7 @@ export interface requestGetOrder{
 export interface responseGetOrder{
     paymentStatus: "WAITING" | "PAID" | "CANCELED";
     totalPrice: number;
+    createdAt: Date;
     orderitems: Array<
         {
             count: number;
