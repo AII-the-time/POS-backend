@@ -30,6 +30,34 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
                 .send();
         }
     });
+
+    server.post<{
+        Headers: StoreAuthorizationHeader,
+        Body: Order.requestPay,
+        Reply: {
+            200: Order.responsePay,
+            '4xx': undefined
+        }
+    }>('/pay', async (request, reply) => {
+        if(!request.headers.storeid || !request.headers.authorization) {
+            return reply
+                .code(400)
+                .send();
+        }
+
+        try{
+            const result = await orderService.pay(request.headers, request.body);
+            reply
+                .code(200)
+                .send(result);
+        }
+        catch(e) {
+            console.log(e);
+            return reply
+                .code(404)
+                .send();
+        }
+    });
 }
 
 export default api;

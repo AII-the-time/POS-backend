@@ -88,3 +88,40 @@ test('order', async () => {
     expect(body.orderId).toBeDefined();
 });
 
+test("pay", async () => {
+    const response = await app.inject({
+        method: 'POST',
+        url: `/api/order/pay`,
+        headers: {
+            authorization: `Bearer ${accessToken}`,
+            storeid: storeId.toString()
+        },
+        payload: {
+            "orderId": orderId,
+            "paymentMethod": "MILEAGE",
+            "price": 500,
+        }
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.body) as Order.responsePay;
+    expect(body.leftPrice).toEqual(menus[0].price * 2 + menus[1].price - 500);
+
+    const response2 = await app.inject({
+        method: 'POST',
+        url: `/api/order/pay`,
+        headers: {
+            authorization: `Bearer ${accessToken}`,
+            storeid: storeId.toString()
+        },
+        payload: {
+            "orderId": orderId,
+            "paymentMethod": "CARD",
+            "price": body.leftPrice,
+        }
+    });
+
+    expect(response2.statusCode).toBe(200);
+    const body2 = JSON.parse(response2.body) as Order.responsePay;
+    expect(body2.leftPrice).toEqual(0);
+});

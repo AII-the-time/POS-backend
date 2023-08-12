@@ -14,3 +14,13 @@ export interface requestOrder{
 export interface responseOrder{
     orderId: number;
 }
+
+export interface requestPay{
+    orderId: number;
+    paymentMethod: "CARD" | "CASH" | "MILEAGE" | "BANK"; //카드, 현금, 마일리지, 계좌이체
+    price: number;
+}
+
+export interface responsePay{
+    leftPrice: number;
+}
