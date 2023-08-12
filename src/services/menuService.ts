@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient,Menu,OptionMenu,Option } from "@prisma/client";
 import { StoreAuthorizationHeader } from "../DTO/index.dto";
 import { MenuList } from "../DTO/menu.dto";
 import { LoginToken } from "../utils/jwt";
@@ -22,6 +22,13 @@ export default {
                 menu: {
                     orderBy: {
                         sort: 'asc'
+                    },
+                    include: {
+                        optionMenu: {
+                            include: {
+                                option: true
+                            }
+                        }
                     }
                 }
             },
@@ -29,6 +36,19 @@ export default {
                 sort: 'asc'
             }
         });
-        return new MenuList(categories);
+        const newCategories = categories.map((category) => {
+            return {
+                ...category,
+                menu: category.menu.map((menu:Menu&{optionMenu:OptionMenu[]}) => {
+                const newMenu:Menu&{option:Option[],optionMenu?:any} = {
+                    ...menu,
+                    option: menu.optionMenu.flatMap((optionMenu:any) => optionMenu.option)
+                }
+                delete newMenu.optionMenu;
+                return newMenu;
+            })
+            }
+        });
+        return new MenuList(newCategories);
     }
 }
