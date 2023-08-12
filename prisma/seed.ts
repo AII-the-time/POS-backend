@@ -51,7 +51,52 @@ async function main() {
         }
     });
 
-    await Promise.all(
+    const option = await Promise.all(
+        [
+            {
+                optionName: "ice",
+                optionPrice: 0,
+                optionCategory: "온도", 
+                storeId: store.id,
+            },
+            {
+                optionName: "hot",
+                optionPrice: 0,
+                optionCategory: "온도",
+                storeId: store.id,
+            },
+            {
+                optionName: "케냐",
+                optionPrice: 0,
+                optionCategory: "원두",
+                storeId: store.id,
+            },
+            {
+                optionName: "콜롬비아",
+                optionPrice: 300,
+                optionCategory: "원두",
+                storeId: store.id,
+            },
+            {
+                optionName: "1샷 추가",
+                optionPrice: 500,
+                optionCategory: "샷",
+                storeId: store.id,
+            },
+            {
+                optionName: "연하게",
+                optionPrice: 0,
+                optionCategory: "샷",
+                storeId: store.id,
+            }
+        ].map(async (option) => {
+            return await prisma.option.create({
+                data: option
+            });
+        })
+    )
+
+    const menu = await Promise.all(
         [
             {
                 name: '아메리카노',
@@ -81,21 +126,24 @@ async function main() {
                 updatedAt: new Date(),
             }
         ].map(async (menu) => {
-            await prisma.menu.create({
+            return await prisma.menu.create({
                 data: menu
             });
         })
     );
 
-    await prisma.mileage.create({
-        data: {
-            storeId: store.id,
-            mileage: 0,
-            phone: '010-4321-8765',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        }
-    });
+    await Promise.all(
+        menu.flatMap((menu) => {
+            return option.map((option) => 
+                prisma.optionMenu.create({
+                    data: {
+                        menuId: menu.id,
+                        optionId: option.id
+                    }
+                })
+            )
+        })
+    );
 }
 
 main()

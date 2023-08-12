@@ -42,11 +42,43 @@ test('mileage', async () => {
         }
     });
 
+    expect(response.statusCode).toBe(404);
+});
+
+test('register mileage', async () => {
+    const response = await app.inject({
+        method: 'POST',
+        url: `/api/mileage`,
+        headers: {
+            authorization: `Bearer ${accessToken}`,
+            storeid: storeId.toString()
+        },
+        payload: {
+            "phone": customerPhone
+        }
+    });
     expect(response.statusCode).toBe(200);
-    const body = JSON.parse(response.body) as Mileage.responseGetMileage;
-    expect(body.mileageId).toBeDefined();
+    const body = JSON.parse(response.body) as Mileage.responseRegisterMileage;
     mileageId = body.mileageId;
-    expect(body.mileage).toBeDefined();
+    expect(body.mileageId).toBeDefined();
+});
+
+test('add mileage', async () => {
+    const response = await app.inject({
+        method: 'PUT',
+        url: `/api/mileage`,
+        headers: {
+            authorization: `Bearer ${accessToken}`,
+            storeid: storeId.toString()
+        },
+        payload: {
+            "mileageId": mileageId,
+            "mileage": 1000
+        }
+    });
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.body) as Mileage.responseSaveMileage;
+    expect(body.mileage).toBe(1000);
 });
 
 let orderId: number;
@@ -64,18 +96,92 @@ test('order', async () => {
             "menus": [
                 {
                     "id": menus[0].id,
-                    "count": 2
+                    "count": 2,
+                    "options": [
+                        menus[0].option[0].options[0].id,
+                        menus[0].option[1].options[1].id,
+                        menus[0].option[2].options[0].id
+                    ]
                 },
                 {
                     "id": menus[1].id,
-                    "count": 1
+                    "count": 1,
+                    "options": [
+                        menus[1].option[0].options[0].id,
+                    ]
                 }
             ]
         }
     });
 
     expect(response.statusCode).toBe(200);
-    const body = JSON.parse(response.body) as Order.responseOrder;
+    const body = JSON.parse(response.body) as Order.responseNewOrder;
     orderId = body.orderId;
     expect(body.orderId).toBeDefined();
+});
+
+test("pay", async () => {
+    const response = await app.inject({
+        method: 'POST',
+        url: `/api/order/pay`,
+        headers: {
+            authorization: `Bearer ${accessToken}`,
+            storeid: storeId.toString()
+        },
+        payload: {
+            "orderId": orderId,
+            "paymentMethod": "MILEAGE",
+            "price": 500,
+        }
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.body) as Order.responsePay;
+    expect(body.leftPrice).toEqual(menus[0].price * 2 + menus[1].price - 500);
+
+    const response2 = await app.inject({
+        method: 'POST',
+        url: `/api/order/pay`,
+        headers: {
+            authorization: `Bearer ${accessToken}`,
+            storeid: storeId.toString()
+        },
+        payload: {
+            "orderId": orderId,
+            "paymentMethod": "CARD",
+            "price": body.leftPrice,
+        }
+    });
+
+    expect(response2.statusCode).toBe(200);
+    const body2 = JSON.parse(response2.body) as Order.responsePay;
+    expect(body2.leftPrice).toEqual(0);
+});
+
+test("get order", async () => {
+    const response = await app.inject({
+        method: 'GET',
+        url: `/api/order/${orderId}`,
+        headers: {
+            authorization: `Bearer ${accessToken}`,
+            storeid: storeId.toString()
+        },
+    });
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.body) as Order.responseGetOrder;
+    expect(body.paymentStatus).toEqual("PAID");
+});
+
+test("get order list", async () => {
+    const response = await app.inject({
+        method: 'GET',
+        url: `/api/order?page=1&count=10`,
+        headers: {
+            authorization: `Bearer ${accessToken}`,
+            storeid: storeId.toString()
+        },
+    });
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.body) as Order.responseGetOrderList;
+    expect(body.orders.length).toBeGreaterThan(0);
 });

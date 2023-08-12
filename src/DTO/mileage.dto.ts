@@ -9,3 +9,20 @@ export interface responseGetMileage{
     mileageId: number;
     mileage: number;
 }
+
+export interface requestRegisterMileage{
+    phone: string;
+}
+
+export interface responseRegisterMileage{
+    mileageId: number;
+}
+
+export interface requestSaveMileage{
+    mileageId: number;
+    mileage: number;
+}
+
+export interface responseSaveMileage{
+    mileage: number;
+}
