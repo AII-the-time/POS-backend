@@ -81,6 +81,22 @@ test('add mileage', async () => {
     expect(body.mileage).toBe(1000);
 });
 
+test('get mileage', async () => {
+    const response = await app.inject({
+        method: 'GET',
+        url: `/api/mileage?phone=${customerPhone}`,
+        headers: {
+            authorization: `Bearer ${accessToken}`,
+            storeid: storeId.toString()
+        }
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.body) as Mileage.responseGetMileage;
+    expect(body.mileage).toBe(1000);
+    expect(body.mileageId).toBe(mileageId);
+});
+
 let orderId: number;
 test('order', async () => {
     const response = await app.inject({
