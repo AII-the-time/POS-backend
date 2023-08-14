@@ -58,7 +58,7 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
         }
     });
 
-    server.put<{
+    server.patch<{
         Headers: StoreAuthorizationHeader,
         Body: Mileage.requestSaveMileage,
         Reply: {

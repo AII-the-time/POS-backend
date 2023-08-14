@@ -65,7 +65,7 @@ test('register mileage', async () => {
 
 test('add mileage', async () => {
     const response = await app.inject({
-        method: 'PUT',
+        method: 'PATCH',
         url: `/api/mileage`,
         headers: {
             authorization: `Bearer ${accessToken}`,
