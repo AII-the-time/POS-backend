@@ -52,7 +52,6 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
                 .send(result);
         }
         catch(e) {
-            console.log(e);
             return reply
                 .code(404)
                 .send();

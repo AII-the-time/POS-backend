@@ -2,6 +2,7 @@ import server from '../../src/server';
 import { FastifyInstance } from 'fastify';
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
 import * as User from "../../src/DTO/user.dto";
+import test400 from './400test';
 
 let app: FastifyInstance;
 
@@ -21,6 +22,24 @@ let accessToken: string;
 let refreshToken: string;
 
 describe('login', () => {
+    test('ping', async () => {
+        const response = await app.inject({
+            method: 'GET',
+            url: '/api/ping'
+        });
+        expect(response.statusCode).toBe(200);
+        const body = JSON.parse(response.body) as {data: string};
+        expect(body.data).toBe('pong');
+    });
+    test('400 test', async () => {
+        await test400(app,[
+            ['/api/user/phone', 'POST'],
+            ['/api/user/phone/certificationCode', 'POST'],
+            ['/api/user/login', 'POST'],
+            ['/api/user/refresh', 'POST'],
+        ]);
+    });
+
     test('send CertificationCode', async () => {
         const response = await app.inject({
             method: 'POST',
@@ -66,6 +85,18 @@ describe('login', () => {
         expect(response.statusCode).toBe(401);
     });
 
+    test('new user: fail', async () => {
+        const response = await app.inject({
+            method: 'POST',
+            url: '/api/user/login',
+            payload: {
+                businessRegistrationNumber: businessRegistrationNumber,
+                certificatedPhoneToken: "asdf"
+            }
+        });
+        expect(response.statusCode).toBe(401);
+    });
+
     test('new user', async () => {
         const response = await app.inject({
             method: 'POST',
@@ -105,6 +136,17 @@ describe('login', () => {
         expect(body.refreshToken).not.toBe(refreshToken);
         accessToken = body.accessToken;
         refreshToken = body.refreshToken;
+    });
+
+    test('refresh token:fail', async () => {
+        const response = await app.inject({
+            method: 'POST',
+            url: '/api/user/refresh',
+            headers: {
+                Authorization: `Bearer ${refreshToken+1}`
+            }
+        });
+        expect(response.statusCode).toBe(401);
     });
 
     test('refresh token', async () => {

@@ -8,6 +8,7 @@ import menuService from '../../src/services/menuService';
 import * as Menu from "../../src/DTO/menu.dto";
 import * as Order from "../../src/DTO/order.dto";
 import * as Mileage from "../../src/DTO/mileage.dto";
+import test400 from './400test';
 
 let app: FastifyInstance;
 
@@ -28,6 +29,18 @@ beforeAll(async () => {
 
 afterAll(async () => {
     await app.close();
+});
+
+test('400 test', async () => {
+    await test400(app, [
+        ['/api/order', 'POST'],
+        ['/api/order', 'GET'],
+        ['/api/order/1', 'GET'],
+        ['/api/order/pay', 'POST'],
+        ['/api/mileage', 'POST'],
+        ['/api/mileage', 'GET'],
+        ['/api/mileage', 'PATCH'],
+    ]);
 });
 
 const customerPhone = '010-4321-8765';
