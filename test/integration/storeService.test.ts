@@ -4,6 +4,7 @@ import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
 import { CertificatedPhoneToken } from "../../src/utils/jwt";
 import userService from '../../src/services/userService';
 import * as Store from "../../src/DTO/store.dto";
+import test400 from './400test';
 
 let app: FastifyInstance;
 
@@ -44,6 +45,13 @@ const defaultOpeningHours: Array<{
         close: '17:00'
     }
 ]
+
+test('400 test', async () => {
+    await test400(app, [
+        ['/api/store', 'POST'],
+        ['/api/store', 'GET']
+    ]);
+});
 
 let storeId: number;
 test('new store', async () => {
