@@ -5,7 +5,16 @@
         "module": "es6",
         "moduleResolution": "node",
         "outDir": "build",
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "baseUrl": ".",
+        "paths": {
+            "@api": ["src/api"],
+            "@config": ["src/config"],
+            "@DTO/*": ["src/DTO/*"],
+            "@loaders": ["src/loaders"],
+            "@services/*": ["src/services/*"],
+            "@utils/*": ["src/utils/*"],
+        }
     },
     "include": [
         "src/**/*.ts"
