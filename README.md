@@ -10,6 +10,7 @@ DATABASE_URL="mysql://root:root@db/db"
 docker-compose down --rmi local
 docker-compose up -d
 ```
+4. http://localhost:3000/docs 에서 api 문서 확인
 
 # 백엔드 개발
 ## 개발용 서버 실행 방법
