@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { StoreAuthorizationHeader } from "../DTO/index.dto";
-import { LoginToken } from "../utils/jwt";
-import * as Mileage from "../DTO/mileage.dto";
+import { StoreAuthorizationHeader } from "@DTO/index.dto";
+import { LoginToken } from "@utils/jwt";
+import * as Mileage from "@DTO/mileage.dto";
 const prisma = new PrismaClient();
 
 export default {

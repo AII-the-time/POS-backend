@@ -1,7 +1,7 @@
 import { PrismaClient,Menu,OptionMenu,Option } from "@prisma/client";
-import { StoreAuthorizationHeader } from "../DTO/index.dto";
-import { MenuList } from "../DTO/menu.dto";
-import { LoginToken } from "../utils/jwt";
+import { StoreAuthorizationHeader } from "@DTO/index.dto";
+import { MenuList } from "@DTO/menu.dto";
+import { LoginToken } from "@utils/jwt";
 
 const prisma = new PrismaClient();
 

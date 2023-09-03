@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyPluginAsync } from "fastify";
-import storeService from "../services/storeService";
-import * as Store from "../DTO/store.dto";
+import storeService from "@services/storeService";
+import * as Store from "@DTO/store.dto";
 
 const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     server.post<{

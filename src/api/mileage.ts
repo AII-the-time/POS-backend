@@ -1,7 +1,7 @@
 import { FastifyInstance,FastifyPluginAsync } from "fastify";
-import mileageService from "../services/mileageService";
-import { StoreAuthorizationHeader } from "../DTO/index.dto";
-import * as Mileage from "../DTO/mileage.dto";
+import mileageService from "@services/mileageService";
+import { StoreAuthorizationHeader } from "@DTO/index.dto";
+import * as Mileage from "@DTO/mileage.dto";
 
 const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
     server.get<{

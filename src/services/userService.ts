@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import * as User from "../DTO/user.dto";
-import { TokenForCertificatePhone, CertificatedPhoneToken, LoginToken } from "../utils/jwt";
+import * as User from "@DTO/user.dto";
+import { TokenForCertificatePhone, CertificatedPhoneToken, LoginToken } from "@utils/jwt";
 
 const prisma = new PrismaClient();
 

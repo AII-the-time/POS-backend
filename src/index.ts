@@ -1,6 +1,6 @@
 import {FastifyInstance} from 'fastify';
 import serverSetting from './server';
-import config from './config';
+import config from '@config';
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 

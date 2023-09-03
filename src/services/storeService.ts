@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import * as Store from "../DTO/store.dto";
-import { LoginToken } from "../utils/jwt";
+import * as Store from "@DTO/store.dto";
+import { LoginToken } from "@utils/jwt";
 
 const prisma = new PrismaClient();
 
