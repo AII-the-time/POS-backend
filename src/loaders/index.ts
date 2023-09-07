@@ -3,6 +3,7 @@ import { initEnvFromDotEnv } from '@config';
 import api from '@api';
 import swagger from '@fastify/swagger';
 import swaggerUI from '@fastify/swagger-ui';
+import {LoginToken} from '@utils/jwt';
 
 export default async (server: FastifyInstance): Promise<void> => {
     initEnvFromDotEnv();
@@ -16,7 +17,19 @@ export default async (server: FastifyInstance): Promise<void> => {
             host: 'localhost:3000',
             schemes: ['http'],
             consumes: ['application/json'],
-            produces: ['application/json']
+            produces: ['application/json'],
+            securityDefinitions: {
+                Authorization: {
+                    type: 'apiKey',
+                    name: 'authorization',
+                    in: 'header'
+                }
+            },
+            security: [
+                {
+                    Authorization: []
+                },
+            ],
         }
     });
     server.register(swaggerUI, {

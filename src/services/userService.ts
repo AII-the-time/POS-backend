@@ -5,7 +5,7 @@ import { TokenForCertificatePhone, CertificatedPhoneToken, LoginToken } from "@u
 const prisma = new PrismaClient();
 
 export default {
-    async sendCertificationCode({phone}:User.requestPhone): Promise<User.responsePhone>{
+    async sendCertificationCode({phone}:User.phoneInterface['Body']): Promise<User.phoneInterface['Reply']['200']>{
         //TODO: 인증번호 생성
         const certificationCode = "123456";
         const token = new TokenForCertificatePhone(phone, certificationCode).sign();
@@ -63,7 +63,7 @@ export default {
         return {accessToken, refreshToken};
     },
 
-    async refresh({authorization}:User.requestRefreshHeader): Promise<User.responseLogin>{
+    async refresh({authorization}:User.refreshInterface['Headers']): Promise<User.refreshInterface['Reply']['200']>{
         authorization = authorization.replace("Bearer ", "");
         let userId: number;
         try{

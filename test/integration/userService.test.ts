@@ -50,9 +50,9 @@ describe('login', () => {
         });
         expect(response.statusCode).toBe(200);
 
-        const body = JSON.parse(response.body) as User.responsePhone;
+        const body = JSON.parse(response.body) as User.phoneInterface['Reply']['200'];
         expect(body).toHaveProperty('tokenForCertificatePhone');
-        tokenForCertificatePhone = body.tokenForCertificatePhone;
+        tokenForCertificatePhone = body.tokenForCertificatePhone as string;
     });
 
     test('certificate phone:success', async () => {
@@ -161,12 +161,12 @@ describe('login', () => {
         });
         expect(response.statusCode).toBe(200);
 
-        const body = JSON.parse(response.body) as User.responseRefresh;
+        const body = JSON.parse(response.body) as User.refreshInterface['Reply']['200'];
         expect(body).toHaveProperty('accessToken');
         expect(body).toHaveProperty('refreshToken');
         expect(body.accessToken).not.toBe(accessToken);
         expect(body.refreshToken).not.toBe(refreshToken);
-        accessToken = body.accessToken;
-        refreshToken = body.refreshToken;
+        accessToken = body.accessToken as string;
+        refreshToken = body.refreshToken as string;
     });
 });
