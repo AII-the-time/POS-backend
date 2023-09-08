@@ -1,11 +1,40 @@
 # 프론트 개발을 위한 로컬 서버 실행
-0. docker가 설치되어 있어야 함
-1. 백엔드 레포 클론 후
-2. 루트 디렉토리에 .env 파일 생성 후 아래 내용 추가
+0. docker가 설치되어 있어야 함(백엔드 레포 클론은 필요 없음)
+1. .env 파일 생성 후 아래 내용 추가
 ```
 DATABASE_URL="mysql://root:root@db/db"
 ```
-3. 루트 디렉토리에서 아래 명령어 실행
+2. .env 파일이 있는 디렉토리에 docker-compose.yml 파일 생성 후 아래 내용 추가
+```
+version: "3"
+
+services:
+  db:
+    image: mariadb:10.9.7
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db
+    networks:
+      - my-network
+
+  server:
+    image: raipen/reinpos:latest
+    env_file: ./.env
+    container_name: reinpos
+    ports:
+      - 3000:3000
+    depends_on:
+      - db
+    networks:
+      - my-network
+    links:
+      - db
+  
+networks:
+  my-network:
+```
+3. .env와 docker-compose.yml 파일이 있는 디렉토리에서 아래 명령어 실행
 ```
 docker-compose down --rmi local
 docker-compose up -d
