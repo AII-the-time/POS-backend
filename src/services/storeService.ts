@@ -5,7 +5,7 @@ import { LoginToken } from "@utils/jwt";
 const prisma = new PrismaClient();
 
 export default {
-    async newStore({authorization}: Store.requestNewStoreHeader, {name, address, openingHours}: Store.requestNewStore): Promise<Store.responseNewStore> {
+    async newStore({authorization}: Store.newStoreInterface['Headers'], {name, address, openingHours}: Store.newStoreInterface['Body']): Promise<Store.newStoreInterface['Reply']['200']> {
         authorization = authorization.replace("Bearer ", "");
         let userId: number;
         try{
@@ -18,7 +18,7 @@ export default {
             data: {
                 name: name,
                 address: address,
-                defaultOpeningHours: openingHours,
+                defaultOpeningHours: openingHours as any,
                 user: {
                     connect: {
                         id: userId
@@ -30,7 +30,7 @@ export default {
         return {storeId: store.id};
     },
 
-    async getStoreList({authorization}: Store.requestStoreListHeader): Promise<Store.responseStoreList> {
+    async getStoreList({authorization}: Store.storeListInterface['Headers']): Promise<Store.storeListInterface['Reply']['200']> {
         authorization = authorization.replace("Bearer ", "");
         let userId: number;
         try{

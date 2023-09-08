@@ -1,6 +1,5 @@
-import { FastifySchema } from 'fastify';
 import { User as prismaUser } from '@prisma/client';
-import { FromSchema } from "json-schema-to-ts";
+import { AuthorizationHeader, errorSchema, SchemaToInterfase } from '@DTO/index.dto';
 export type User = prismaUser;
 
 export const phoneSchema ={
@@ -19,30 +18,17 @@ export const phoneSchema ={
         200: {
             type: 'object',
             description: 'success response',
+            required: ['tokenForCertificatePhone'],
             properties: {
                 tokenForCertificatePhone: { type: 'string' }
-            }
-        },
-        400: {
-            type: 'object',
-            description: 'Bad Request',
-            properties: {
-                error: { type: 'string' },
-                message: { type: 'string' }
             }
         }
     }
 } as const;
 
-export interface phoneInterface {
-    Body: FromSchema<typeof phoneSchema.body>,
-    Reply: {
-        200: FromSchema<typeof phoneSchema.response['200']>,
-        400: FromSchema<typeof phoneSchema.response['400']>,
-    }
-}
-
-export const certificatePhoneSchema: FastifySchema = {
+export const certificatePhoneSchema = {
+    tags: ['user'],
+    summary: '인증 번호 확인',
     body: {
         type: 'object',
         required: ['phone','certificationCode','phoneCertificationToken'],
@@ -55,24 +41,19 @@ export const certificatePhoneSchema: FastifySchema = {
     response: {
         200: {
             type: 'object',
+            description: 'success response',
+            required: ['certificatedPhoneToken'],
             properties: {
                 certificatedPhoneToken: { type: 'string' }
             }
-        }
+        },
+        401: errorSchema('인증번호가 일치하지 않습니다.')
     }
-};
+} as const;
 
-export interface requestCertificatePhone{
-    "phone": string;
-    "certificationCode": string;
-    "phoneCertificationToken": string;
-}
-
-export interface responseCertificatePhone{
-    "certificatedPhoneToken": string;
-}
-
-export const loginSchema: FastifySchema = {
+export const loginSchema = {
+    tags: ['user'],
+    summary: '로그인',
     body: {
         type: 'object',
         required: ['businessRegistrationNumber','certificatedPhoneToken'],
@@ -84,59 +65,36 @@ export const loginSchema: FastifySchema = {
     response: {
         200: {
             type: 'object',
+            description: 'success response',
+            required: ['accessToken','refreshToken'],
             properties: {
                 accessToken: { type: 'string' },
                 refreshToken: { type: 'string' }
             }
-        }
+        },
+        401: errorSchema('전화번호가 인증되지 않았습니다.')
     }
-};
-
-
-export interface requestLogin{
-    "businessRegistrationNumber": string;
-    "certificatedPhoneToken": string;
-}
-
-export interface responseLogin{
-    "accessToken": string;
-    "refreshToken": string;
-}
+} as const;
 
 export const refreshSchema ={
     tags: ['user'],
     summary: '사용자 휴대폰으로 인증번호 발송',
-    headers:{
-        type: 'object',
-        properties: {
-            authorization: { type: 'string' }
-        },
-        required: ['authorization']
-    },
+    headers: AuthorizationHeader,
     response: {
         200: {
             type: 'object',
             description: 'success response',
+            required: ['accessToken','refreshToken'],
             properties: {
                 accessToken: { type: 'string' },
                 refreshToken: { type: 'string' }
             }
         },
-        400: {
-            type: 'object',
-            description: 'Bad Request',
-            properties: {
-                error: { type: 'string' },
-                message: { type: 'string' }
-            }
-        }
+        401: errorSchema('토큰이 만료되었습니다.')
     }
 } as const;
 
-export interface refreshInterface {
-    Headers: FromSchema<typeof refreshSchema.headers>,
-    Reply: {
-        200: FromSchema<typeof refreshSchema.response['200']>,
-        '4xx': FromSchema<typeof refreshSchema.response['400']>,
-    }
-}
+export type phoneInterface = SchemaToInterfase<typeof phoneSchema>;
+export type certificatePhoneInterface = SchemaToInterfase<typeof certificatePhoneSchema>;
+export type loginInterface = SchemaToInterfase<typeof loginSchema>;
+export type refreshInterface = SchemaToInterfase<typeof refreshSchema>;

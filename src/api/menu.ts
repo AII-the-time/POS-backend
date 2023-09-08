@@ -1,11 +1,12 @@
 import { FastifyInstance,FastifyPluginAsync } from "fastify";
 import menuService from "@services/menuService";
 import { StoreAuthorizationHeader } from "@DTO/index.dto";
+import { FromSchema } from "json-schema-to-ts";
 import { MenuList } from "@DTO/menu.dto";
 
 const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
     server.get<{
-        Headers: StoreAuthorizationHeader,
+        Headers: FromSchema<typeof StoreAuthorizationHeader>,
         Reply: {
             200: MenuList,
             '4xx': undefined

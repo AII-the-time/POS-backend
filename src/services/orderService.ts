@@ -5,7 +5,7 @@ import * as Order from "@DTO/order.dto";
 const prisma = new PrismaClient();
 
 export default {
-    async order({authorization, storeid}: StoreAuthorizationHeader, {totalPrice,mileageId, menus }: Order.requestNewOrder ): Promise<Order.responseNewOrder> {
+    async order({authorization, storeid}: Order.newOrderInterface['Headers'], {menus, totalPrice, mileageId}: Order.newOrderInterface['Body']): Promise<Order.newOrderInterface['Reply']['200']> {
         authorization = authorization.replace("Bearer ", "");
         let userId: number;
         try{
@@ -39,7 +39,7 @@ export default {
         });
         return {orderId: order.id};
     },
-    async pay({authorization, storeid}: StoreAuthorizationHeader, {orderId, paymentMethod, price}: Order.requestPay): Promise<Order.responsePay> {
+    async pay({authorization, storeid}: Order.payInterface['Headers'], {orderId, paymentMethod, price}: Order.payInterface['Body']): Promise<Order.payInterface['Reply']['200']> {
         authorization = authorization.replace("Bearer ", "");
         let userId: number;
         try{
@@ -117,7 +117,7 @@ export default {
         return {leftPrice: order.totalPrice - paidPrice - price};
     },
 
-    async getOrder({authorization, storeid}: StoreAuthorizationHeader, {orderId}: Order.requestGetOrder): Promise<Order.responseGetOrder> {
+    async getOrder({authorization, storeid}: Order.getOrderInterface['Headers'], {orderId}: Order.getOrderInterface['Params']): Promise<Order.getOrderInterface['Reply']['200']> {
         authorization = authorization.replace("Bearer ", "");
         let userId: number;
         try{
@@ -173,7 +173,7 @@ export default {
         return {paymentStatus, totalPrice, createdAt, orderitems, pay};
 
     },
-    async getOrderList({authorization, storeid}: StoreAuthorizationHeader, {page, count}: Order.requestGetOrderList): Promise<Order.responseGetOrderList> {
+    async getOrderList({authorization, storeid}: Order.getOrderListInterface['Headers'], {page, count}: Order.getOrderListInterface['Querystring']): Promise<Order.getOrderListInterface['Reply']['200']> {
         authorization = authorization.replace("Bearer ", "");
         let userId: number;
         try{
