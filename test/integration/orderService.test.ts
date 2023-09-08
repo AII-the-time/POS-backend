@@ -71,7 +71,7 @@ test('register mileage', async () => {
         }
     });
     expect(response.statusCode).toBe(200);
-    const body = JSON.parse(response.body) as Mileage.responseRegisterMileage;
+    const body = JSON.parse(response.body) as Mileage.registerMileageInterface['Reply']['200'];
     mileageId = body.mileageId;
     expect(body.mileageId).toBeDefined();
 });
@@ -90,7 +90,7 @@ test('add mileage', async () => {
         }
     });
     expect(response.statusCode).toBe(200);
-    const body = JSON.parse(response.body) as Mileage.responseSaveMileage;
+    const body = JSON.parse(response.body) as Mileage.saveMileageInterface['Reply']['200'];
     expect(body.mileage).toBe(1000);
 });
 
@@ -105,7 +105,7 @@ test('get mileage', async () => {
     });
 
     expect(response.statusCode).toBe(200);
-    const body = JSON.parse(response.body) as Mileage.responseGetMileage;
+    const body = JSON.parse(response.body) as Mileage.getMileageInterface['Reply']['200'];
     expect(body.mileage).toBe(1000);
     expect(body.mileageId).toBe(mileageId);
 });
@@ -144,7 +144,7 @@ test('order', async () => {
     });
 
     expect(response.statusCode).toBe(200);
-    const body = JSON.parse(response.body) as Order.responseNewOrder;
+    const body = JSON.parse(response.body) as Order.newOrderInterface['Reply']['200'];
     orderId = body.orderId;
     expect(body.orderId).toBeDefined();
 });
@@ -165,7 +165,7 @@ test("pay", async () => {
     });
 
     expect(response.statusCode).toBe(200);
-    const body = JSON.parse(response.body) as Order.responsePay;
+    const body = JSON.parse(response.body) as Order.payInterface['Reply']['200'];
     expect(body.leftPrice).toEqual(menus[0].price * 2 + menus[1].price - 500);
 
     const response2 = await app.inject({
@@ -183,7 +183,7 @@ test("pay", async () => {
     });
 
     expect(response2.statusCode).toBe(200);
-    const body2 = JSON.parse(response2.body) as Order.responsePay;
+    const body2 = JSON.parse(response2.body) as Order.payInterface['Reply']['200'];
     expect(body2.leftPrice).toEqual(0);
 });
 
@@ -197,7 +197,7 @@ test("get order", async () => {
         },
     });
     expect(response.statusCode).toBe(200);
-    const body = JSON.parse(response.body) as Order.responseGetOrder;
+    const body = JSON.parse(response.body) as Order.getOrderInterface['Reply']['200'];
     expect(body.paymentStatus).toEqual("PAID");
 });
 
@@ -211,6 +211,6 @@ test("get order list", async () => {
         },
     });
     expect(response.statusCode).toBe(200);
-    const body = JSON.parse(response.body) as Order.responseGetOrderList;
+    const body = JSON.parse(response.body) as Order.getOrderListInterface['Reply']['200'];
     expect(body.orders.length).toBeGreaterThan(0);
 });

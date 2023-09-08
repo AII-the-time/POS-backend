@@ -69,7 +69,7 @@ test('new store', async () => {
     });
     expect(response.statusCode).toBe(200);
 
-    const body = JSON.parse(response.body) as Store.responseNewStore;
+    const body = JSON.parse(response.body) as Store.newStoreInterface['Reply']['200'];
     expect(body).toHaveProperty('storeId');
     storeId = body.storeId;
 });
@@ -84,7 +84,7 @@ test('get store list', async () => {
     });
     expect(response.statusCode).toBe(200);
 
-    const body = JSON.parse(response.body) as Store.responseStoreList;
+    const body = JSON.parse(response.body) as Store.storeListInterface['Reply']['200'];
     expect(body).toHaveProperty('stores');
     expect(body.stores.length).toBeGreaterThan(0);
     const lastStore = body.stores[body.stores.length - 1];

@@ -5,51 +5,21 @@ import * as User from "@DTO/user.dto";
 const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     server.post<User.phoneInterface>('/phone', {schema: User.phoneSchema}, async (request, reply) => {
         const result = await userService.sendCertificationCode(request.body);
-        reply.code(200)
-            .send(result);
+        reply.code(200).send(result);
     });
 
-    server.post<{
-        Body: User.requestCertificatePhone,
-        Reply: {
-            200: User.responseCertificatePhone,
-            '4xx': undefined
-        }
-    }>('/phone/certificationCode', {schema: User.certificatePhoneSchema}, async (request, reply) => {
-        if (!request.body.phone || !request.body.certificationCode || !request.body.phoneCertificationToken) {
-            return reply
-                .code(400)
-                .send();
-        }
-
+    server.post<User.certificatePhoneInterface>('/phone/certificationCode', {schema: User.certificatePhoneSchema}, async (request, reply) => {
         try {
-            const result: User.responseCertificatePhone = await userService.certificatePhone(request.body);
-            reply
-                .code(200)
-                .send(result);
+            const result = await userService.certificatePhone(request.body);
+            reply.code(200).send(result);
         } catch (e) {
-            return reply
-                .code(401)
-                .send();
+            return reply.code(401).send();
         }
-
     });
 
-    server.post<{
-        Body: User.requestLogin,
-        Reply: {
-            200: User.responseLogin,
-            '4xx': undefined
-        }
-    }>('/login', {schema: User.loginSchema}, async (request, reply) => {
-        if (!request.body.businessRegistrationNumber || !request.body.certificatedPhoneToken) {
-            return reply
-                .code(400)
-                .send();
-        }
-
+    server.post<User.loginInterface>('/login', {schema: User.loginSchema}, async (request, reply) => {
         try {
-            const result: User.responseLogin = await userService.login(request.body);
+            const result = await userService.login(request.body);
             reply
                 .code(200)
                 .send(result);
@@ -61,12 +31,6 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     });
 
     server.post<User.refreshInterface>('/refresh',{schema: User.refreshSchema}, async (request, reply) => {
-        if (!request.headers.authorization) {
-            return reply
-                .code(400)
-                .send();
-        }
-
         try {
             const result = await userService.refresh(request.headers);
             reply

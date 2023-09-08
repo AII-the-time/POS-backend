@@ -1,12 +1,13 @@
 import { PrismaClient,Menu,OptionMenu,Option } from "@prisma/client";
 import { StoreAuthorizationHeader } from "@DTO/index.dto";
+import { FromSchema } from "json-schema-to-ts";
 import { MenuList } from "@DTO/menu.dto";
 import { LoginToken } from "@utils/jwt";
 
 const prisma = new PrismaClient();
 
 export default {
-    async getMenus({authorization, storeid}: StoreAuthorizationHeader): Promise<MenuList> {
+    async getMenus({authorization, storeid}: FromSchema<typeof StoreAuthorizationHeader>): Promise<MenuList> {
         authorization = authorization.replace("Bearer ", "");
         let userId: number;
         try{

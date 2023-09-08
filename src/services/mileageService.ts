@@ -5,7 +5,7 @@ import * as Mileage from "@DTO/mileage.dto";
 const prisma = new PrismaClient();
 
 export default {
-    async getMileage({authorization, storeid}: StoreAuthorizationHeader, { phone }: Mileage.requestGetMileage ): Promise<Mileage.responseGetMileage> {
+    async getMileage({authorization, storeid}: Mileage.getMileageInterface['Headers'], { phone }: Mileage.getMileageInterface['Querystring']): Promise<Mileage.getMileageInterface['Reply']['200']> {
         authorization = authorization.replace("Bearer ", "");
         let userId: number;
         try{
@@ -27,7 +27,7 @@ export default {
         return {mileageId: mileage.id, mileage: mileage.mileage};
     },
 
-    async registerMileage({authorization, storeid}: StoreAuthorizationHeader, { phone }: Mileage.requestRegisterMileage ): Promise<Mileage.responseRegisterMileage> {
+    async registerMileage({authorization, storeid}: Mileage.registerMileageInterface['Headers'], { phone }: Mileage.registerMileageInterface['Body']): Promise<Mileage.registerMileageInterface['Reply']['200']> {
         authorization = authorization.replace("Bearer ", "");
         let userId: number;
         try{
@@ -47,7 +47,7 @@ export default {
         return {mileageId: mileage.id};
     },
 
-    async saveMileage({authorization, storeid}: StoreAuthorizationHeader, { mileageId, mileage }: Mileage.requestSaveMileage ): Promise<Mileage.responseSaveMileage> {
+    async saveMileage({authorization, storeid}: Mileage.saveMileageInterface['Headers'], { mileageId, mileage }: Mileage.saveMileageInterface['Body']): Promise<Mileage.saveMileageInterface['Reply']['200']> {
         authorization = authorization.replace("Bearer ", "");
         let userId: number;
         try{

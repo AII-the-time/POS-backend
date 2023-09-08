@@ -4,20 +4,7 @@ import { StoreAuthorizationHeader } from "@DTO/index.dto";
 import * as Order from "@DTO/order.dto";
 
 const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
-    server.post<{
-        Headers: StoreAuthorizationHeader,
-        Body: Order.requestNewOrder,
-        Reply: {
-            200: Order.responseNewOrder,
-            '4xx': undefined
-        }
-    }>('/', async (request, reply) => {
-        if(!request.headers.storeid || !request.headers.authorization) {
-            return reply
-                .code(400)
-                .send();
-        }
-
+    server.post<Order.newOrderInterface>('/',{schema:Order.newOrderSchema}, async (request, reply) => {
         try{
             const result = await orderService.order(request.headers, request.body);
             reply
@@ -26,25 +13,12 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
         }
         catch(e) {
             return reply
-                .code(404)
+                .code(401)
                 .send();
         }
     });
 
-    server.post<{
-        Headers: StoreAuthorizationHeader,
-        Body: Order.requestPay,
-        Reply: {
-            200: Order.responsePay,
-            '4xx': undefined
-        }
-    }>('/pay', async (request, reply) => {
-        if(!request.headers.storeid || !request.headers.authorization) {
-            return reply
-                .code(400)
-                .send();
-        }
-
+    server.post<Order.payInterface>('/pay',{schema:Order.paySchema}, async (request, reply) => {
         try{
             const result = await orderService.pay(request.headers, request.body);
             reply
@@ -53,25 +27,12 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
         }
         catch(e) {
             return reply
-                .code(404)
+                .code(401)
                 .send();
         }
     });
 
-    server.get<{
-        Headers: StoreAuthorizationHeader,
-        Params: Order.requestGetOrder,
-        Reply: {
-            200: Order.responseGetOrder,
-            '4xx': undefined
-        }
-    }>('/:orderId', async (request, reply) => {
-        if(!request.headers.storeid || !request.headers.authorization|| !request.params.orderId) {
-            return reply
-                .code(400)
-                .send();
-        }
-
+    server.get<Order.getOrderInterface>('/:orderId',{schema:Order.getOrderSchema}, async (request, reply) => {
         try{
             const result = await orderService.getOrder(request.headers, request.params);
             reply
@@ -80,25 +41,12 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
         }
         catch(e) {
             return reply
-                .code(404)
+                .code(401)
                 .send();
         }
     });
 
-    server.get<{
-        Headers: StoreAuthorizationHeader,
-        Querystring: Order.requestGetOrderList,
-        Reply: {
-            200: Order.responseGetOrderList,
-            '4xx': undefined
-        }
-    }>('/', async (request, reply) => {
-        if(!request.headers.storeid || !request.headers.authorization || !request.query.page || !request.query.count) {
-            return reply
-                .code(400)
-                .send();
-        }
-
+    server.get<Order.getOrderListInterface>('/',{schema:Order.getOrderListSchema}, async (request, reply) => {
         try{
             const result = await orderService.getOrderList(request.headers, request.query);
             reply
@@ -107,7 +55,7 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
         }
         catch(e) {
             return reply
-                .code(404)
+                .code(401)
                 .send();
         }
     });

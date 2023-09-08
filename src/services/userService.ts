@@ -12,7 +12,7 @@ export default {
         return {tokenForCertificatePhone: token};
     },
 
-    async certificatePhone({phone, certificationCode, phoneCertificationToken}:User.requestCertificatePhone): Promise<User.responseCertificatePhone>{
+    async certificatePhone({phone, certificationCode, phoneCertificationToken}:User.certificatePhoneInterface['Body']): Promise<User.certificatePhoneInterface['Reply']['200']>{
         if(!TokenForCertificatePhone.verify(phoneCertificationToken, phone, certificationCode)){
             throw new Error("인증번호가 일치하지 않습니다.");
         }
@@ -20,7 +20,7 @@ export default {
         return {certificatedPhoneToken: token};
     },
 
-    async create({businessRegistrationNumber, certificatedPhoneToken}:User.requestLogin): Promise<User.User> {
+    async create({businessRegistrationNumber, certificatedPhoneToken}:User.loginInterface['Body']): Promise<User.User> {
         const certificatedPhone = CertificatedPhoneToken.decode(certificatedPhoneToken);
         try{
             return await prisma.user.create({
@@ -34,7 +34,7 @@ export default {
         }
     },
 
-    async login({businessRegistrationNumber, certificatedPhoneToken}:User.requestLogin): Promise<User.responseLogin>{
+    async login({businessRegistrationNumber, certificatedPhoneToken}:User.loginInterface['Body']): Promise<User.loginInterface['Reply']['200']>{
         let certificatedPhone: CertificatedPhoneToken;
         try{
             certificatedPhone = CertificatedPhoneToken.decode(certificatedPhoneToken);
