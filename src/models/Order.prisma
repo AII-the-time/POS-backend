@@ -2,8 +2,10 @@ model Order{
     id Int @id @default(autoincrement())
     paymentStatus String
     totalPrice Int
-    mileageId Int
-    mileage Mileage @relation(fields: [mileageId], references: [id])
+    mileageId Int?
+    mileage Mileage? @relation(fields: [mileageId], references: [id])
+    useMileage Int?
+    saveMileage Int?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     cancelledAt DateTime?

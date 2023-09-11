@@ -121,7 +121,6 @@ test('order', async () => {
         },
         payload: {
             "totalPrice": menus[0].price * 2 + menus[1].price,
-            "mileageId": mileageId,
             "menus": [
                 {
                     "id": menus[0].id,
@@ -159,32 +158,14 @@ test("pay", async () => {
         },
         payload: {
             "orderId": orderId,
-            "paymentMethod": "MILEAGE",
-            "price": 500,
+            "paymentMethod": "CARD",
+            "mileageId": mileageId,
+            "useMileage": 500,
+            "saveMileage": Math.floor((menus[0].price * 2 + menus[1].price-500)*0.1),
         }
     });
 
     expect(response.statusCode).toBe(200);
-    const body = JSON.parse(response.body) as Order.payInterface['Reply']['200'];
-    expect(body.leftPrice).toEqual(menus[0].price * 2 + menus[1].price - 500);
-
-    const response2 = await app.inject({
-        method: 'POST',
-        url: `/api/order/pay`,
-        headers: {
-            authorization: `Bearer ${accessToken}`,
-            storeid: storeId.toString()
-        },
-        payload: {
-            "orderId": orderId,
-            "paymentMethod": "CARD",
-            "price": body.leftPrice,
-        }
-    });
-
-    expect(response2.statusCode).toBe(200);
-    const body2 = JSON.parse(response2.body) as Order.payInterface['Reply']['200'];
-    expect(body2.leftPrice).toEqual(0);
 });
 
 test("get order", async () => {
@@ -199,6 +180,14 @@ test("get order", async () => {
     expect(response.statusCode).toBe(200);
     const body = JSON.parse(response.body) as Order.getOrderInterface['Reply']['200'];
     expect(body.paymentStatus).toEqual("PAID");
+    expect(body.pay.paymentMethod).toEqual("CARD");
+    expect(body.pay.price).toEqual(menus[0].price * 2 + menus[1].price - 500);
+    expect(body.totalPrice).toEqual(menus[0].price * 2 + menus[1].price);
+    expect(body.mileage).toBeDefined();
+    if(body.mileage === undefined) return;
+    expect(body.mileage.mileageId).toEqual(mileageId);
+    expect(body.mileage.use).toEqual(500);
+    expect(body.mileage.save).toEqual(Math.floor((menus[0].price * 2 + menus[1].price-500)*0.1));
 });
 
 test("get order list", async () => {
@@ -213,4 +202,7 @@ test("get order list", async () => {
     expect(response.statusCode).toBe(200);
     const body = JSON.parse(response.body) as Order.getOrderListInterface['Reply']['200'];
     expect(body.orders.length).toBeGreaterThan(0);
+    const order = body.orders[0];
+    expect(order.orderId).toEqual(orderId);
+    expect(order.totalCount).toEqual(3);
 });

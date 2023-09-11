@@ -5,7 +5,7 @@ import * as Order from "@DTO/order.dto";
 const prisma = new PrismaClient();
 
 export default {
-    async order({authorization, storeid}: Order.newOrderInterface['Headers'], {menus, totalPrice, mileageId}: Order.newOrderInterface['Body']): Promise<Order.newOrderInterface['Reply']['200']> {
+    async order({authorization, storeid}: Order.newOrderInterface['Headers'], {menus, totalPrice}: Order.newOrderInterface['Body']): Promise<Order.newOrderInterface['Reply']['200']> {
         authorization = authorization.replace("Bearer ", "");
         let userId: number;
         try{
@@ -33,13 +33,12 @@ export default {
                                 }
                             }
                         })
-                },
-                mileageId: mileageId,
+                }
             }
         });
         return {orderId: order.id};
     },
-    async pay({authorization, storeid}: Order.payInterface['Headers'], {orderId, paymentMethod, price}: Order.payInterface['Body']): Promise<Order.payInterface['Reply']['200']> {
+    async pay({authorization, storeid}: Order.payInterface['Headers'], {orderId, paymentMethod, useMileage, saveMileage, mileageId}: Order.payInterface['Body']): Promise<Order.payInterface['Reply']['200']> {
         authorization = authorization.replace("Bearer ", "");
         let userId: number;
         try{
@@ -63,10 +62,10 @@ export default {
             throw new Error("이미 결제된 주문입니다.");
         }
 
-        if(paymentMethod === "MILEAGE"){
+        if(mileageId !== undefined){
             const mileage = await prisma.mileage.findUnique({
                 where: {
-                    id: order.mileageId
+                    id: mileageId
                 }
             });
             if(mileage === null){
@@ -75,7 +74,10 @@ export default {
             if(mileage.storeId !== Number(storeid)){
                 throw new Error("마일리지가 존재하지 않습니다.");
             }
-            if(mileage.mileage < price){
+            if(useMileage === undefined||saveMileage === undefined){
+                throw new Error("사용할 마일리지와 적립할 마일리지를 입력해주세요.");
+            }
+            if(mileage.mileage < useMileage){
                 throw new Error("마일리지가 부족합니다.");
             }
             await prisma.mileage.update({
@@ -83,38 +85,32 @@ export default {
                     id: mileage.id
                 },
                 data: {
-                    mileage: mileage.mileage - price
+                    mileage: mileage.mileage - useMileage + saveMileage
                 }
             });
-        }
-
-        const paidPrice = order.payment.reduce((acc, cur) => {
-            return acc + cur.price;
-        }, 0);
-        if(paidPrice + price > order.totalPrice){
-            throw new Error("결제 금액이 주문 금액을 초과합니다.");
         }
 
         await prisma.payment.create({
             data: {
                 orderId: orderId,
                 paymentMethod: paymentMethod,
-                price: price
+                price: order.totalPrice - (useMileage??0),
             }
         });
 
-        if(paidPrice + price === order.totalPrice){
-            await prisma.order.update({
-                where: {
-                    id: orderId
-                },
-                data: {
-                    paymentStatus: "PAID"
-                }
-            });
-        }
+        await prisma.order.update({
+            where: {
+                id: orderId
+            },
+            data: {
+                paymentStatus: "PAID",
+                mileageId: mileageId,
+                useMileage: useMileage,
+                saveMileage: saveMileage,
+            }
+        });
 
-        return {leftPrice: order.totalPrice - paidPrice - price};
+        return null;
     },
 
     async getOrder({authorization, storeid}: Order.getOrderInterface['Headers'], {orderId}: Order.getOrderInterface['Params']): Promise<Order.getOrderInterface['Reply']['200']> {
@@ -158,19 +154,24 @@ export default {
             return {
                 count: orderitem.count,
                 price: orderitem.menu.price,
-                menuId: orderitem.menuId,
-                options: orderitem.optionOrderItems.map(optionOrderItem => optionOrderItem.optionId)
+                menuName: orderitem.menu.name,
+                options: orderitem.optionOrderItems.map(optionOrderItem => ({
+                    name: optionOrderItem.option.optionName,
+                    price: optionOrderItem.option.optionPrice
+                }))
             }
         });
-        const pay = order.payment.map(payment => {
-            return {
-                paymentMethod: payment.paymentMethod as "CARD" | "CASH" | "MILEAGE" | "BANK",
-                price: payment.price,
-                paidAt: payment.createdAt
-            }
-        });
+        const pay = {
+            paymentMethod: order.payment[0].paymentMethod as "CARD" | "CASH" | "BANK",
+            price: order.payment[0].price
+        }
+        const mileage = order.mileageId === null ? undefined : {
+            mileageId: order.mileageId,
+            use: order.useMileage??0,
+            save: order.saveMileage??0
+        }
 
-        return {paymentStatus, totalPrice, createdAt, orderitems, pay};
+        return {paymentStatus, totalPrice, createdAt, orderitems, pay, mileage};
 
     },
     async getOrderList({authorization, storeid}: Order.getOrderListInterface['Headers'], {page, count}: Order.getOrderListInterface['Querystring']): Promise<Order.getOrderListInterface['Reply']['200']> {
@@ -193,16 +194,18 @@ export default {
             skip: (page - 1) * count,
             take: count,
             include: {
-                payment: true
+                payment: true,
+                orderitems: true
             }
         });
-        const list = orders.map(order => {
-            const paymentStatus = order.paymentStatus as "WAITING" | "PAID" | "CANCELED";
-            const totalPrice = order.totalPrice;
-            const createdAt = order.createdAt;
-            const orderId = order.id;
-            return {paymentStatus, totalPrice, createdAt, orderId};
-        });
+        const list = orders.map(order => ({
+            paymentStatus: order.paymentStatus as "WAITING" | "PAID" | "CANCELED" | "FAILED",
+            paymentMethod: order.payment[0].paymentMethod as "CARD" | "CASH" | "BANK",
+            totalCount: order.orderitems.reduce((acc, cur) => acc + cur.count, 0),
+            totalPrice: order.totalPrice,
+            createdAt: order.createdAt,
+            orderId: order.id,
+        }));
         return {orders:list};
     }
 }
