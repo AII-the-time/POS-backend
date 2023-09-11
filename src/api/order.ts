@@ -20,10 +20,10 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
 
     server.post<Order.payInterface>('/pay',{schema:Order.paySchema}, async (request, reply) => {
         try{
-            const result = await orderService.pay(request.headers, request.body);
+            await orderService.pay(request.headers, request.body);
             reply
                 .code(200)
-                .send(result);
+                .send();
         }
         catch(e) {
             return reply

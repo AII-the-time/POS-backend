@@ -8,12 +8,9 @@ export const newOrderSchema ={
     headers: StoreAuthorizationHeader,
     body: {
         type: 'object',
-        required: ['totalPrice','mileageId','menus'],
+        required: ['totalPrice','menus'],
         properties: {
             totalPrice: {
-                type: 'number',
-            },
-            mileageId: {
                 type: 'number',
             },
             menus: {
@@ -63,35 +60,47 @@ export const getOrderSchema = {
             description: 'success response',
             required: ['paymentStatus','totalPrice','createdAt','orderitems','pay'],
             properties: {
-                paymentStatus: { type: 'string' },
+                paymentStatus: { type: 'string', enum: ["WAITING", "PAID", "FAILED", "CANCELED"] },
                 totalPrice: { type: 'number' },
                 createdAt: { type: 'string', format: 'date-time' },
                 orderitems: {
                     type: 'array',
                     items: {
                         type: 'object',
-                        required: ['count','price','menuId','options'],
+                        required: ['count','price','menuName','options'],
                         properties: {
                             count: { type: 'number' },
                             price: { type: 'number' },
-                            menuId: { type: 'number' },
+                            menuName: { type: 'string' },
                             options: {
                                 type: 'array',
-                                items: { type: 'number' }
+                                items: {
+                                    type: 'object',
+                                    required: ['name','price'],
+                                    properties: {
+                                        name: { type: 'string' },
+                                        price: { type: 'number' }
+                                    }
+                                }
                             }
                         }
                     }
                 },
+                mileage: {
+                    type: 'object',
+                    required: ['mileageId','use','save',],
+                    properties: {
+                        mileageId: { type: 'number' },
+                        use: { type: 'number' },
+                        save: { type: 'number' }
+                    }
+                },
                 pay: {
-                    type: 'array',
-                    items: {
-                        type: 'object',
-                        required: ['paymentMethod','price','paidAt'],
-                        properties: {
-                            paymentMethod: { type: 'string' },
-                            price: { type: 'number' },
-                            paidAt: { type: 'string', format: 'date-time' }
-                        }
+                    type: 'object',
+                    required: ['paymentMethod','price'],
+                    properties: {
+                        paymentMethod: { type: 'string', enum: ["CARD", "CASH", "BANK"] },
+                        price: { type: 'number' }
                     }
                 }
             }
@@ -122,10 +131,12 @@ export const getOrderListSchema = {
                     type: 'array',
                     items: {
                         type: 'object',
-                        required: ['orderId','paymentStatus','totalPrice','createdAt'],
+                        required: ['orderId','paymentStatus','paymentMethod','totalPrice','createdAt','totalCount'],
                         properties: {
                             orderId: { type: 'number' },
-                            paymentStatus: { type: 'string' },
+                            paymentStatus: { type: 'string' , enum: ["WAITING", "PAID", "FAILED", "CANCELED"] },
+                            paymentMethod: { type: 'string' , enum: ["CARD", "CASH", "BANK"] },
+                            totalCount: { type: 'number' },
                             totalPrice: { type: 'number' },
                             createdAt: { type: 'string', format: 'date-time' }
                         }
@@ -143,27 +154,25 @@ export const paySchema = {
     headers: StoreAuthorizationHeader,
     body: {
         type: 'object',
-        required: ['orderId','paymentMethod','price'],
+        required: ['orderId','paymentMethod'],
         properties: {
             orderId: { type: 'number' },
-            paymentMethod: { type: 'string' },
-            price: { type: 'number' }
+            paymentMethod: { type: 'string',enum: ["CARD", "CASH", "BANK"] },
+            mileageId: { type: 'number' },
+            useMileage: { type: 'number' },
+            saveMileage: { type: 'number' }
         }
     },
     response: {
         200: {
-            type: 'object',
+            type: 'null',
             description: 'success response',
-            required: ['leftPrice'],
-            properties: {
-                leftPrice: { type: 'number' }
-            }
         },
         401: errorSchema('토큰이 만료되었습니다.')
     }
 } as const;
 
 export type newOrderInterface = SchemaToInterfase<typeof newOrderSchema>;
-export type getOrderInterface = SchemaToInterfase<typeof getOrderSchema>;
-export type getOrderListInterface = SchemaToInterfase<typeof getOrderListSchema>;
+export type getOrderInterface = SchemaToInterfase<typeof getOrderSchema, [{pattern: {type: 'string'; format: 'date-time'}; output: Date }]>;
+export type getOrderListInterface = SchemaToInterfase<typeof getOrderListSchema, [{pattern: {type: 'string'; format: 'date-time'}; output: Date }]>;
 export type payInterface = SchemaToInterfase<typeof paySchema>;
