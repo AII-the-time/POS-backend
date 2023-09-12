@@ -7,3 +7,4 @@ build
 coverage
 migrations
 schema.prisma
+.env
