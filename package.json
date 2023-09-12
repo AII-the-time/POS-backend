@@ -8,6 +8,8 @@
     "test": "prisma migrate reset -f && jest --detectOpenHandles --forceExit",
     "test-coverage": "prisma migrate reset -f && jest --coverage --detectOpenHandles --forceExit",
     "prisma": "./prisma/concat_schema.sh && prisma migrate dev --name init --preview-feature",
+    "prisma:deploy": "./prisma/concat_schema.sh && prisma migrate deploy --preview-feature",
+    "prisma:generate": "./prisma/concat_schema.sh && prisma generate",
     "seed": "prisma db seed"
   },
   "prisma": {
