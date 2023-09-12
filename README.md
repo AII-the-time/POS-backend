@@ -1,10 +1,19 @@
 # 프론트 개발을 위한 로컬 서버 실행
-0. docker가 설치되어 있어야 함(백엔드 레포 클론은 필요 없음)
-1. .env 파일 생성 후 아래 내용 추가
+0. docker가 설치되어 있어야 함
+1. 백엔드 레포 클론 후
+2. 루트 디렉토리에 .env 파일 생성 후 아래 내용 추가
 ```
 DATABASE_URL="mysql://root:root@db/db"
 ```
-2. .env 파일이 있는 디렉토리에 docker-compose.yml 파일 생성 후 아래 내용 추가
+3. 루트 디렉토리에서 아래 명령어 실행
+```
+docker-compose down --rmi local
+docker-compose up -d
+```
+4. http://localhost:3000/docs 에서 api 문서 확인
+# 프론트 테스팅 자동화를 위한 서버 실행
+0. docker가 설치되어 있어야 하고 dockerhub의 raipen 계정에 로그인 되어 있어야함(백엔드 레포 클론은 필요 없음)
+1. docker-compose.yml 파일 생성 후 아래 내용 추가
 ```
 version: "3"
 
@@ -20,7 +29,10 @@ services:
 
   server:
     image: raipen/reinpos:latest
-    env_file: ./.env
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DATABASE_URL: mysql://root:root@db/db
     container_name: reinpos
     ports:
       - 3000:3000
@@ -34,12 +46,12 @@ services:
 networks:
   my-network:
 ```
-3. .env와 docker-compose.yml 파일이 있는 디렉토리에서 아래 명령어 실행
+2. docker-compose.yml 파일이 있는 디렉토리에서 아래 명령어 실행
 ```
 docker-compose down --rmi local
 docker-compose up -d
 ```
-4. http://localhost:3000/docs 에서 api 문서 확인
+3. http://localhost:3000/api/... 으로 api 테스팅
 
 # 백엔드 개발
 ## 개발용 서버 실행 방법
