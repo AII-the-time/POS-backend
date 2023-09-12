@@ -7,6 +7,6 @@ if [ "$NODE_ENV" = "production" ]; then
     npm run prisma:generate
 else
     npm run prisma
+    npm run seed
 fi
-npm run seed
 npm run dev
