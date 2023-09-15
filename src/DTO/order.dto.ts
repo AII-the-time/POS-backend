@@ -21,6 +21,7 @@ export const newOrderSchema ={
                     properties: {
                         id: { type: 'number' },
                         count: { type: 'number' },
+                        detail: { type: 'string', nullable: true },
                         options: {
                             type: 'array',
                             items: { type: 'number' }
@@ -67,10 +68,11 @@ export const getOrderSchema = {
                     type: 'array',
                     items: {
                         type: 'object',
-                        required: ['count','price','menuName','options'],
+                        required: ['count','price','menuName','options','detail'],
                         properties: {
                             count: { type: 'number' },
                             price: { type: 'number' },
+                            detail: { type: 'string' },
                             menuName: { type: 'string' },
                             options: {
                                 type: 'array',
@@ -158,9 +160,9 @@ export const paySchema = {
         properties: {
             orderId: { type: 'number' },
             paymentMethod: { type: 'string',enum: ["CARD", "CASH", "BANK"] },
-            mileageId: { type: 'number' },
-            useMileage: { type: 'number' },
-            saveMileage: { type: 'number' }
+            mileageId: { type: 'number', nullable: true },
+            useMileage: { type: 'number', nullable: true },
+            saveMileage: { type: 'number', nullable: true }
         }
     },
     response: {
