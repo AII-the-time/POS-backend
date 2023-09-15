@@ -1,9 +1,9 @@
 import { FastifyInstance,FastifyPluginAsync,FastifySchema } from "fastify";
-import menu from './menu';
-import order from './order';
-import user from './user';
-import store from './store';
-import mileage from './mileage';
+import menu from './routes/menu';
+import order from './routes/order';
+import user from './routes/user';
+import store from './routes/store';
+import mileage from './routes/mileage';
 
 const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
     const testSchema: FastifySchema = {
