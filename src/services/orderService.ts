@@ -6,12 +6,12 @@ const prisma = new PrismaClient();
 
 export default {
   async order(
-    { storeid }: Order.newOrderInterface['Headers'],
+    { storeid }: { storeid: number },
     { menus, totalPrice }: Order.newOrderInterface['Body']
   ): Promise<Order.newOrderInterface['Reply']['200']> {
     const order = await prisma.order.create({
       data: {
-        storeId: Number(storeid),
+        storeId: storeid,
         paymentStatus: 'WAITING',
         totalPrice: totalPrice,
         orderitems: {
@@ -35,7 +35,7 @@ export default {
     return { orderId: order.id };
   },
   async pay(
-    { authorization, storeid }: Order.payInterface['Headers'],
+    { storeid }: { storeid: number },
     {
       orderId,
       paymentMethod,
@@ -44,14 +44,6 @@ export default {
       mileageId,
     }: Order.payInterface['Body']
   ): Promise<Order.payInterface['Reply']['200']> {
-    authorization = authorization.replace('Bearer ', '');
-    let userId: number;
-    try {
-      userId = LoginToken.getUserId(authorization);
-    } catch (e) {
-      throw new Error('토큰이 유효하지 않습니다.');
-    }
-
     const order = await prisma.order.findUnique({
       where: {
         id: orderId,
@@ -76,7 +68,7 @@ export default {
       if (mileage === null) {
         throw new Error('마일리지가 존재하지 않습니다.');
       }
-      if (mileage.storeId !== Number(storeid)) {
+      if (mileage.storeId !== storeid) {
         throw new Error('마일리지가 존재하지 않습니다.');
       }
       if (
@@ -124,17 +116,9 @@ export default {
   },
 
   async getOrder(
-    { authorization, storeid }: Order.getOrderInterface['Headers'],
+    { storeid }: { storeid: number },
     { orderId }: Order.getOrderInterface['Params']
   ): Promise<Order.getOrderInterface['Reply']['200']> {
-    authorization = authorization.replace('Bearer ', '');
-    let userId: number;
-    try {
-      userId = LoginToken.getUserId(authorization);
-    } catch (e) {
-      throw new Error('토큰이 유효하지 않습니다.');
-    }
-
     const order = await prisma.order.findUnique({
       where: {
         id: Number(orderId),
@@ -156,7 +140,7 @@ export default {
     if (order === null) {
       throw new Error('주문이 존재하지 않습니다.');
     }
-    if (order.storeId !== Number(storeid)) {
+    if (order.storeId !== storeid) {
       throw new Error('주문이 존재하지 않습니다.');
     }
 
@@ -194,21 +178,14 @@ export default {
     return { paymentStatus, totalPrice, createdAt, orderitems, pay, mileage };
   },
   async getOrderList(
-    { authorization, storeid }: Order.getOrderListInterface['Headers'],
+    { storeid }: { storeid: number },
     { page, count }: Order.getOrderListInterface['Querystring']
   ): Promise<Order.getOrderListInterface['Reply']['200']> {
-    authorization = authorization.replace('Bearer ', '');
-    let userId: number;
-    try {
-      userId = LoginToken.getUserId(authorization);
-    } catch (e) {
-      throw new Error('토큰이 유효하지 않습니다.');
-    }
     page = Number(page || 1);
     count = Number(count || 10);
     const orders = await prisma.order.findMany({
       where: {
-        storeId: Number(storeid),
+        storeId: storeid,
       },
       orderBy: {
         createdAt: 'desc',

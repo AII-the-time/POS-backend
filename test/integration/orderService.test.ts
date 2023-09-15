@@ -1,7 +1,7 @@
 import server from '../../src/server';
 import { FastifyInstance } from 'fastify';
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
-import { CertificatedPhoneToken } from '../../src/utils/jwt';
+import { CertificatedPhoneToken, LoginToken } from '../../src/utils/jwt';
 import userService from '../../src/services/userService';
 import storeService from '../../src/services/storeService';
 import menuService from '../../src/services/menuService';
@@ -26,9 +26,8 @@ beforeAll(async () => {
       certificatedPhoneToken,
     })
   ).accessToken;
-  storeId = (
-    await storeService.getStoreList({ authorization: 'Bearer ' + accessToken })
-  ).stores[0].storeId;
+  const userid = LoginToken.getUserId(accessToken);
+  storeId = (await storeService.getStoreList({ userid })).stores[0].storeId;
   menus = (
     await menuService.getMenus({
       authorization: 'Bearer ' + accessToken,
