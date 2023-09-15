@@ -22,7 +22,8 @@ export const errorSchema = (describtion:string) => ({
     description: describtion,
     properties: {
         error: { type: 'string' },
-        message: { type: 'string' }
+        message: { type: 'string' },
+        toast: { type: 'string' }
     }
 }) as const;
 

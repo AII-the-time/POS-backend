@@ -1,21 +1,15 @@
 import { FastifyInstance,FastifyPluginAsync } from "fastify";
 import mileageService from "@services/mileageService";
 import { StoreAuthorizationHeader } from "@DTO/index.dto";
+import onError from "@hooks/onError";
 import * as Mileage from "@DTO/mileage.dto";
 
 const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
-    server.get<Mileage.getMileageInterface>('/',{schema:Mileage.getMileageSchema}, async (request, reply) => {
-        try{
-            const result = await mileageService.getMileage(request.headers, request.query);
-            reply
-                .code(200)
-                .send(result);
-        }
-        catch(e) {
-            return reply
-                .code(404)
-                .send();
-        }
+    server.get<Mileage.getMileageInterface>('/',{schema:Mileage.getMileageSchema,onError}, async (request, reply) => {
+        const result = await mileageService.getMileage(request.headers, request.query);
+        reply
+            .code(200)
+            .send(result);
     });
 
     server.post<Mileage.registerMileageInterface>('/',{schema:Mileage.registerMileageSchema}, async (request, reply) => {
