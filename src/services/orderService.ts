@@ -24,6 +24,7 @@ export default {
                             return {
                                 count: menu.count,
                                 menuId: menu.id,
+                                detail: menu.detail,
                                 optionOrderItems: {
                                     create: menu.options.map(option => {
                                             return {
@@ -62,7 +63,7 @@ export default {
             throw new Error("이미 결제된 주문입니다.");
         }
 
-        if(mileageId !== undefined){
+        if(mileageId !== undefined && mileageId !== null){
             const mileage = await prisma.mileage.findUnique({
                 where: {
                     id: mileageId
@@ -74,7 +75,7 @@ export default {
             if(mileage.storeId !== Number(storeid)){
                 throw new Error("마일리지가 존재하지 않습니다.");
             }
-            if(useMileage === undefined||saveMileage === undefined){
+            if(useMileage === undefined || saveMileage === undefined || useMileage === null || saveMileage === null){
                 throw new Error("사용할 마일리지와 적립할 마일리지를 입력해주세요.");
             }
             if(mileage.mileage < useMileage){
@@ -155,6 +156,7 @@ export default {
                 count: orderitem.count,
                 price: orderitem.menu.price,
                 menuName: orderitem.menu.name,
+                detail: orderitem.detail??"",
                 options: orderitem.optionOrderItems.map(optionOrderItem => ({
                     name: optionOrderItem.option.optionName,
                     price: optionOrderItem.option.optionPrice

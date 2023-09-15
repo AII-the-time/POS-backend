@@ -136,7 +136,8 @@ test('order', async () => {
                     "count": 1,
                     "options": [
                         menus[1].option[0].options[0].id,
-                    ]
+                    ],
+                    "detail": "얼음 따로 포장해주세요"
                 }
             ]
         }
@@ -167,6 +168,8 @@ test("pay", async () => {
 
     expect(response.statusCode).toBe(200);
 });
+
+//TODO: milage 없는 경우, 이미 결제된 주문을 다시 결제하는 경우 테스트 필요
 
 test("get order", async () => {
     const response = await app.inject({
