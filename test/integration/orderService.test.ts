@@ -56,7 +56,6 @@ test('mileage', async () => {
     });
 
     expect(response.statusCode).toBe(404);
-    console.log(response.body);
     const body = JSON.parse(response.body) as Mileage.getMileageInterface['Reply']['404'];
     expect(body.message).toBe("해당하는 마일리지가 없습니다.");
     expect(body.toast).toBe("마일리지을(를) 찾을 수 없습니다.");

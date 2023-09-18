@@ -1,16 +1,12 @@
 import { FastifyRequest,FastifyReply,FastifyError} from "fastify";
-import { NotFoundError } from "@errors";
+import { NotFoundError} from "@errors";
 
 export default (request: FastifyRequest, reply: FastifyReply, error: FastifyError) => {
     if(error instanceof NotFoundError) {
-        console.log(request.url, error);
         reply
             .code(404)
-            .send(error);
+            .send(error.setToast(`${error.missing}을(를) 찾을 수 없습니다.`));
     }
 
-    reply.code(400).send({
-        "message": "unknown error",
-        "toast": "알 수 없는 에러가 발생했습니다."
-    });
+    reply.code(400).send();
 };
