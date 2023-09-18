@@ -134,12 +134,7 @@ export const getOrderListSchema = {
       page: { type: 'number', default: 1 },
       endPage: { type: 'number', default: 1 },
       count: { type: 'number', default: 10 },
-      startDate: {
-        type: 'string',
-        format: 'date-time',
-        nullable: true,
-      },
-      endDate: {
+      date: {
         type: 'string',
         format: 'date-time',
         nullable: true,
@@ -159,7 +154,6 @@ export const getOrderListSchema = {
             required: [
               'orderId',
               'paymentStatus',
-
               'totalPrice',
               'createdAt',
               'totalCount',

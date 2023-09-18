@@ -179,22 +179,16 @@ export default {
   },
   async getOrderList(
     { storeid }: { storeid: number },
-    {
-      page,
-      endPage,
-      count,
-      startDate,
-      endDate,
-    }: Order.getOrderListInterface['Querystring']
+    { page, endPage, count, date }: Order.getOrderListInterface['Querystring']
   ): Promise<Order.getOrderListInterface['Reply']['200']> {
-    console.log('check');
+    const splitDate = date
+      ? date.split('T')
+      : new Date().toISOString().split('T');
+    const orderDate = splitDate[0] + 'T00:00:00.000Z';
     const orders = await prisma.order.findMany({
       where: {
         storeId: storeid,
-        // createdAt: {
-        //   gte: startDate ?? undefined,
-        //   lte: endDate ?? undefined,
-        // },
+        createdAt: { gte: orderDate },
       },
       orderBy: {
         createdAt: 'desc',
@@ -206,13 +200,6 @@ export default {
         orderitems: true,
       },
     });
-    console.log('default check');
-    console.log(page);
-    console.log(endPage);
-    console.log(count);
-    // console.log(startDate ?? undefined);
-    // console.log(endDate ?? undefined);
-    console.log('default check end');
 
     const list = orders.map((order) => ({
       paymentStatus: order.paymentStatus as
