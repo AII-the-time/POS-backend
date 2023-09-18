@@ -1,15 +1,15 @@
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import orderService from '@services/orderService';
-import { StoreAuthorizationHeader } from '@DTO/index.dto';
+import onError from "@hooks/onError";
 import * as Order from '@DTO/order.dto';
-import checkStoreIdUser from './hooks/checkStoreIdUser';
+import checkStoreIdUser from '@hooks/checkStoreIdUser';
 
 const api: FastifyPluginAsync = async (server: FastifyInstance) => {
   server.post<Order.newOrderInterface>(
     '/',
     {
-      schema: Order.newOrderSchema,
-      preValidation: checkStoreIdUser.checkStoreIdUser,
+      schema: Order.newOrderSchema,onError,
+      preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
       try {
@@ -27,8 +27,8 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
   server.post<Order.payInterface>(
     '/pay',
     {
-      schema: Order.paySchema,
-      preValidation: checkStoreIdUser.checkStoreIdUser,
+      schema: Order.paySchema,onError,
+      preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
       try {
@@ -46,8 +46,8 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
   server.get<Order.getOrderInterface>(
     '/:orderId',
     {
-      schema: Order.getOrderSchema,
-      preValidation: checkStoreIdUser.checkStoreIdUser,
+      schema: Order.getOrderSchema,onError,
+      preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
       try {
@@ -65,8 +65,8 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
   server.get<Order.getOrderListInterface>(
     '/',
     {
-      schema: Order.getOrderListSchema,
-      preValidation: checkStoreIdUser.checkStoreIdUser,
+      schema: Order.getOrderListSchema,onError,
+      preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
       try {

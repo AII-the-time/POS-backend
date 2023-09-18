@@ -22,10 +22,11 @@ export const errorSchema = (describtion: string) =>
     type: 'object',
     description: describtion,
     properties: {
-      error: { type: 'string' },
-      message: { type: 'string' },
-    },
-  } as const);
+        error: { type: 'string' },
+        message: { type: 'string' },
+        toast: { type: 'string' }
+    }
+}) as const;
 
 export type SchemaToInterfase<
   T extends {

@@ -1,7 +1,7 @@
-import { PrismaClient } from '@prisma/client';
-import { StoreAuthorizationHeader } from '@DTO/index.dto';
-import { LoginToken } from '@utils/jwt';
-import * as Mileage from '@DTO/mileage.dto';
+import { PrismaClient } from "@prisma/client";
+import { NotFoundError } from "@errors";
+import { LoginToken } from "@utils/jwt";
+import * as Mileage from "@DTO/mileage.dto";
 const prisma = new PrismaClient();
 
 export default {
@@ -17,7 +17,7 @@ export default {
     });
 
     if (!mileage) {
-      throw new Error('해당하는 마일리지가 없습니다.');
+      throw new NotFoundError("해당하는 마일리지가 없습니다.","마일리지");
     }
     return { mileageId: mileage.id, mileage: mileage.mileage };
   },
