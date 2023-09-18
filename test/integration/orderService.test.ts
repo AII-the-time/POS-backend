@@ -217,12 +217,13 @@ test('get order', async () => {
 test('get order list', async () => {
   const response = await app.inject({
     method: 'GET',
-    url: `/api/order?page=1&count=10`,
+    url: `/api/order?page=1&count=10&startDate=2023-09-18T00:00:00&endDate=2021-12-31T00:00:00`,
     headers: {
       authorization: `Bearer ${accessToken}`,
       storeid: storeId.toString(),
     },
   });
+  console.log(response.body);
   expect(response.statusCode).toBe(200);
   const body = JSON.parse(
     response.body
