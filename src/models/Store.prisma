@@ -1,3 +1,4 @@
+
 model Store{
     id Int @id @default(autoincrement())
     user User @relation(fields: [userId], references: [id])
@@ -10,6 +11,6 @@ model Store{
     order Order[]
     mileage Mileage[]
     option Option[]
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt DateTime @default(dbgenerated("NOW()")) @db.DateTime
+    updatedAt DateTime @default(dbgenerated("NOW() ON UPDATE NOW()")) @db.DateTime
 }

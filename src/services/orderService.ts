@@ -179,31 +179,38 @@ export default {
   },
   async getOrderList(
     { storeid }: { storeid: number },
-    { page, count }: Order.getOrderListInterface['Querystring']
+    { page, endPage, count, date }: Order.getOrderListInterface['Querystring']
   ): Promise<Order.getOrderListInterface['Reply']['200']> {
-    page = Number(page || 1);
-    count = Number(count || 10);
+    const splitDate = date
+      ? date.split('T')
+      : new Date().toISOString().split('T');
+    const orderDate = splitDate[0] + 'T00:00:00.000Z';
     const orders = await prisma.order.findMany({
       where: {
         storeId: storeid,
+        createdAt: { gte: orderDate },
       },
       orderBy: {
         createdAt: 'desc',
       },
-      skip: (page - 1) * count,
+      skip: (page! - 1) * count!,
       take: count,
       include: {
         payment: true,
         orderitems: true,
       },
     });
+
     const list = orders.map((order) => ({
       paymentStatus: order.paymentStatus as
         | 'WAITING'
         | 'PAID'
         | 'CANCELED'
         | 'FAILED',
-      paymentMethod: order.payment[0].paymentMethod as 'CARD' | 'CASH' | 'BANK',
+      paymentMethod:
+        order.paymentStatus === 'WAITING'
+          ? undefined
+          : (order.payment[0].paymentMethod as 'CARD' | 'CASH' | 'BANK'),
       totalCount: order.orderitems.reduce((acc, cur) => acc + cur.count, 0),
       totalPrice: order.totalPrice,
       createdAt: order.createdAt,

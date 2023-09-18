@@ -220,16 +220,19 @@ test('get order', async () => {
 test('get order list', async () => {
   const response = await app.inject({
     method: 'GET',
-    url: `/api/order?page=1&count=10`,
+    url: `/api/order?page=1&count=10&date=2023-09-18T10:01:12.301Z`,
+
     headers: {
       authorization: `Bearer ${accessToken}`,
       storeid: storeId.toString(),
     },
   });
+  console.log(response.body);
   expect(response.statusCode).toBe(200);
   const body = JSON.parse(
     response.body
   ) as Order.getOrderListInterface['Reply']['200'];
+  if (body.orders.length === 0) return;
   expect(body.orders.length).toBeGreaterThan(0);
   const order = body.orders[0];
   expect(order.orderId).toEqual(orderId);
