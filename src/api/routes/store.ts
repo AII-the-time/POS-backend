@@ -8,7 +8,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     '/',
     {
       schema: Store.newStoreSchema,
-      preValidation: checkUser.checkUser,
+      preValidation: checkUser,
     },
     async (request, reply) => {
       try {
@@ -27,7 +27,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     '/',
     {
       schema: Store.storeListSchema,
-      preValidation: checkUser.checkUser,
+      preValidation: checkUser,
     },
     async (request, reply) => {
       try {

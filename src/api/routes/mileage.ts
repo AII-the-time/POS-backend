@@ -5,7 +5,7 @@ import * as Mileage from "@DTO/mileage.dto";
 import checkStoreIdUser from '@hooks/checkStoreIdUser';
 
 const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
-    server.get<Mileage.getMileageInterface>('/',{schema:Mileage.getMileageSchema,onError,preValidation: checkStoreIdUser.checkStoreIdUser}, async (request, reply) => {
+    server.get<Mileage.getMileageInterface>('/',{schema:Mileage.getMileageSchema,onError,preValidation: checkStoreIdUser}, async (request, reply) => {
         const result = await mileageService.getMileage({ storeid: Number(request.headers.storeid) }, request.query);
         reply
             .code(200)
@@ -16,7 +16,7 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
     '/',
     {
       schema: Mileage.registerMileageSchema,
-      preValidation: checkStoreIdUser.checkStoreIdUser,
+      preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
       try {
@@ -35,7 +35,7 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
     '/',
     {
       schema: Mileage.saveMileageSchema,
-      preValidation: checkStoreIdUser.checkStoreIdUser,
+      preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
       try {

@@ -9,7 +9,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     '/',
     {
       schema: Order.newOrderSchema,
-      preValidation: checkStoreIdUser.checkStoreIdUser,
+      preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
       try {
@@ -28,7 +28,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     '/pay',
     {
       schema: Order.paySchema,
-      preValidation: checkStoreIdUser.checkStoreIdUser,
+      preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
       try {
@@ -47,7 +47,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     '/:orderId',
     {
       schema: Order.getOrderSchema,
-      preValidation: checkStoreIdUser.checkStoreIdUser,
+      preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
       try {
@@ -66,7 +66,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     '/',
     {
       schema: Order.getOrderListSchema,
-      preValidation: checkStoreIdUser.checkStoreIdUser,
+      preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
       try {

@@ -43,7 +43,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     '/refresh',
     {
       schema: User.refreshSchema,
-      preValidation: checkUser.checkUser,
+      preValidation: checkUser,
     },
     async (request, reply) => {
       try {
