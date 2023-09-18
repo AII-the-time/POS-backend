@@ -10,6 +10,15 @@ class ErrorWithToast extends Error {
     }
 }
 
+const generateGenericError = (name: string) => {
+    return class extends ErrorWithToast {
+        constructor(message: string) {
+            super(message);
+            this.name = name;
+        }
+    };
+}
+
 
 export class NotFoundError extends ErrorWithToast {
     missing: string;
@@ -19,3 +28,9 @@ export class NotFoundError extends ErrorWithToast {
         this.missing = missing;
     }
 }
+
+export const UserAuthorizationError = generateGenericError('UserAuthorizationError');
+
+export const StoreAuthorizationError = generateGenericError('StoreAuthorizationError');
+
+export const NoAuthorizationInHeaderError = generateGenericError('NoAuthorizationInHeaderError');

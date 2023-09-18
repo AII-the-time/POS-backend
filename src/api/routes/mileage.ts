@@ -15,7 +15,7 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
   server.post<Mileage.registerMileageInterface>(
     '/',
     {
-      schema: Mileage.registerMileageSchema,
+      schema: Mileage.registerMileageSchema,onError,
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
@@ -34,7 +34,7 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
   server.patch<Mileage.saveMileageInterface>(
     '/',
     {
-      schema: Mileage.saveMileageSchema,
+      schema: Mileage.saveMileageSchema,onError,
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
