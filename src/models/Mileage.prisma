@@ -1,7 +1,7 @@
 model Mileage{
     id Int @id @default(autoincrement())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt DateTime @default(dbgenerated("NOW()")) @db.DateTime 
+    updatedAt DateTime @default(dbgenerated("NOW() ON UPDATE NOW()")) @db.DateTime
     mileage Decimal
     phone String
     storeId Int
