@@ -15,7 +15,7 @@ export const newOrderSchema = {
     required: ['totalPrice', 'menus'],
     properties: {
       totalPrice: {
-        type: 'number',
+        type: 'string',
       },
       menus: {
         type: 'array',
@@ -75,7 +75,7 @@ export const getOrderSchema = {
           type: 'string',
           enum: ['WAITING', 'PAID', 'FAILED', 'CANCELED'],
         },
-        totalPrice: { type: 'number' },
+        totalPrice: { type: 'string' },
         createdAt: { type: 'string', format: 'date-time' },
         orderitems: {
           type: 'array',
@@ -84,7 +84,7 @@ export const getOrderSchema = {
             required: ['count', 'price', 'menuName', 'options', 'detail'],
             properties: {
               count: { type: 'number' },
-              price: { type: 'number' },
+              price: { type: 'string' },
               detail: { type: 'string' },
               menuName: { type: 'string' },
               options: {
@@ -94,7 +94,7 @@ export const getOrderSchema = {
                   required: ['name', 'price'],
                   properties: {
                     name: { type: 'string' },
-                    price: { type: 'number' },
+                    price: { type: 'string' },
                   },
                 },
               },
@@ -106,8 +106,8 @@ export const getOrderSchema = {
           required: ['mileageId', 'use', 'save'],
           properties: {
             mileageId: { type: 'number' },
-            use: { type: 'number' },
-            save: { type: 'number' },
+            use: { type: 'string' },
+            save: { type: 'string' },
           },
         },
         pay: {
@@ -115,7 +115,7 @@ export const getOrderSchema = {
           required: ['paymentMethod', 'price'],
           properties: {
             paymentMethod: { type: 'string', enum: ['CARD', 'CASH', 'BANK'] },
-            price: { type: 'number' },
+            price: { type: 'string' },
           },
         },
       },
@@ -170,7 +170,7 @@ export const getOrderListSchema = {
                 nullable: true,
               },
               totalCount: { type: 'number' },
-              totalPrice: { type: 'number' },
+              totalPrice: { type: 'string' },
               createdAt: { type: 'string', format: 'date-time' },
             },
           },
@@ -192,8 +192,8 @@ export const paySchema = {
       orderId: { type: 'number' },
       paymentMethod: { type: 'string', enum: ['CARD', 'CASH', 'BANK'] },
       mileageId: { type: 'number', nullable: true },
-      useMileage: { type: 'number', nullable: true },
-      saveMileage: { type: 'number', nullable: true },
+      useMileage: { type: 'string', nullable: true },
+      saveMileage: { type: 'string', nullable: true },
     },
   },
   response: {

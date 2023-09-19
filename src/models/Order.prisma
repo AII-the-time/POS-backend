@@ -2,11 +2,11 @@
 model Order{
     id Int @id @default(autoincrement())
     paymentStatus String
-    totalPrice Int
+    totalPrice Decimal
     mileageId Int?
     mileage Mileage? @relation(fields: [mileageId], references: [id])
-    useMileage Int?
-    saveMileage Int?
+    useMileage Decimal?
+    saveMileage Decimal?
     createdAt DateTime @default(dbgenerated("NOW()")) @db.DateTime
     updatedAt DateTime @default(dbgenerated("NOW() ON UPDATE NOW()")) @db.DateTime
     cancelledAt DateTime?
