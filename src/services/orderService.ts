@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { StoreAuthorizationHeader } from '@DTO/index.dto';
 import { LoginToken } from '@utils/jwt';
 import * as Order from '@DTO/order.dto';
@@ -79,7 +79,10 @@ export default {
       ) {
         throw new Error('사용할 마일리지와 적립할 마일리지를 입력해주세요.');
       }
-      if (mileage.mileage < useMileage) {
+      if (
+        Prisma.Decimal.max(mileage.mileage, useMileage) ===
+        Prisma.Decimal.add(useMileage, 0)
+      ) {
         throw new Error('마일리지가 부족합니다.');
       }
       await prisma.mileage.update({
@@ -87,7 +90,10 @@ export default {
           id: mileage.id,
         },
         data: {
-          mileage: mileage.mileage - useMileage + saveMileage,
+          mileage: Prisma.Decimal.sum(
+            Prisma.Decimal.sub(mileage.mileage, useMileage),
+            saveMileage
+          ),
         },
       });
     }
@@ -96,7 +102,7 @@ export default {
       data: {
         orderId: orderId,
         paymentMethod: paymentMethod,
-        price: order.totalPrice - (useMileage ?? 0),
+        price: Prisma.Decimal.sub(order.totalPrice, useMileage ?? 0),
       },
     });
 
@@ -148,31 +154,31 @@ export default {
       | 'WAITING'
       | 'PAID'
       | 'CANCELED';
-    const totalPrice = order.totalPrice;
+    const totalPrice = order.totalPrice.toString();
     const createdAt = order.createdAt;
     const orderitems = order.orderitems.map((orderitem) => {
       return {
         count: orderitem.count,
-        price: orderitem.menu.price,
+        price: orderitem.menu.price.toString(),
         menuName: orderitem.menu.name,
         detail: orderitem.detail ?? '',
         options: orderitem.optionOrderItems.map((optionOrderItem) => ({
           name: optionOrderItem.option.optionName,
-          price: optionOrderItem.option.optionPrice,
+          price: optionOrderItem.option.optionPrice.toString(),
         })),
       };
     });
     const pay = {
       paymentMethod: order.payment[0].paymentMethod as 'CARD' | 'CASH' | 'BANK',
-      price: order.payment[0].price,
+      price: order.payment[0].price.toString(),
     };
     const mileage =
       order.mileageId === null
         ? undefined
         : {
             mileageId: order.mileageId,
-            use: order.useMileage ?? 0,
-            save: order.saveMileage ?? 0,
+            use: order.useMileage?.toString() ?? '0',
+            save: order.saveMileage?.toString() ?? '0',
           };
 
     return { paymentStatus, totalPrice, createdAt, orderitems, pay, mileage };
@@ -205,7 +211,7 @@ export default {
         | 'FAILED',
       paymentMethod: order.payment[0].paymentMethod as 'CARD' | 'CASH' | 'BANK',
       totalCount: order.orderitems.reduce((acc, cur) => acc + cur.count, 0),
-      totalPrice: order.totalPrice,
+      totalPrice: order.totalPrice.toString(),
       createdAt: order.createdAt,
       orderId: order.id,
     }));

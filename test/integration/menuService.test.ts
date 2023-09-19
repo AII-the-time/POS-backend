@@ -49,13 +49,13 @@ test('get menu list', async () => {
           {
             id: expect.any(Number),
             name: '아메리카노',
-            price: 2000,
+            price: '2000',
             option: expect.any(Array),
           },
           {
             id: expect.any(Number),
             name: '카페라떼',
-            price: 3000,
+            price: '3000',
             option: expect.any(Array),
           },
         ],
@@ -66,7 +66,7 @@ test('get menu list', async () => {
           {
             id: expect.any(Number),
             name: '아이스티',
-            price: 2500,
+            price: '2500',
             option: expect.any(Array),
           },
         ],

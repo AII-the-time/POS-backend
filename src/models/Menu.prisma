@@ -5,7 +5,7 @@ model Menu {
     category Category @relation(fields: [categoryId], references: [id])
     categoryId Int
     name String
-    price Int
+    price Decimal
     sort Int
     optionMenu OptionMenu[]
     createdAt DateTime @default(now())

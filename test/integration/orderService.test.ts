@@ -8,6 +8,7 @@ import menuService from '../../src/services/menuService';
 import * as Menu from '../../src/DTO/menu.dto';
 import * as Order from '../../src/DTO/order.dto';
 import * as Mileage from '../../src/DTO/mileage.dto';
+import { Prisma } from '@prisma/client';
 import test400 from './400test';
 
 let app: FastifyInstance;
@@ -64,10 +65,12 @@ test('mileage', async () => {
     },
   });
 
-    expect(response.statusCode).toBe(404);
-    const body = JSON.parse(response.body) as Mileage.getMileageInterface['Reply']['404'];
-    expect(body.message).toBe("해당하는 마일리지가 없습니다.");
-    expect(body.toast).toBe("마일리지을(를) 찾을 수 없습니다.");
+  expect(response.statusCode).toBe(404);
+  const body = JSON.parse(
+    response.body
+  ) as Mileage.getMileageInterface['Reply']['404'];
+  expect(body.message).toBe('해당하는 마일리지가 없습니다.');
+  expect(body.toast).toBe('마일리지을(를) 찾을 수 없습니다.');
 });
 
 test('register mileage', async () => {
@@ -107,7 +110,7 @@ test('add mileage', async () => {
   const body = JSON.parse(
     response.body
   ) as Mileage.saveMileageInterface['Reply']['200'];
-  expect(body.mileage).toBe(1000);
+  expect(body.mileage).toBe('1000');
 });
 
 test('get mileage', async () => {
@@ -124,7 +127,7 @@ test('get mileage', async () => {
   const body = JSON.parse(
     response.body
   ) as Mileage.getMileageInterface['Reply']['200'];
-  expect(body.mileage).toBe(1000);
+  expect(body.mileage).toBe('1000');
   expect(body.mileageId).toBe(mileageId);
 });
 
@@ -138,7 +141,10 @@ test('order', async () => {
       storeid: storeId.toString(),
     },
     payload: {
-      totalPrice: menus[0].price * 2 + menus[1].price,
+      totalPrice: Prisma.Decimal.sum(
+        Prisma.Decimal.mul(menus[0].price, 2),
+        menus[1].price
+      ),
       menus: [
         {
           id: menus[0].id,
@@ -180,8 +186,13 @@ test('pay', async () => {
       paymentMethod: 'CARD',
       mileageId: mileageId,
       useMileage: 500,
-      saveMileage: Math.floor(
-        (menus[0].price * 2 + menus[1].price - 500) * 0.1
+      saveMileage: Prisma.Decimal.mul(
+        Prisma.Decimal.sum(
+          Prisma.Decimal.mul(menus[0].price, 2),
+          menus[1].price,
+          -500
+        ),
+        0.1
       ),
     },
   });
@@ -206,14 +217,32 @@ test('get order', async () => {
   ) as Order.getOrderInterface['Reply']['200'];
   expect(body.paymentStatus).toEqual('PAID');
   expect(body.pay.paymentMethod).toEqual('CARD');
-  expect(body.pay.price).toEqual(menus[0].price * 2 + menus[1].price - 500);
-  expect(body.totalPrice).toEqual(menus[0].price * 2 + menus[1].price);
+  expect(body.pay.price).toEqual(
+    Prisma.Decimal.sum(
+      Prisma.Decimal.mul(menus[0].price, 2),
+      menus[1].price,
+      -500
+    ).toString()
+  );
+  expect(body.totalPrice).toEqual(
+    Prisma.Decimal.sum(
+      Prisma.Decimal.mul(menus[0].price, 2),
+      menus[1].price
+    ).toString()
+  );
   expect(body.mileage).toBeDefined();
   if (body.mileage === undefined) return;
   expect(body.mileage.mileageId).toEqual(mileageId);
-  expect(body.mileage.use).toEqual(500);
+  expect(body.mileage.use).toEqual('500');
   expect(body.mileage.save).toEqual(
-    Math.floor((menus[0].price * 2 + menus[1].price - 500) * 0.1)
+    Prisma.Decimal.mul(
+      Prisma.Decimal.sum(
+        Prisma.Decimal.mul(menus[0].price, 2),
+        menus[1].price,
+        -500
+      ),
+      0.1
+    ).toString()
   );
 });
 
