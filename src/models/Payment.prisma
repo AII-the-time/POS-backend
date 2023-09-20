@@ -6,6 +6,6 @@ model Payment{
     createdAt DateTime @default(dbgenerated("NOW()")) @db.DateTime
     orderId Int
     order Order @relation(fields: [orderId], references: [id])
-    preOrderId Int
-    preOrder PreOrder @relation(fields: [preOrderId], references: [id])
+    preOrderId Int?
+    preOrder PreOrder? @relation(fields: [preOrderId], references: [id])
 }

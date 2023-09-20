@@ -8,7 +8,7 @@ model PreOrder{
     cancelledAt DateTime?
     storeId Int
     orderId Int?
-    order Order ?@relation(fields: [orderId], references: [id])
+    order Order? @relation(fields: [orderId], references: [id])
     store Store @relation(fields: [storeId], references: [id])
     preOrderitems PreOrderItem[]
     payment Payment[]
