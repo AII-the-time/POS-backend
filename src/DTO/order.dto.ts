@@ -17,6 +17,7 @@ export const newOrderSchema = {
       totalPrice: {
         type: 'string',
       },
+      preOrderId: { type: 'number', nullable: true },
       menus: {
         type: 'array',
         items: {
@@ -56,7 +57,7 @@ export const getOrderSchema = {
     type: 'object',
     required: ['orderId'],
     properties: {
-      orderId: { type: 'string' },
+      orderId: { type: 'number' },
     },
   },
   response: {
@@ -81,11 +82,11 @@ export const getOrderSchema = {
           type: 'array',
           items: {
             type: 'object',
-            required: ['count', 'price', 'menuName', 'options', 'detail'],
+            required: ['count', 'price', 'menuName', 'options'],
             properties: {
               count: { type: 'number' },
               price: { type: 'string' },
-              detail: { type: 'string' },
+              detail: { type: 'string', nullable: true },
               menuName: { type: 'string' },
               options: {
                 type: 'array',
