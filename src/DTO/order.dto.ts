@@ -130,10 +130,15 @@ export const getOrderListSchema = {
   headers: StoreAuthorizationHeader,
   querystring: {
     type: 'object',
-    required: ['page', 'count'],
     properties: {
-      page: { type: 'number' },
-      count: { type: 'number' },
+      page: { type: 'number', default: 1 },
+      endPage: { type: 'number', default: 1 },
+      count: { type: 'number', default: 10 },
+      date: {
+        type: 'string',
+        format: 'date-time',
+        nullable: true,
+      },
     },
   },
   response: {
@@ -149,7 +154,6 @@ export const getOrderListSchema = {
             required: [
               'orderId',
               'paymentStatus',
-              'paymentMethod',
               'totalPrice',
               'createdAt',
               'totalCount',
@@ -160,7 +164,11 @@ export const getOrderListSchema = {
                 type: 'string',
                 enum: ['WAITING', 'PAID', 'FAILED', 'CANCELED'],
               },
-              paymentMethod: { type: 'string', enum: ['CARD', 'CASH', 'BANK'] },
+              paymentMethod: {
+                type: 'string',
+                enum: ['CARD', 'CASH', 'BANK'],
+                nullable: true,
+              },
               totalCount: { type: 'number' },
               totalPrice: { type: 'string' },
               createdAt: { type: 'string', format: 'date-time' },
