@@ -9,6 +9,7 @@ model Store{
     category Category[]
     menu Menu[]
     order Order[]
+    preOrder PreOrder[]
     mileage Mileage[]
     option Option[]
     createdAt DateTime @default(dbgenerated("NOW()")) @db.DateTime

@@ -1,18 +1,15 @@
-
-model Order{
+model PreOrder{
     id Int @id @default(autoincrement())
     paymentStatus String
     totalPrice Decimal
-    mileageId Int?
-    mileage Mileage? @relation(fields: [mileageId], references: [id])
-    useMileage Decimal?
-    saveMileage Decimal?
+    reservationDateTime DateTime?
     createdAt DateTime @default(dbgenerated("NOW()")) @db.DateTime
     updatedAt DateTime @default(dbgenerated("NOW() ON UPDATE NOW()")) @db.DateTime
     cancelledAt DateTime?
     storeId Int
+    orderId Int?
+    order Order ?@relation(fields: [orderId], references: [id])
     store Store @relation(fields: [storeId], references: [id])
-    orderitems OrderItem[]
+    preOrderitems PreOrderItem[]
     payment Payment[]
-    preOrder PreOrder[]
 }
