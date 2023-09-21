@@ -40,11 +40,12 @@ test('get menu list', async () => {
   });
   expect(response.statusCode).toBe(200);
 
-  const body = JSON.parse(response.body) as Menu.MenuList;
+  const body = JSON.parse(response.body) as Menu.getMenuListInterface['Reply']['200'];
   expect(body).toEqual({
     categories: [
       {
         category: '커피',
+        categoryId: 1,
         menus: [
           {
             id: expect.any(Number),
@@ -62,6 +63,7 @@ test('get menu list', async () => {
       },
       {
         category: '티&에이드',
+        categoryId: 2,
         menus: [
           {
             id: expect.any(Number),

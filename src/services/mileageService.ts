@@ -1,6 +1,5 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { NotFoundError } from '@errors';
-import { LoginToken } from '@utils/jwt';
 import * as Mileage from '@DTO/mileage.dto';
 const prisma = new PrismaClient();
 
