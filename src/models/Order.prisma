@@ -14,5 +14,5 @@ model Order{
     store Store @relation(fields: [storeId], references: [id])
     orderitems OrderItem[]
     payment Payment[]
-    preOrder PreOrder[]
+    preOrderId Int?
 }

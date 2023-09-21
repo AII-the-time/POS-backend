@@ -73,18 +73,26 @@ export default {
     const createdAt = preOrder.createdAt;
     const preOrderitems = preOrder.preOrderitems.map((orderitem) => {
       return {
+        id: orderitem.id,
         count: orderitem.count,
         price: orderitem.menu.price.toString(),
         menuName: orderitem.menu.name,
         detail: orderitem.detail ?? '',
         options: orderitem.optionOrderItems.map((optionOrderItem) => ({
+          id: optionOrderItem.option.id,
           name: optionOrderItem.option.optionName,
           price: optionOrderItem.option.optionPrice.toString(),
         })),
       };
     });
     const reservationDateTime = preOrder.reservationDateTime;
-    return { totalPrice, createdAt, preOrderitems, reservationDateTime };
+    return {
+      totalPrice,
+      createdAt,
+      preOrderitems,
+      reservationDateTime,
+      preOrderId: preOrder.id,
+    };
   },
   async getPreOrderList(
     { storeid }: { storeid: number },

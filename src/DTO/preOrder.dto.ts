@@ -73,27 +73,34 @@ export const getPreOrderSchema = {
         'createdAt',
         'preOrderitems',
         'reservationDateTime',
+        'preOrderId',
       ],
       properties: {
+        preOrderId: { type: 'number' },
         totalPrice: { type: 'string' },
         createdAt: { type: 'string', format: 'date-time' },
         reservationDateTime: { type: 'string', format: 'date-time' },
         preOrderitems: {
           type: 'array',
-          required: ['count', 'price', 'menuName', 'options'],
-          properties: {
-            count: { type: 'number' },
-            price: { type: 'string' },
-            menuName: { type: 'string' },
-            detail: { type: 'string', nullable: true },
-            options: {
-              type: 'array',
-              items: {
-                type: 'object',
-                required: ['name', 'price'],
-                properties: {
-                  name: { type: 'string' },
-                  price: { type: 'string' },
+          items: {
+            type: 'object',
+            required: ['id', 'count', 'price', 'menuName', 'options'],
+            properties: {
+              id: { type: 'number' },
+              count: { type: 'number' },
+              price: { type: 'string' },
+              menuName: { type: 'string' },
+              detail: { type: 'string', nullable: true },
+              options: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: ['id', 'name', 'price'],
+                  properties: {
+                    id: { type: 'number' },
+                    name: { type: 'string' },
+                    price: { type: 'string' },
+                  },
                 },
               },
             },

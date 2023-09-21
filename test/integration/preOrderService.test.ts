@@ -7,6 +7,7 @@ import storeService from '../../src/services/storeService';
 import menuService from '../../src/services/menuService';
 import * as Menu from '../../src/DTO/menu.dto';
 import * as PreOrder from '../../src/DTO/preOrder.dto';
+import * as Order from '../../src/DTO/order.dto';
 import { Prisma } from '@prisma/client';
 import test400 from './400test';
 
@@ -131,4 +132,32 @@ test('get preorder list', async () => {
   const order = body.preOrders[0];
   expect(order.preOrderId).toEqual(preOrderId);
   expect(order.totalCount).toEqual(3);
+});
+
+test('preOrder to order', async () => {
+  preOrderData.preOrderitems.forEach((item: any) => {
+    let optionList: any[] = [];
+    item.options.forEach((option: any) => {
+      optionList.push(option.id);
+    });
+    item.options = optionList;
+  }); //각 options의 id만 배열로 바꿔줌
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/order`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: storeId.toString(),
+    },
+    payload: {
+      preOrderId: preOrderId,
+      totalPrice: preOrderData.totalPrice,
+      menus: preOrderData.preOrderitems,
+    },
+  });
+  expect(response.statusCode).toBe(200);
+  const body = JSON.parse(
+    response.body
+  ) as Order.newOrderInterface['Reply']['200'];
+  expect(body.orderId).toBeDefined();
 });

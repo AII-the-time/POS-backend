@@ -6,8 +6,6 @@ model PreOrder{
     updatedAt DateTime @default(dbgenerated("NOW() ON UPDATE NOW()")) @db.DateTime
     cancelledAt DateTime?
     storeId Int
-    orderId Int?
-    order Order? @relation(fields: [orderId], references: [id])
     store Store @relation(fields: [storeId], references: [id])
     preOrderitems PreOrderItem[]
 }

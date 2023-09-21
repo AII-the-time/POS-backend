@@ -7,13 +7,14 @@ const prisma = new PrismaClient();
 export default {
   async order(
     { storeid }: { storeid: number },
-    { menus, totalPrice }: Order.newOrderInterface['Body']
+    { menus, totalPrice, preOrderId }: Order.newOrderInterface['Body']
   ): Promise<Order.newOrderInterface['Reply']['200']> {
     const order = await prisma.order.create({
       data: {
         storeId: storeid,
         paymentStatus: 'WAITING',
         totalPrice: totalPrice,
+        preOrderId: preOrderId ?? undefined,
         orderitems: {
           create: menus.map((menu) => {
             return {
