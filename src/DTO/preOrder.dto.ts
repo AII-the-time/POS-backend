@@ -34,6 +34,10 @@ export const newPreOrderSchema = {
           },
         },
       },
+      reservationDateTime: {
+        type: 'string',
+        format: 'date-time',
+      },
     },
   },
   response: {
@@ -73,6 +77,7 @@ export const getPreOrderSchema = {
       properties: {
         totalPrice: { type: 'string' },
         createdAt: { type: 'string', format: 'date-time' },
+        reservationDateTime: { type: 'string', format: 'date-time' },
         preOrderitems: {
           type: 'array',
           required: ['count', 'price', 'menuName', 'options'],
@@ -83,10 +88,13 @@ export const getPreOrderSchema = {
             detail: { type: 'string', nullable: true },
             options: {
               type: 'array',
-              required: ['name', 'price'],
-              properties: {
-                name: { type: 'string' },
-                price: { type: 'string' },
+              items: {
+                type: 'object',
+                required: ['name', 'price'],
+                properties: {
+                  name: { type: 'string' },
+                  price: { type: 'string' },
+                },
               },
             },
           },
@@ -97,13 +105,12 @@ export const getPreOrderSchema = {
   },
 } as const;
 
-export const getPreOrdersSchema = {
+export const getPreOrderListSchema = {
   tags: ['preorder'],
   summary: '예약 주문 내역 리스트 가져오기',
   headers: StoreAuthorizationHeader,
   querystring: {
     type: 'object',
-    required: ['page'],
     properties: {
       page: { type: 'number', default: 1 },
       endPage: { type: 'number', default: 1 },
@@ -130,12 +137,14 @@ export const getPreOrdersSchema = {
               'totalPrice',
               'createdAt',
               'reservationDateTime',
+              'totalCount',
             ],
             properties: {
               preOrderId: { type: 'number' },
               totalPrice: { type: 'string' },
               createdAt: { type: 'string', format: 'date-time' },
               reservationDateTime: { type: 'string', format: 'date-time' },
+              totalCount: { type: 'number' },
             },
           },
         },
@@ -145,8 +154,8 @@ export const getPreOrdersSchema = {
   },
 } as const;
 
-export type newPreOrderSchema = SchemaToInterfase<typeof newPreOrderSchema>;
-export type getPreOrderSchema = SchemaToInterfase<
+export type newPreOrderInterface = SchemaToInterfase<typeof newPreOrderSchema>;
+export type getPreOrderInterface = SchemaToInterfase<
   typeof getPreOrderSchema,
   [
     {
@@ -158,8 +167,8 @@ export type getPreOrderSchema = SchemaToInterfase<
     }
   ]
 >;
-export type getPreOrdersSchema = SchemaToInterfase<
-  typeof getPreOrdersSchema,
+export type getPreOrderListInterface = SchemaToInterfase<
+  typeof getPreOrderListSchema,
   [
     {
       pattern: {

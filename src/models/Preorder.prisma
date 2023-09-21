@@ -1,6 +1,5 @@
 model PreOrder{
     id Int @id @default(autoincrement())
-    paymentStatus String
     totalPrice Decimal
     reservationDateTime DateTime?
     createdAt DateTime @default(dbgenerated("NOW()")) @db.DateTime
@@ -11,5 +10,4 @@ model PreOrder{
     order Order? @relation(fields: [orderId], references: [id])
     store Store @relation(fields: [storeId], references: [id])
     preOrderitems PreOrderItem[]
-    payment Payment[]
 }
