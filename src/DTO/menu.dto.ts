@@ -1,61 +1,70 @@
 import { Category, Menu, Option, Prisma } from '@prisma/client';
-export type CategoryWithMenuWithOption = Category & {
-  menu: (Menu & { option: Option[] })[];
-};
+import {
+  StoreAuthorizationHeader,
+  errorSchema,
+  SchemaToInterfase,
+} from '@DTO/index.dto';
+import * as E from '@errors';
 
-type option = {
-  optionType: string;
-  options: Array<{
-    id: number;
-    name: string;
-    price: Prisma.Decimal;
-  }>;
-};
-
-export class MenuResponse {
-  id: number;
-  name: string;
-  price: Prisma.Decimal;
-  option: option[];
-  constructor(menu: Menu & { option: Option[] }) {
-    this.id = menu.id;
-    this.name = menu.name;
-    this.price = menu.price;
-    this.option = menu.option
-      .map((option) => ({
-        optionType: option.optionCategory,
-        options: [
-          {
-            id: option.id,
-            name: option.optionName,
-            price: option.optionPrice,
-          },
-        ],
-      }))
-      .reduce((acc, cur) => {
-        const idx = acc.findIndex(
-          (option) => option.optionType === cur.optionType
-        );
-        if (idx === -1) {
-          acc.push(cur);
-        } else {
-          acc[idx].options.push(...cur.options);
+export const getMenuListSchema = {
+  tags: ['menu'],
+  summary: '메뉴 조회',
+  headers: StoreAuthorizationHeader,
+  response: {
+    200: {
+      type: 'object',
+      description: 'success response',
+      required: ['categories'],
+      properties: {
+        categories: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['category', 'menus','categoryId'],
+            properties: {
+              category: { type: 'string' },
+              categoryId: { type: 'number', nullable: true }, //null: 그룹 미지정
+              menus: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: ['id', 'name', 'price', 'option'],
+                  properties: {
+                    id: { type: 'number' },
+                    name: { type: 'string' },
+                    price: { type: 'string'},
+                    option: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        required: ['optionType', 'options'],
+                        properties: {
+                          optionType: { type: 'string' },
+                          options: {
+                            type: 'array',
+                            items: {
+                              type: 'object',
+                              required: ['id', 'name', 'price'],
+                              properties: {
+                                id: { type: 'number' },
+                                name: { type: 'string' },
+                                price: { type: 'string' },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  }
+                }
+              }
+            }
+          }
         }
-        return acc;
-      }, [] as unknown as option[]);
-  }
-}
+      },
+    },
+    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+  },
+} as const;
 
-export class MenuList {
-  categories: Array<{
-    category: string;
-    menus: MenuResponse[];
-  }>;
-
-  constructor(categories: CategoryWithMenuWithOption[]) {
-    this.categories = categories.map((category) => ({
-      category: category.name,
-      menus: category.menu.map((menu) => new MenuResponse(menu)),
-    }));
-  }
-}
+export type getMenuListInterface = SchemaToInterfase<typeof getMenuListSchema>;

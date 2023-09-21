@@ -1,20 +1,11 @@
-import { PrismaClient,Menu,OptionMenu,Option } from "@prisma/client";
-import { StoreAuthorizationHeader } from "@DTO/index.dto";
-import { FromSchema } from "json-schema-to-ts";
-import { MenuList } from "@DTO/menu.dto";
-import { LoginToken } from "@utils/jwt";
+import { PrismaClient } from "@prisma/client";
+import { NotFoundError } from '@errors';
+import * as Menu from "@DTO/menu.dto";
 
 const prisma = new PrismaClient();
 
 export default {
-    async getMenus({authorization, storeid}: FromSchema<typeof StoreAuthorizationHeader>): Promise<MenuList> {
-        authorization = authorization.replace("Bearer ", "");
-        let userId: number;
-        try{
-            userId = LoginToken.getUserId(authorization);
-        }catch(e){
-            throw new Error("토큰이 유효하지 않습니다.");
-        }
+    async getMenus({storeid}: {storeid:number}): Promise<Menu.getMenuListInterface['Reply']['200']> {
         const categories = await prisma.category.findMany({
             where: {
                 storeId: Number(storeid)
@@ -37,19 +28,49 @@ export default {
                 sort: 'asc'
             }
         });
-        const newCategories = categories.map((category) => {
-            return {
-                ...category,
-                menu: category.menu.map((menu:Menu&{optionMenu:OptionMenu[]}) => {
-                const newMenu:Menu&{option:Option[],optionMenu?:any} = {
-                    ...menu,
-                    option: menu.optionMenu.flatMap((optionMenu:any) => optionMenu.option)
+
+        const result = categories.map((category) => {
+            const menus = category.menu.map((menu) => {
+                const options = menu.optionMenu.map((optionMenu) => {
+                    return {
+                        id: optionMenu.option.id,
+                        name: optionMenu.option.optionName,
+                        price: optionMenu.option.optionPrice.toString(),
+                        optionType: optionMenu.option.optionCategory
+                    }
+                })
+
+                const categorizedOptions = options.reduce((acc, cur) => {
+                    if(acc[cur.optionType]===undefined) {
+                        acc[cur.optionType] = [];
+                    }
+                    acc[cur.optionType].push({
+                        id: cur.id,
+                        name: cur.name,
+                        price: cur.price
+                    });
+                    return acc;
+                }, {} as {[key:string]:{id:number,name:string,price:string}[]});
+
+                return {
+                    id: menu.id,
+                    name: menu.name,
+                    price: menu.price.toString(),
+                    option: Object.entries(categorizedOptions).map(([optionType, options]) => {
+                        return {
+                            optionType,
+                            options
+                        }
+                    })
                 }
-                delete newMenu.optionMenu;
-                return newMenu;
-            })
+            });
+
+            return {
+                category: category.name,
+                categoryId: category.id,
+                menus
             }
-        });
-        return new MenuList(newCategories);
+        })
+        return {categories: result};
     }
 }

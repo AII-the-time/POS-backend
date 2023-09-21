@@ -19,7 +19,6 @@ const generateGenericError = (name: string) => {
     };
 }
 
-
 export class NotFoundError extends ErrorWithToast {
     missing: string;
     constructor(message: string, missing: string="{missing}") {
@@ -29,8 +28,11 @@ export class NotFoundError extends ErrorWithToast {
     }
 }
 
+export const ValidationError = generateGenericError('ValidationError');
+
 export const UserAuthorizationError = generateGenericError('UserAuthorizationError');
 
 export const StoreAuthorizationError = generateGenericError('StoreAuthorizationError');
 
 export const NoAuthorizationInHeaderError = generateGenericError('NoAuthorizationInHeaderError');
+

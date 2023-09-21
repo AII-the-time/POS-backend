@@ -1,34 +1,24 @@
-import { FastifyInstance,FastifyPluginAsync } from "fastify";
+import { FastifyInstance, FastifyPluginAsync } from "fastify";
+import onError from "@hooks/onError";
+import checkStoreIdUser from '@hooks/checkStoreIdUser';
+import * as Menu from "@DTO/menu.dto";
 import menuService from "@services/menuService";
-import { StoreAuthorizationHeader } from "@DTO/index.dto";
-import { FromSchema } from "json-schema-to-ts";
-import { MenuList } from "@DTO/menu.dto";
 
-const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
-    server.get<{
-        Headers: FromSchema<typeof StoreAuthorizationHeader>,
-        Reply: {
-            200: MenuList,
-            '4xx': undefined
-        }
-    }>('/', async (request, reply) => {
-        if(!request.headers.storeid || !request.headers.authorization) {
-            return reply
-                .code(400)
-                .send();
-        }
-
-        try{
-            const categories: MenuList = await menuService.getMenus(request.headers)
+const api: FastifyPluginAsync = async (server: FastifyInstance) => {
+    server.get<Menu.getMenuListInterface>(
+        '/',
+        {
+            schema: Menu.getMenuListSchema,
+            onError,
+            preValidation: checkStoreIdUser
+        },
+        async (request, reply) => {
+            const result = await menuService.getMenus({ storeid: Number(request.headers.storeid) });
             reply
                 .code(200)
-                .send(categories);
-        } catch(e) {
-            return reply
-                .code(404)
-                .send();
+                .send(result);
         }
-    });
+    );
 }
 
 export default api;

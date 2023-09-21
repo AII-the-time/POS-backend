@@ -8,6 +8,12 @@ export type ErrorConfigType = {
 const ErrorConfig: ErrorConfigType
 = [
     {
+        describtion: '요청이 잘못되었습니다.',
+        error:E.ValidationError,
+        code: 400,
+        toast: (error:E.ErrorWithToast) => `누락된 정보가 있습니다.`
+    },
+    {
         describtion: '요청은 성공했으나, 응답을 제공할 데이터가 없습니다.',
         error:E.NotFoundError,
         code: 404,
