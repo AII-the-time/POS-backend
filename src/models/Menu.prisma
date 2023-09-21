@@ -12,4 +12,5 @@ model Menu {
     createdAt DateTime @default(dbgenerated("NOW()")) @db.DateTime
     updatedAt DateTime @default(dbgenerated("NOW() ON UPDATE NOW()")) @db.DateTime
     orderitems OrderItem[]
+    preOrderitems PreOrderItem[]
 }

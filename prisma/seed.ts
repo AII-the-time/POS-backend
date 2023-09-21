@@ -157,8 +157,12 @@ async function main() {
           };
         }),
       },
-      createdAt: new Date('2022-01-01 00:00:00'),
-      updatedAt: new Date('2022-01-01 00:00:00'),
+      createdAt: new Date(
+        new Date('2022-01-01 00:00:00').getTime() + 9 * 60 * 60 * 1000
+      ),
+      updatedAt: new Date(
+        new Date('2022-01-01 00:00:00').getTime() + 9 * 60 * 60 * 1000
+      ),
     },
   });
 }
