@@ -46,7 +46,7 @@ export const newPreOrderSchema = {
       description: 'success response',
       required: ['preOrderId'],
       properties: {
-        orderId: { type: 'number' },
+        preOrderId: { type: 'number' },
       },
     },
     401: errorSchema('토큰이 만료되었습니다.'),

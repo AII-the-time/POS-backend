@@ -23,8 +23,8 @@ model OptionOrderItem{
     id Int @id @default(autoincrement())
     optionId Int
     option Option @relation(fields: [optionId], references: [id])
-    orderItemId Int
-    orderItem OrderItem @relation(fields: [orderItemId], references: [id])
+    orderItemId Int?
+    orderItem OrderItem? @relation(fields: [orderItemId], references: [id])
     preOrderItemId Int?
     preOrderItem PreOrderItem? @relation(fields: [preOrderItemId], references: [id])
 }

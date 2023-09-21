@@ -13,20 +13,16 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      try {
-        const result = await preOrderService.preOrder(
-          { storeid: Number(request.headers.storeid) },
-          request.body
-        );
-        reply.code(200).send(result);
-      } catch (e) {
-        return reply.code(401).send();
-      }
+      const result = await preOrderService.preOrder(
+        { storeid: Number(request.headers.storeid) },
+        request.body
+      );
+      reply.code(200).send(result);
     }
   );
 
   server.get<PreOrder.getPreOrderInterface>(
-    '/:orderId',
+    '/:preOrderId',
     {
       schema: PreOrder.getPreOrderSchema,
       onError,

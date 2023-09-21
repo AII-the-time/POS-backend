@@ -24,7 +24,7 @@ export default {
               count: menu.count,
               menuId: menu.id,
               detail: menu.detail,
-              optionPreOrderItems: {
+              optionOrderItems: {
                 create: menu.options.map((option) => {
                   return {
                     optionId: option,
