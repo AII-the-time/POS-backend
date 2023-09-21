@@ -4,6 +4,7 @@ import {
   errorSchema,
   SchemaToInterfase,
 } from '@DTO/index.dto';
+import * as E from '@errors';
 export type Mileage = prismaMileage;
 
 export const getMileageSchema = {
@@ -27,8 +28,7 @@ export const getMileageSchema = {
         mileage: { type: 'string' },
       },
     },
-    401: errorSchema('토큰이 만료되었습니다.'),
-    404: errorSchema('마일리지가 존재하지 않습니다.'),
+    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
   },
 } as const;
 
@@ -52,7 +52,7 @@ export const registerMileageSchema = {
         mileageId: { type: 'number' },
       },
     },
-    401: errorSchema('토큰이 만료되었습니다.'),
+    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
   },
 } as const;
 
@@ -77,7 +77,7 @@ export const saveMileageSchema = {
         mileage: { type: 'string' },
       },
     },
-    401: errorSchema('토큰이 만료되었습니다.'),
+    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
   },
 } as const;
 

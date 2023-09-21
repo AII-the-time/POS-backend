@@ -10,6 +10,7 @@ import * as Order from '../../src/DTO/order.dto';
 import * as Mileage from '../../src/DTO/mileage.dto';
 import { Prisma } from '@prisma/client';
 import test400 from './400test';
+import {ErrorInterface} from "../../src/DTO/index.dto";
 
 let app: FastifyInstance;
 
@@ -68,7 +69,7 @@ test('mileage', async () => {
   expect(response.statusCode).toBe(404);
   const body = JSON.parse(
     response.body
-  ) as Mileage.getMileageInterface['Reply']['404'];
+  ) as ErrorInterface;
   expect(body.message).toBe('해당하는 마일리지가 없습니다.');
   expect(body.toast).toBe('마일리지을(를) 찾을 수 없습니다.');
 });
@@ -256,7 +257,6 @@ test('get order list', async () => {
       storeid: storeId.toString(),
     },
   });
-  console.log(response.body);
   expect(response.statusCode).toBe(200);
   const body = JSON.parse(
     response.body

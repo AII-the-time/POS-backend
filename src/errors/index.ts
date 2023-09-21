@@ -22,7 +22,7 @@ const generateGenericError = (name: string) => {
 
 export class NotFoundError extends ErrorWithToast {
     missing: string;
-    constructor(message: string, missing: string) {
+    constructor(message: string, missing: string="{missing}") {
         super(message);
         this.name = 'NotFoundError';
         this.missing = missing;
