@@ -1,5 +1,6 @@
 import { User as prismaUser } from '@prisma/client';
 import { AuthorizationHeader, errorSchema, SchemaToInterfase } from '@DTO/index.dto';
+import * as E from '@errors';
 export type User = prismaUser;
 
 export const phoneSchema ={
@@ -47,7 +48,7 @@ export const certificatePhoneSchema = {
                 certificatedPhoneToken: { type: 'string' }
             }
         },
-        401: errorSchema('인증번호가 일치하지 않습니다.')
+        ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
     }
 } as const;
 
@@ -72,7 +73,7 @@ export const loginSchema = {
                 refreshToken: { type: 'string' }
             }
         },
-        401: errorSchema('전화번호가 인증되지 않았습니다.')
+        ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
     }
 } as const;
 
@@ -90,7 +91,7 @@ export const refreshSchema ={
                 refreshToken: { type: 'string' }
             }
         },
-        401: errorSchema('토큰이 만료되었습니다.')
+        ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
     }
 } as const;
 

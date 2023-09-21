@@ -19,15 +19,11 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      try {
         const result = await mileageService.registerMileage(
           { storeid: Number(request.headers.storeid) },
           request.body
         );
         reply.code(200).send(result);
-      } catch (e) {
-        return reply.code(401).send();
-      }
     }
   );
 
@@ -38,12 +34,8 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      try {
         const result = await mileageService.saveMileage(request.body);
         reply.code(200).send(result);
-      } catch (e) {
-        return reply.code(401).send();
-      }
     }
   );
 };

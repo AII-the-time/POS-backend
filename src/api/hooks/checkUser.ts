@@ -1,5 +1,6 @@
 import { LoginToken } from '@utils/jwt';
 import { FastifyRequest, FastifyReply, FastifyError } from 'fastify';
+import { UserAuthorizationError, NoAuthorizationInHeaderError } from '@errors/index';
 
 export default async (
   request: FastifyRequest,
@@ -8,8 +9,7 @@ export default async (
 ) => {
   const authorization = request.headers.authorization;
   if (!authorization) {
-    reply.code(400).send('토큰이 존재하지 않습니다');
-    return;
+    throw new NoAuthorizationInHeaderError('헤더에 Authorization이 없습니다');
   }
 
   const replace_authorization = authorization.replace('Bearer ', '');
@@ -21,6 +21,6 @@ export default async (
       userid: userId + '',
     };
   } catch (e) {
-    reply.code(401).send('토큰이 유효하지 않습니다');
+    throw new UserAuthorizationError('유저 인증에 실패했습니다');
   }
 };

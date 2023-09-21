@@ -4,6 +4,7 @@ import {
   errorSchema,
   SchemaToInterfase,
 } from '@DTO/index.dto';
+import * as E from '@errors';
 export type Order = prismaOrder;
 
 export const newOrderSchema = {
@@ -44,7 +45,7 @@ export const newOrderSchema = {
         orderId: { type: 'number' },
       },
     },
-    401: errorSchema('토큰이 만료되었습니다.'),
+    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
   },
 } as const;
 
@@ -120,7 +121,7 @@ export const getOrderSchema = {
         },
       },
     },
-    401: errorSchema('토큰이 만료되었습니다.'),
+    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
   },
 } as const;
 
@@ -177,7 +178,7 @@ export const getOrderListSchema = {
         },
       },
     },
-    401: errorSchema('토큰이 만료되었습니다.'),
+    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
   },
 } as const;
 
@@ -201,7 +202,7 @@ export const paySchema = {
       type: 'null',
       description: 'success response',
     },
-    401: errorSchema('토큰이 만료되었습니다.'),
+    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
   },
 } as const;
 

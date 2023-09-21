@@ -5,6 +5,7 @@ import {
   CertificatedPhoneToken,
   LoginToken,
 } from '@utils/jwt';
+import * as E from '@errors';
 
 const prisma = new PrismaClient();
 
@@ -34,7 +35,7 @@ export default {
         certificationCode
       )
     ) {
-      throw new Error('인증번호가 일치하지 않습니다.');
+      throw new E.UserAuthorizationError('인증번호가 일치하지 않습니다.');
     }
     const token = new CertificatedPhoneToken(phone).sign();
     return { certificatedPhoneToken: token };
@@ -69,7 +70,7 @@ export default {
     try {
       certificatedPhone = CertificatedPhoneToken.decode(certificatedPhoneToken);
     } catch (e) {
-      throw new Error('토큰이 유효하지 않습니다.');
+      throw new E.UserAuthorizationError('토큰이 유효하지 않습니다.');
     }
 
     let user = await prisma.user.findFirst({

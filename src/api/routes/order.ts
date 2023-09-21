@@ -12,15 +12,11 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      try {
-        const result = await orderService.order(
-          { storeid: Number(request.headers.storeid) },
-          request.body
-        );
-        reply.code(200).send(result);
-      } catch (e) {
-        return reply.code(401).send();
-      }
+      const result = await orderService.order(
+        { storeid: Number(request.headers.storeid) },
+        request.body
+      );
+      reply.code(200).send(result);
     }
   );
 
@@ -31,15 +27,11 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      try {
-        await orderService.pay(
-          { storeid: Number(request.headers.storeid) },
-          request.body
-        );
-        reply.code(200).send();
-      } catch (e) {
-        return reply.code(401).send();
-      }
+      await orderService.pay(
+        { storeid: Number(request.headers.storeid) },
+        request.body
+      );
+      reply.code(200).send();
     }
   );
 
@@ -50,15 +42,11 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      try {
-        const result = await orderService.getOrder(
-          { storeid: Number(request.headers.storeid) },
-          request.params
-        );
-        reply.code(200).send(result);
-      } catch (e) {
-        return reply.code(401).send();
-      }
+      const result = await orderService.getOrder(
+        { storeid: Number(request.headers.storeid) },
+        request.params
+      );
+      reply.code(200).send(result);
     }
   );
 
@@ -69,16 +57,11 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      try {
         const result = await orderService.getOrderList(
           { storeid: Number(request.headers.storeid) },
           request.query
         );
         reply.code(200).send(result);
-      } catch (e: any) {
-        console.log(e.message);
-        return reply.code(401).send(e.message);
-      }
     }
   );
 };
