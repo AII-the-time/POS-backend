@@ -16,5 +16,5 @@ export default (request: FastifyRequest, reply: FastifyReply, error: FastifyErro
             .code(knownError.code)
             .send(error.setToast(knownError.toast(error)));
     }
-    reply.code(400).send();
+    reply.code(500).send();
 };
