@@ -17,7 +17,7 @@ const phone = '010-1234-5678';
 const businessRegistrationNumber = '0123456789';
 let accessToken: string;
 let storeId: number;
-let menus: Menu.MenuResponse[];
+let menus: Menu.getMenuListInterface['Reply']['200']['categories'][0]['menus'];
 beforeAll(async () => {
   app = await server();
   const certificatedPhoneToken = new CertificatedPhoneToken(phone).sign();
@@ -31,8 +31,7 @@ beforeAll(async () => {
   storeId = (await storeService.getStoreList({ userid })).stores[0].storeId;
   menus = (
     await menuService.getMenus({
-      authorization: 'Bearer ' + accessToken,
-      storeid: storeId.toString(),
+      storeid: storeId
     })
   ).categories.flatMap((category) => category.menus);
 });
