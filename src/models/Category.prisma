@@ -6,6 +6,6 @@ model Category {
     name String
     sort Int
     menu Menu[]
-    createdAt DateTime @default(dbgenerated("NOW()")) @db.DateTime
-    updatedAt DateTime @default(dbgenerated("NOW() ON UPDATE NOW()")) @db.DateTime
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }

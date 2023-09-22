@@ -9,8 +9,8 @@ model Menu {
     price Decimal
     sort Int
     optionMenu OptionMenu[]
-    createdAt DateTime @default(dbgenerated("NOW()")) @db.DateTime
-    updatedAt DateTime @default(dbgenerated("NOW() ON UPDATE NOW()")) @db.DateTime
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
     orderitems OrderItem[]
     preOrderitems PreOrderItem[]
 }

@@ -2,8 +2,8 @@ model PreOrder{
     id Int @id @default(autoincrement())
     totalPrice Decimal
     reservationDateTime DateTime?
-    createdAt DateTime @default(dbgenerated("NOW()")) @db.DateTime
-    updatedAt DateTime @default(dbgenerated("NOW() ON UPDATE NOW()")) @db.DateTime
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
     cancelledAt DateTime?
     storeId Int
     store Store @relation(fields: [storeId], references: [id])
