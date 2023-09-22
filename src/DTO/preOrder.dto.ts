@@ -5,6 +5,7 @@ import {
   SchemaToInterfase,
 } from '@DTO/index.dto';
 import exp from 'constants';
+import * as E from '@errors';
 export type PreOrder = prismaPreOrder;
 
 export const newPreOrderSchema = {
@@ -49,7 +50,12 @@ export const newPreOrderSchema = {
         preOrderId: { type: 'number' },
       },
     },
-    401: errorSchema('토큰이 만료되었습니다.'),
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
   },
 } as const;
 
@@ -108,7 +114,12 @@ export const getPreOrderSchema = {
         },
       },
     },
-    401: errorSchema('토큰이 만료되었습니다.'),
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
   },
 } as const;
 
@@ -157,7 +168,12 @@ export const getPreOrderListSchema = {
         },
       },
     },
-    401: errorSchema('토큰이 만료되었습니다.'),
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
   },
 } as const;
 
