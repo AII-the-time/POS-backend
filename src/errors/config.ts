@@ -47,7 +47,7 @@ const ErrorConfig: ErrorConfigType = [
   {
     describtion: '이미 등록된 값이 있습니다.',
     error: E.ExistError,
-    code: 404, // 추후 이 에러 409로 바꿔야함. 현재 409로 변경할 경우 에러 발생. 이슈에 있음
+    code: 409, // 추후 이 에러 409로 바꿔야함. 현재 409로 변경할 경우 에러 발생. 이슈에 있음
     toast: (error: E.ExistError) => `입력된 ${error.exist}가 이미 존재합니다.`,
   },
 ];

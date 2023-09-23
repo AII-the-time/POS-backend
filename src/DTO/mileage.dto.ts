@@ -52,7 +52,7 @@ export const registerMileageSchema = {
         mileageId: { type: 'number' },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError,E.ExistError)
   },
 } as const;
 

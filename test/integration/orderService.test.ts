@@ -122,10 +122,11 @@ test('exist mileage check', async () => {
       phone: existPhone,
     },
   });
-  expect(response.statusCode).toBe(404);
+  expect(response.statusCode).toBe(409);
   const body = JSON.parse(response.body) as ErrorInterface;
+  console.log(body);
   expect(body.message).toBe('입력된 전화번호가 이미 존재합니다.');
-  //expect(body.toast).toBe('입력된 전화번호가 이미 존재합니다.');
+  expect(body.toast).toBe('입력된 전화번호가 이미 존재합니다.');
 });
 
 test('add mileage', async () => {
