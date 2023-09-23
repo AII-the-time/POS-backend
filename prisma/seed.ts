@@ -165,6 +165,13 @@ async function main() {
       ),
     },
   });
+  const mileage = await prisma.mileage.create({
+    data: {
+      phone: '010-1234-5678',
+      mileage: 0,
+      storeId: store.id,
+    },
+  });
 }
 
 main()

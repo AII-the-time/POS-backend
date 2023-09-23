@@ -10,7 +10,7 @@ import * as Order from '../../src/DTO/order.dto';
 import * as Mileage from '../../src/DTO/mileage.dto';
 import { Prisma } from '@prisma/client';
 import test400 from './400test';
-import {ErrorInterface} from "../../src/DTO/index.dto";
+import { ErrorInterface } from '../../src/DTO/index.dto';
 
 let app: FastifyInstance;
 
@@ -54,6 +54,8 @@ test('400 test', async () => {
 });
 
 const customerPhone = '010-4321-8765';
+const existPhone = '010-1234-5678';
+const notCorrectPhone = '010-1234-567';
 let mileageId: number;
 test('mileage', async () => {
   const response = await app.inject({
@@ -66,9 +68,7 @@ test('mileage', async () => {
   });
 
   expect(response.statusCode).toBe(404);
-  const body = JSON.parse(
-    response.body
-  ) as ErrorInterface;
+  const body = JSON.parse(response.body) as ErrorInterface;
   expect(body.message).toBe('해당하는 마일리지가 없습니다.');
   expect(body.toast).toBe('마일리지을(를) 찾을 수 없습니다.');
 });
@@ -91,6 +91,41 @@ test('register mileage', async () => {
   ) as Mileage.registerMileageInterface['Reply']['200'];
   mileageId = body.mileageId;
   expect(body.mileageId).toBeDefined();
+});
+
+test('register mileage with not correct phone check', async () => {
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/mileage`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: storeId.toString(),
+    },
+    payload: {
+      phone: notCorrectPhone,
+    },
+  });
+  expect(response.statusCode).toBe(400);
+  const body = JSON.parse(response.body) as ErrorInterface;
+  expect(body.message).toBe('입력된 전화번호이(가) 양식과 맞지 않습니다.');
+});
+
+test('exist mileage check', async () => {
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/mileage`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: storeId.toString(),
+    },
+    payload: {
+      phone: existPhone,
+    },
+  });
+  expect(response.statusCode).toBe(404);
+  const body = JSON.parse(response.body) as ErrorInterface;
+  expect(body.message).toBe('입력된 전화번호가 이미 존재합니다.');
+  //expect(body.toast).toBe('입력된 전화번호가 이미 존재합니다.');
 });
 
 test('add mileage', async () => {

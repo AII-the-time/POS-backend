@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { NotFoundError } from '@errors';
+import { NotFoundError, NotCorrectTypeError, ExistError } from '@errors';
 import * as Mileage from '@DTO/mileage.dto';
 const prisma = new PrismaClient();
 
@@ -25,6 +25,21 @@ export default {
     { storeid }: { storeid: number },
     { phone }: Mileage.registerMileageInterface['Body']
   ): Promise<Mileage.registerMileageInterface['Reply']['200']> {
+    if (phone.length !== 13) {
+      throw new NotCorrectTypeError(
+        '입력된 전화번호이(가) 양식과 맞지 않습니다.',
+        '전화번호'
+      );
+    }
+    const existMileage = await prisma.mileage.findFirst({
+      where: {
+        phone: phone,
+        storeId: storeid,
+      },
+    });
+    if (existMileage) {
+      throw new ExistError('입력된 전화번호가 이미 존재합니다.', '전화번호');
+    }
     const mileage = await prisma.mileage.create({
       data: {
         phone: phone,
