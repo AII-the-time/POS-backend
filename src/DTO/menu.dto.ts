@@ -1,4 +1,3 @@
-import { Category, Menu, Option, Prisma } from '@prisma/client';
 import {
   StoreAuthorizationHeader,
   errorSchema,
@@ -20,7 +19,7 @@ export const getMenuListSchema = {
           type: 'array',
           items: {
             type: 'object',
-            required: ['category', 'menus','categoryId'],
+            required: ['category', 'menus', 'categoryId'],
             properties: {
               category: { type: 'string' },
               categoryId: { type: 'number', nullable: true }, //null: 그룹 미지정
@@ -32,7 +31,7 @@ export const getMenuListSchema = {
                   properties: {
                     id: { type: 'number' },
                     name: { type: 'string' },
-                    price: { type: 'string'},
+                    price: { type: 'string' },
                     option: {
                       type: 'array',
                       items: {
@@ -61,6 +60,69 @@ export const getMenuListSchema = {
             }
           }
         }
+      },
+    },
+    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+  },
+} as const;
+
+export const getMenuSchema = {
+  tags: ['menu'],
+  summary: '각 메뉴 상세 조회',
+  headers: StoreAuthorizationHeader,
+  params: {
+    type: 'object',
+    required: ['menuId'],
+    properties: {
+      menuId: { type: 'number' },
+    },
+  },
+  response: {
+    200: {
+      type: 'object',
+      description: 'success response',
+      required: ['categoriyName', 'categoryId', 'name', 'price', 'option','recipe'],
+      properties: {
+        categoriyName: { type: 'string' },
+        categoryId: { type: 'number', nullable: true }, //null: 그룹 미지정
+        name: { type: 'string' },
+        price: { type: 'string' },
+        option: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['optionType', 'options'],
+            properties: {
+              optionType: { type: 'string' },
+              options: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: ['id', 'name', 'price', 'isSelectable'],
+                  properties: {
+                    id: { type: 'number' },
+                    name: { type: 'string' },
+                    price: { type: 'string' },
+                    isSelectable: { type: 'boolean' },
+                  },
+                },
+              },
+            },
+          },
+        },
+        recipe: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['id', 'name', 'amount', 'unit'],
+            properties: {
+              id: { type: 'number' },
+              name: { type: 'string' },
+              amount: { type: 'number' },
+              unit: { type: 'string' },
+            },
+          },
+        },
       },
     },
     ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
