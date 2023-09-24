@@ -27,33 +27,11 @@ export const getMenuListSchema = {
                 type: 'array',
                 items: {
                   type: 'object',
-                  required: ['id', 'name', 'price', 'option'],
+                  required: ['id', 'name', 'price'],
                   properties: {
                     id: { type: 'number' },
                     name: { type: 'string' },
                     price: { type: 'string' },
-                    option: {
-                      type: 'array',
-                      items: {
-                        type: 'object',
-                        required: ['optionType', 'options'],
-                        properties: {
-                          optionType: { type: 'string' },
-                          options: {
-                            type: 'array',
-                            items: {
-                              type: 'object',
-                              required: ['id', 'name', 'price'],
-                              properties: {
-                                id: { type: 'number' },
-                                name: { type: 'string' },
-                                price: { type: 'string' },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
                   }
                 }
               }

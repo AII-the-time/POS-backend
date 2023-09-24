@@ -15,5 +15,6 @@ export default {
     "^@errors$": "<rootDir>/src/errors",
     "^@routes/(.*)$": "<rootDir>/src/api/routes/$1",
     "^@hooks/(.*)$": "<rootDir>/src/api/hooks/$1",
+    "^@server$": "<rootDir>/src/server.ts",
   }
 };

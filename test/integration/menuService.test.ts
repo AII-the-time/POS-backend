@@ -1,28 +1,15 @@
-import server from '../../src/server';
+import server from '@server';
 import { FastifyInstance } from 'fastify';
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
-import { CertificatedPhoneToken, LoginToken } from '../../src/utils/jwt';
-import userService from '../../src/services/userService';
-import storeService from '../../src/services/storeService';
-import * as Menu from '../../src/DTO/menu.dto';
+import { LoginToken } from '@utils/jwt';
+import seedValues from './seedValues';
+import * as Menu from '@DTO/menu.dto';
 
 let app: FastifyInstance;
 
-const phone = '010-1234-5678';
-const businessRegistrationNumber = '0123456789';
-let accessToken: string;
-let storeId: number;
+const accessToken = new LoginToken(seedValues.user.id).signAccessToken();
 beforeAll(async () => {
   app = await server();
-  const certificatedPhoneToken = new CertificatedPhoneToken(phone).sign();
-  accessToken = (
-    await userService.login({
-      businessRegistrationNumber,
-      certificatedPhoneToken,
-    })
-  ).accessToken;
-  const userid = LoginToken.getUserId(accessToken);
-  storeId = (await storeService.getStoreList({ userid })).stores[0].storeId;
 });
 
 afterAll(async () => {
@@ -35,7 +22,7 @@ test('get menu list', async () => {
     url: `/api/menu`,
     headers: {
       authorization: `Bearer ${accessToken}`,
-      storeid: storeId.toString(),
+      storeid: seedValues.store.id.toString(),
     },
   });
   expect(response.statusCode).toBe(200);
@@ -48,16 +35,14 @@ test('get menu list', async () => {
         categoryId: 1,
         menus: [
           {
-            id: expect.any(Number),
+            id: 1,
             name: '아메리카노',
             price: '2000',
-            option: expect.any(Array),
           },
           {
-            id: expect.any(Number),
+            id: 2,
             name: '카페라떼',
             price: '3000',
-            option: expect.any(Array),
           },
         ],
       },
@@ -66,10 +51,9 @@ test('get menu list', async () => {
         categoryId: 2,
         menus: [
           {
-            id: expect.any(Number),
+            id: 3,
             name: '아이스티',
             price: '2500',
-            option: expect.any(Array),
           },
         ],
       },
