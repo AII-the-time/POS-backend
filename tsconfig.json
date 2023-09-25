@@ -18,10 +18,12 @@
             "@errors/*": ["src/errors/*"],
             "@routes/*": ["src/api/routes/*"],
             "@hooks/*": ["src/api/hooks/*"],
+            "@server": ["src/server"],
         }
     },
     "include": [
-        "src/**/*.ts"
+        "src/**/*.ts",
+        "test/**/*.ts"
     ],
     "exclude": [
         "node_modules"
