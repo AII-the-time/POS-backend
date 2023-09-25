@@ -39,7 +39,7 @@ export default {
         return {categories: result};
     },
 
-    async getMenu({storeid}: {storeid:number},{menuId}:{menuId:number}): Promise<Menu.getMenuInterface['Reply']['200']> {
+    async getMenu({storeid}: {storeid:number},{menuId}:Menu.getMenuInterface['Params']): Promise<Menu.getMenuInterface['Reply']['200']> {
         const menu = await prisma.menu.findUnique({
             where: {
                 id: menuId
@@ -93,7 +93,7 @@ export default {
         }
     },
 
-    async createCategory({storeid}: {storeid:number}, {name}: {name: string}): Promise<Menu.createCategoryInterface['Reply']['201']> {
+    async createCategory({storeid}: {storeid:number}, {name}: Menu.createCategoryInterface['Body']): Promise<Menu.createCategoryInterface['Reply']['201']> {
         const categoryCount = await prisma.category.count({
             where: {
                 storeId: Number(storeid)
@@ -110,5 +110,33 @@ export default {
         return {
             categoryId: result.id
         }
+    },
+
+    async createMenu({storeid}: {storeid:number}, {name, price, categoryId, option, recipe}:Menu.createMenuInterface['Body']): Promise<Menu.createMenuInterface['Reply']['201']> {
+        const menuCount = await prisma.menu.count({
+            where: {
+                storeId: Number(storeid),
+                categoryId: categoryId
+            }
+        });
+        const result = await prisma.menu.create({
+            data: {
+                name,
+                price,
+                storeId: Number(storeid),
+                categoryId,
+                sort: menuCount + 1,
+                optionMenu: {
+                    create: option.map((id) => ({
+                        optionId: id
+                    }))
+                },
+            }
+        });
+
+        return {
+            menuId: result.id
+        }
     }
+
 }

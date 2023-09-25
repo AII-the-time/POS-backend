@@ -131,6 +131,51 @@ export const createCategorySchema = {
   },
 } as const;
 
+export const createMenuSchema = {
+  tags: ['menu'],
+  summary: '메뉴 생성',
+  headers: StoreAuthorizationHeader,
+  body: {
+    type: 'object',
+    required: ['name', 'price', 'categoryId', 'option', 'recipe'],
+    properties: {
+      name: { type: 'string' },
+      price: { type: 'number' },
+      categoryId: { type: 'number' },
+      option: {
+        type: 'array',
+        items: {
+          type: 'number'
+        },
+      },
+      recipe: {
+        type: 'array',
+        items: {
+          type: 'object',
+          required: ['id', 'amount', 'unit'],
+          properties: {
+            id: { type: 'number' },
+            amount: { type: 'number' },
+            unit: { type: 'string' },
+          },
+        },
+      },
+    },
+  },
+  response: {
+    201: {
+      type: 'object',
+      description: 'success response',
+      required: ['menuId'],
+      properties: {
+        menuId: { type: 'number' },
+      },
+    },
+    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+  },
+} as const;
+
 export type getMenuListInterface = SchemaToInterfase<typeof getMenuListSchema>;
 export type getMenuInterface = SchemaToInterfase<typeof getMenuSchema>;
 export type createCategoryInterface = SchemaToInterfase<typeof createCategorySchema>;
+export type createMenuInterface = SchemaToInterfase<typeof createMenuSchema>;

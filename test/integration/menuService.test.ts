@@ -37,6 +37,29 @@ test('new menu category', async () => {
   });
 });
 
+test('new menu', async () => {
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/menu`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    body: {
+      name: '자몽에이드',
+      price: 3000,
+      categoryId: 2,
+      option: [1,3,4],
+      recipe: [],
+    },
+  });
+  expect(response.statusCode).toBe(201);
+  const body = JSON.parse(response.body) as Menu.createMenuInterface['Reply']['201'];
+  expect(body).toEqual({
+    menuId: 4,
+  });
+});
+
 test('get menu list', async () => {
   const response = await app.inject({
     method: 'GET',
@@ -75,6 +98,11 @@ test('get menu list', async () => {
             id: 3,
             name: '아이스티',
             price: '2500',
+          },
+          {
+            id: 4,
+            name: '자몽에이드',
+            price: '3000',
           },
         ],
       },

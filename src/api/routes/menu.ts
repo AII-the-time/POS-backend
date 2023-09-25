@@ -49,6 +49,21 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
                 .send(result);
         }
     );
+
+    server.post<Menu.createMenuInterface>(
+        '/',
+        {
+            schema: Menu.createMenuSchema,
+            onError,
+            preValidation: checkStoreIdUser
+        },
+        async (request, reply) => {
+            const result = await menuService.createMenu({ storeid: Number(request.headers.storeid)}, request.body);
+            reply
+                .code(201)
+                .send(result);
+        }
+    );
 }
 
 export default api;
