@@ -17,6 +17,26 @@ afterAll(async () => {
   await app.close();
 });
 
+test('new menu category', async () => {
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/menu/category`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    body: {
+      name: '디저트',
+      sort: 3,
+    },
+  });
+  expect(response.statusCode).toBe(201);
+  const body = JSON.parse(response.body) as Menu.createCategoryInterface['Reply']['201'];
+  expect(body).toEqual({
+    categoryId: 3,
+  });
+});
+
 test('get menu list', async () => {
   const response = await app.inject({
     method: 'GET',
@@ -57,6 +77,11 @@ test('get menu list', async () => {
             price: '2500',
           },
         ],
+      },
+      {
+        category: '디저트',
+        categoryId: 3,
+        menus: [],
       },
     ],
   });

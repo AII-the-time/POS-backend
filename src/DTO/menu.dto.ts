@@ -22,7 +22,7 @@ export const getMenuListSchema = {
             required: ['category', 'menus', 'categoryId'],
             properties: {
               category: { type: 'string' },
-              categoryId: { type: 'number', nullable: true }, //null: 그룹 미지정
+              categoryId: { type: 'number' },
               menus: {
                 type: 'array',
                 items: {
@@ -62,7 +62,7 @@ export const getMenuSchema = {
       required: ['category', 'categoryId', 'name', 'price', 'option','recipe'],
       properties: {
         category: { type: 'string' },
-        categoryId: { type: 'number', nullable: true }, //null: 그룹 미지정
+        categoryId: { type: 'number'},
         name: { type: 'string' },
         price: { type: 'string' },
         option: {
@@ -107,5 +107,30 @@ export const getMenuSchema = {
   },
 } as const;
 
+export const createCategorySchema = {
+  tags: ['menu'],
+  summary: '카테고리 생성',
+  headers: StoreAuthorizationHeader,
+  body: {
+    type: 'object',
+    required: ['name'],
+    properties: {
+      name: { type: 'string' },
+    },
+  },
+  response: {
+    201: {
+      type: 'object',
+      description: 'success response',
+      required: ['categoryId'],
+      properties: {
+        categoryId: { type: 'number' },
+      },
+    },
+    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+  },
+} as const;
+
 export type getMenuListInterface = SchemaToInterfase<typeof getMenuListSchema>;
 export type getMenuInterface = SchemaToInterfase<typeof getMenuSchema>;
+export type createCategoryInterface = SchemaToInterfase<typeof createCategorySchema>;

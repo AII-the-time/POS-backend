@@ -50,7 +50,7 @@ export default {
             }
         });
         if (!menu) {
-            throw new NotFoundError('메뉴가 존재하지 않습니다.');
+            throw new NotFoundError('메뉴가 존재하지 않습니다.',"메뉴");
         }
 
         const allOption = await prisma.option.findMany({
@@ -90,6 +90,25 @@ export default {
                 })
             ),
             recipe: []
+        }
+    },
+
+    async createCategory({storeid}: {storeid:number}, {name}: {name: string}): Promise<Menu.createCategoryInterface['Reply']['201']> {
+        const categoryCount = await prisma.category.count({
+            where: {
+                storeId: Number(storeid)
+            }
+        });
+        const result = await prisma.category.create({
+            data: {
+                name: name,
+                storeId: Number(storeid),
+                sort: categoryCount + 1
+            }
+        });
+        
+        return {
+            categoryId: result.id
         }
     }
 }

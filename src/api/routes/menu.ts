@@ -34,6 +34,21 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
                 .send(result);
         }
     );
+
+    server.post<Menu.createCategoryInterface>(
+        '/category',
+        {
+            schema: Menu.createCategorySchema,
+            onError,
+            preValidation: checkStoreIdUser
+        },
+        async (request, reply) => {
+            const result = await menuService.createCategory({ storeid: Number(request.headers.storeid)}, request.body);
+            reply
+                .code(201)
+                .send(result);
+        }
+    );
 }
 
 export default api;
