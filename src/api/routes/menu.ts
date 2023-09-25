@@ -13,7 +13,22 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
             preValidation: checkStoreIdUser
         },
         async (request, reply) => {
-            const result = await menuService.getMenus({ storeid: Number(request.headers.storeid) });
+            const result = await menuService.getMenuList({ storeid: Number(request.headers.storeid) });
+            reply
+                .code(200)
+                .send(result);
+        }
+    );
+
+    server.get<Menu.getMenuInterface>(
+        '/:menuId',
+        {
+            schema: Menu.getMenuSchema,
+            onError,
+            preValidation: checkStoreIdUser
+        },
+        async (request, reply) => {
+            const result = await menuService.getMenu({ storeid: Number(request.headers.storeid)}, request.params);
             reply
                 .code(200)
                 .send(result);

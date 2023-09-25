@@ -59,9 +59,9 @@ export const getMenuSchema = {
     200: {
       type: 'object',
       description: 'success response',
-      required: ['categoriyName', 'categoryId', 'name', 'price', 'option','recipe'],
+      required: ['category', 'categoryId', 'name', 'price', 'option','recipe'],
       properties: {
-        categoriyName: { type: 'string' },
+        category: { type: 'string' },
         categoryId: { type: 'number', nullable: true }, //null: 그룹 미지정
         name: { type: 'string' },
         price: { type: 'string' },
@@ -108,3 +108,4 @@ export const getMenuSchema = {
 } as const;
 
 export type getMenuListInterface = SchemaToInterfase<typeof getMenuListSchema>;
+export type getMenuInterface = SchemaToInterfase<typeof getMenuSchema>;
