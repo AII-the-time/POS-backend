@@ -141,12 +141,16 @@ async function main() {
   await Promise.all(
     menu.flatMap((menu) => {
       return option.map((option) =>
-        prisma.optionMenu.create({
-          data: {
-            menuId: menu.id,
-            optionId: option.id,
-          },
-        })
+        {
+          if(menu.name==='아이스티' && option.optionName==='hot') return;
+          if(menu.name==='아이스티' && option.optionName==='연하게') return;
+          return prisma.optionMenu.create({
+            data: {
+              menuId: menu.id,
+              optionId: option.id,
+            },
+          })
+        }
       );
     })
   );

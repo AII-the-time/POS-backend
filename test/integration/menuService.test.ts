@@ -90,7 +90,7 @@ test('get menu list', async () => {
 test('get menu detail', async () => {
   const response = await app.inject({
     method: 'GET',
-    url: `/api/menu/1`,
+    url: `/api/menu/3`,
     headers: {
       authorization: `Bearer ${accessToken}`,
       storeid: seedValues.store.id.toString(),
@@ -100,10 +100,10 @@ test('get menu detail', async () => {
 
   const body = JSON.parse(response.body) as Menu.getMenuInterface['Reply']['200'];
   expect(body).toEqual({
-    name: '아메리카노',
-    price: '2000',
-    categoryId: 1,
-    category: '커피',
+    name: '아이스티',
+    price: '2500',
+    categoryId: 2,
+    category: '티&에이드',
     option: [
       {
         optionType: '온도',
@@ -118,7 +118,7 @@ test('get menu detail', async () => {
             id: 2,
             name: 'hot',
             price: '0',
-            isSelectable: true
+            isSelectable: false
           }
         ]
       },
@@ -152,7 +152,7 @@ test('get menu detail', async () => {
             id: 6,
             name: '연하게',
             price: '0',
-            isSelectable: true
+            isSelectable: false
           }
         ]
       }
