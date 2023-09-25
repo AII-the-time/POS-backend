@@ -127,7 +127,7 @@ async function main() {
         price: 2500,
         storeId: 1,
         categoryId: 2,
-        sort: 3,
+        sort: 1,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
