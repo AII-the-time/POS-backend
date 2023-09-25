@@ -79,8 +79,7 @@ export default {
         throw new Error('사용할 마일리지와 적립할 마일리지를 입력해주세요.');
       }
       if (
-        Prisma.Decimal.max(mileage.mileage, useMileage) ===
-        Prisma.Decimal.add(useMileage, 0)
+        mileage.mileage.comparedTo(useMileage) < 0
       ) {
         throw new Error('마일리지가 부족합니다.');
       }
