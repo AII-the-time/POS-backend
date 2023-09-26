@@ -29,11 +29,11 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-        const result = await preOrderService.getPreOrder(
-          { storeid: Number(request.headers.storeid) },
-          request.params
-        );
-        reply.code(200).send(result);
+      const result = await preOrderService.getPreOrder(
+        { storeid: Number(request.headers.storeid) },
+        request.params
+      );
+      reply.code(200).send(result);
     }
   );
 
@@ -45,11 +45,11 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-        const result = await preOrderService.getPreOrderList(
-          { storeid: Number(request.headers.storeid) },
-          request.query
-        );
-        reply.code(200).send(result);
+      const result = await preOrderService.getPreOrderList(
+        { storeid: Number(request.headers.storeid) },
+        request.query
+      );
+      reply.code(200).send(result);
     }
   );
 };
