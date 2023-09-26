@@ -77,7 +77,7 @@ test('register mileage with not correct phone check', async () => {
     url: `/api/mileage`,
     headers: {
       authorization: `Bearer ${accessToken}`,
-      storeid: storeId.toString(),
+      storeid: seedValues.store.id.toString(),
     },
     payload: {
       phone: notCorrectPhone,
@@ -94,7 +94,7 @@ test('exist mileage check', async () => {
     url: `/api/mileage`,
     headers: {
       authorization: `Bearer ${accessToken}`,
-      storeid: storeId.toString(),
+      storeid: seedValues.store.id.toString(),
     },
     payload: {
       phone: existPhone,
