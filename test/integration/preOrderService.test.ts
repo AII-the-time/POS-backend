@@ -1,39 +1,18 @@
-import server from '../../src/server';
+import server from '@server';
 import { FastifyInstance } from 'fastify';
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
-import { CertificatedPhoneToken, LoginToken } from '../../src/utils/jwt';
-import userService from '../../src/services/userService';
-import storeService from '../../src/services/storeService';
-import menuService from '../../src/services/menuService';
-import * as Menu from '../../src/DTO/menu.dto';
-import * as PreOrder from '../../src/DTO/preOrder.dto';
-import * as Order from '../../src/DTO/order.dto';
+import { CertificatedPhoneToken, LoginToken } from '@utils/jwt';
+import * as PreOrder from '@DTO/preOrder.dto';
+import * as Order from '@DTO/order.dto';
 import { Prisma } from '@prisma/client';
 import test400 from './400test';
+import seedValues from './seedValues';
 
 let app: FastifyInstance;
 
-const phone = '010-1234-5678';
-const businessRegistrationNumber = '0123456789';
-let accessToken: string;
-let storeId: number;
-let menus: Menu.getMenuListInterface['Reply']['200']['categories'][0]['menus'];
+const accessToken = new LoginToken(seedValues.user.id).signAccessToken();
 beforeAll(async () => {
   app = await server();
-  const certificatedPhoneToken = new CertificatedPhoneToken(phone).sign();
-  accessToken = (
-    await userService.login({
-      businessRegistrationNumber,
-      certificatedPhoneToken,
-    })
-  ).accessToken;
-  const userid = LoginToken.getUserId(accessToken);
-  storeId = (await storeService.getStoreList({ userid })).stores[0].storeId;
-  menus = (
-    await menuService.getMenus({
-      storeid: storeId,
-    })
-  ).categories.flatMap((category) => category.menus);
 });
 
 afterAll(async () => {
@@ -55,28 +34,28 @@ test('preOrder', async () => {
     url: `/api/preorder`,
     headers: {
       authorization: `Bearer ${accessToken}`,
-      storeid: storeId.toString(),
+      storeid: seedValues.store.id.toString(),
     },
     payload: {
       reservationDateTime: '2023-09-18T10:01:12.301Z',
       totalPrice: Prisma.Decimal.sum(
-        Prisma.Decimal.mul(menus[0].price, 2),
-        menus[1].price
+        Prisma.Decimal.mul(seedValues.menu[0].price, 2),
+        seedValues.menu[1].price
       ),
       menus: [
         {
-          id: menus[0].id,
+          id: seedValues.menu[0].id,
           count: 2,
           options: [
-            menus[0].option[0].options[0].id,
-            menus[0].option[1].options[1].id,
-            menus[0].option[2].options[0].id,
+            seedValues.option[0].id,
+            seedValues.option[2].id,
+            seedValues.option[4].id,
           ],
         },
         {
-          id: menus[1].id,
+          id: seedValues.menu[1].id,
           count: 1,
-          options: [menus[1].option[0].options[0].id],
+          options: [seedValues.option[0].id],
           detail: '얼음 따로 포장해주세요',
         },
       ],
@@ -96,7 +75,7 @@ test('get preOrder', async () => {
     url: `/api/preorder/${preOrderId}`,
     headers: {
       authorization: `Bearer ${accessToken}`,
-      storeid: storeId.toString(),
+      storeid: seedValues.store.id.toString(),
     },
   });
   expect(response.statusCode).toBe(200);
@@ -106,8 +85,8 @@ test('get preOrder', async () => {
   preOrderData = body;
   expect(body.totalPrice).toEqual(
     Prisma.Decimal.sum(
-      Prisma.Decimal.mul(menus[0].price, 2),
-      menus[1].price
+      Prisma.Decimal.mul(seedValues.menu[0].price, 2),
+      seedValues.menu[1].price
     ).toString()
   );
 });
@@ -119,7 +98,7 @@ test('get preorder list', async () => {
 
     headers: {
       authorization: `Bearer ${accessToken}`,
-      storeid: storeId.toString(),
+      storeid: seedValues.store.id.toString(),
     },
   });
   expect(response.statusCode).toBe(200);
@@ -146,7 +125,7 @@ test('preOrder to order', async () => {
     url: `/api/order`,
     headers: {
       authorization: `Bearer ${accessToken}`,
-      storeid: storeId.toString(),
+      storeid: seedValues.store.id.toString(),
     },
     payload: {
       preOrderId: preOrderId,

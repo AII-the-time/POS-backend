@@ -7,8 +7,8 @@ model Order{
     mileage Mileage? @relation(fields: [mileageId], references: [id])
     useMileage Decimal?
     saveMileage Decimal?
-    createdAt DateTime @default(dbgenerated("NOW()")) @db.DateTime
-    updatedAt DateTime @default(dbgenerated("NOW() ON UPDATE NOW()")) @db.DateTime
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
     cancelledAt DateTime?
     storeId Int
     store Store @relation(fields: [storeId], references: [id])

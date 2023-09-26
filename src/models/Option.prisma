@@ -1,7 +1,7 @@
 
 model Option{
     id Int @id @default(autoincrement())
-    createdAt DateTime @default(dbgenerated("NOW()")) @db.DateTime
+    createdAt DateTime @default(now())
     optionName String
     optionPrice Decimal
     optionCategory String

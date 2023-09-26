@@ -3,14 +3,16 @@ const prisma = new PrismaClient();
 async function main() {
   const user = await prisma.user.create({
     data: {
+      id: 1,
       businessRegistrationNumber: '0123456789',
       phoneNumber: '010-1234-5678',
     },
-  });
+  }); //user id 1
 
   const store = await prisma.store.create({
     data: {
-      userId: user.id,
+      id: 1,
+      userId: 1,
       name: '소예다방',
       address: '고려대 근처',
       defaultOpeningHours: [
@@ -28,13 +30,14 @@ async function main() {
       createdAt: new Date(),
       updatedAt: new Date(),
     },
-  });
+  }); //store id 1
 
   const category1 = await prisma.category.create({
     data: {
+      id: 1,
+      storeId: 1,
       name: '커피',
       sort: 1,
-      storeId: store.id,
       createdAt: new Date(),
       updatedAt: new Date(),
     },
@@ -42,9 +45,10 @@ async function main() {
 
   const category2 = await prisma.category.create({
     data: {
+      id: 2,
+      storeId: 1,
       name: '티&에이드',
       sort: 2,
-      storeId: store.id,
       createdAt: new Date(),
       updatedAt: new Date(),
     },
@@ -56,41 +60,44 @@ async function main() {
         optionName: 'ice',
         optionPrice: 0,
         optionCategory: '온도',
-        storeId: store.id,
+        storeId: 1
       },
       {
         optionName: 'hot',
         optionPrice: 0,
         optionCategory: '온도',
-        storeId: store.id,
+        storeId: 1
       },
       {
         optionName: '케냐',
         optionPrice: 0,
         optionCategory: '원두',
-        storeId: store.id,
+        storeId: 1
       },
       {
         optionName: '콜롬비아',
         optionPrice: 300,
         optionCategory: '원두',
-        storeId: store.id,
+        storeId: 1
       },
       {
         optionName: '1샷 추가',
         optionPrice: 500,
         optionCategory: '샷',
-        storeId: store.id,
+        storeId: 1
       },
       {
         optionName: '연하게',
         optionPrice: 0,
         optionCategory: '샷',
-        storeId: store.id,
+        storeId: 1
       },
-    ].map(async (option) => {
+    ].map(async (option,index) => {
       return await prisma.option.create({
-        data: option,
+        data: {
+          id: index+1,
+          ...option
+        },
       });
     })
   );
@@ -100,8 +107,8 @@ async function main() {
       {
         name: '아메리카노',
         price: 2000,
-        storeId: store.id,
-        categoryId: category1.id,
+        storeId: 1,
+        categoryId: 1,
         sort: 1,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -109,8 +116,8 @@ async function main() {
       {
         name: '카페라떼',
         price: 3000,
-        storeId: store.id,
-        categoryId: category1.id,
+        storeId: 1,
+        categoryId: 1,
         sort: 2,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -118,15 +125,15 @@ async function main() {
       {
         name: '아이스티',
         price: 2500,
-        storeId: store.id,
-        categoryId: category2.id,
-        sort: 3,
+        storeId: 1,
+        categoryId: 2,
+        sort: 1,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-    ].map(async (menu) => {
+    ].map(async (menu,index) => {
       return await prisma.menu.create({
-        data: menu,
+        data: {id:index+1,...menu},
       });
     })
   );
@@ -134,21 +141,25 @@ async function main() {
   await Promise.all(
     menu.flatMap((menu) => {
       return option.map((option) =>
-        prisma.optionMenu.create({
-          data: {
-            menuId: menu.id,
-            optionId: option.id,
-          },
-        })
+        {
+          if(menu.name==='아이스티' && option.optionName==='hot') return;
+          if(menu.name==='아이스티' && option.optionName==='연하게') return;
+          return prisma.optionMenu.create({
+            data: {
+              menuId: menu.id,
+              optionId: option.id,
+            },
+          })
+        }
       );
     })
   );
 
-  const dumpOrder = await prisma.order.create({
+  const order = await prisma.order.create({
     data: {
-      storeId: store.id,
+      storeId: 1,
       paymentStatus: 'WAITING',
-      totalPrice: 10000,
+      totalPrice: 7500,
       orderitems: {
         create: menu.map((menu) => {
           return {

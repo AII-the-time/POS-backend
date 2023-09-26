@@ -1,6 +1,4 @@
 import { Prisma, PrismaClient } from '@prisma/client';
-import { StoreAuthorizationHeader } from '@DTO/index.dto';
-import { LoginToken } from '@utils/jwt';
 import * as PreOrder from '@DTO/preOrder.dto';
 const prisma = new PrismaClient();
 

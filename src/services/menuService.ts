@@ -5,7 +5,7 @@ import * as Menu from "@DTO/menu.dto";
 const prisma = new PrismaClient();
 
 export default {
-    async getMenus({storeid}: {storeid:number}): Promise<Menu.getMenuListInterface['Reply']['200']> {
+    async getMenuList({storeid}: {storeid:number}): Promise<Menu.getMenuListInterface['Reply']['200']> {
         const categories = await prisma.category.findMany({
             where: {
                 storeId: Number(storeid)
@@ -14,13 +14,6 @@ export default {
                 menu: {
                     orderBy: {
                         sort: 'asc'
-                    },
-                    include: {
-                        optionMenu: {
-                            include: {
-                                option: true
-                            }
-                        }
                     }
                 }
             },
@@ -30,40 +23,12 @@ export default {
         });
 
         const result = categories.map((category) => {
-            const menus = category.menu.map((menu) => {
-                const options = menu.optionMenu.map((optionMenu) => {
-                    return {
-                        id: optionMenu.option.id,
-                        name: optionMenu.option.optionName,
-                        price: optionMenu.option.optionPrice.toString(),
-                        optionType: optionMenu.option.optionCategory
-                    }
-                })
-
-                const categorizedOptions = options.reduce((acc, cur) => {
-                    if(acc[cur.optionType]===undefined) {
-                        acc[cur.optionType] = [];
-                    }
-                    acc[cur.optionType].push({
-                        id: cur.id,
-                        name: cur.name,
-                        price: cur.price
-                    });
-                    return acc;
-                }, {} as {[key:string]:{id:number,name:string,price:string}[]});
-
-                return {
-                    id: menu.id,
-                    name: menu.name,
+            const menus = category.menu.map(
+                (menu) => ({
+                    ...menu,
                     price: menu.price.toString(),
-                    option: Object.entries(categorizedOptions).map(([optionType, options]) => {
-                        return {
-                            optionType,
-                            options
-                        }
-                    })
-                }
-            });
+                })
+            );
 
             return {
                 category: category.name,
@@ -72,5 +37,106 @@ export default {
             }
         })
         return {categories: result};
+    },
+
+    async getMenu({storeid}: {storeid:number},{menuId}:Menu.getMenuInterface['Params']): Promise<Menu.getMenuInterface['Reply']['200']> {
+        const menu = await prisma.menu.findUnique({
+            where: {
+                id: menuId
+            },
+            include: {
+                optionMenu: true,
+                category: true
+            }
+        });
+        if (!menu) {
+            throw new NotFoundError('메뉴가 존재하지 않습니다.',"메뉴");
+        }
+
+        const allOption = await prisma.option.findMany({
+            where: {
+                storeId: Number(storeid)
+            }
+        });
+
+        const categorizedOption = allOption.reduce(
+            (acc, option) => {
+                const { id, optionCategory: type, optionName: name, optionPrice: price } = option;
+                const curOption = {
+                    id,
+                    name,
+                    price: price.toString(),
+                    isSelectable: menu.optionMenu.some(({optionId}) => optionId === id)
+                };
+                if (acc[type]) {
+                    acc[type].push(curOption);
+                } else {
+                    acc[type] = [curOption];
+                }
+                return acc;
+            },
+            {} as  Record<string, Menu.getMenuInterface['Reply']['200']['option'][0]['options']>
+        );
+
+        return {
+            name: menu.name,
+            price: menu.price.toString(),
+            categoryId: menu.categoryId,
+            category: menu.category.name,
+            option: Object.entries(categorizedOption).map(
+                ([optionType, options]) => ({
+                    optionType,
+                    options
+                })
+            ),
+            recipe: []
+        }
+    },
+
+    async createCategory({storeid}: {storeid:number}, {name}: Menu.createCategoryInterface['Body']): Promise<Menu.createCategoryInterface['Reply']['201']> {
+        const categoryCount = await prisma.category.count({
+            where: {
+                storeId: Number(storeid)
+            }
+        });
+        const result = await prisma.category.create({
+            data: {
+                name: name,
+                storeId: Number(storeid),
+                sort: categoryCount + 1
+            }
+        });
+        
+        return {
+            categoryId: result.id
+        }
+    },
+
+    async createMenu({storeid}: {storeid:number}, {name, price, categoryId, option, recipe}:Menu.createMenuInterface['Body']): Promise<Menu.createMenuInterface['Reply']['201']> {
+        const menuCount = await prisma.menu.count({
+            where: {
+                storeId: Number(storeid),
+                categoryId: categoryId
+            }
+        });
+        const result = await prisma.menu.create({
+            data: {
+                name,
+                price,
+                storeId: Number(storeid),
+                categoryId,
+                sort: menuCount + 1,
+                optionMenu: {
+                    create: option.map((id) => ({
+                        optionId: id
+                    }))
+                },
+            }
+        });
+
+        return {
+            menuId: result.id
+        }
     }
+
 }

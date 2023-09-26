@@ -4,7 +4,6 @@ import {
   errorSchema,
   SchemaToInterfase,
 } from '@DTO/index.dto';
-import exp from 'constants';
 import * as E from '@errors';
 export type PreOrder = prismaPreOrder;
 

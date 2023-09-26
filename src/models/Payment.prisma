@@ -3,7 +3,7 @@ model Payment{
     id Int @id @default(autoincrement())
     paymentMethod String
     price Decimal
-    createdAt DateTime @default(dbgenerated("NOW()")) @db.DateTime
+    createdAt DateTime @default(now())
     orderId Int
     order Order @relation(fields: [orderId], references: [id])
 }

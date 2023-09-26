@@ -13,6 +13,9 @@ export default async (
   if (!authorization) {
     throw new NoAuthorizationInHeaderError('헤더에 Authorization이 없습니다');
   }
+  if (!storeid) {
+    throw new NoAuthorizationInHeaderError('헤더에 storeid가 없습니다');
+  }
   const replace_authorization = authorization.replace('Bearer ', '');
   let userId: number;
   try {
