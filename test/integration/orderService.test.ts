@@ -52,6 +52,25 @@ test('mileage', async () => {
   expect(body.toast).toBe('마일리지을(를) 찾을 수 없습니다.');
 });
 
+test('register mileage without storeid header', async () => {
+  // api 폴더 hooks 폴더 checkStoreIdUser.ts 에서 에러 체크
+  // storeid가 없는 경우 에러를 던지도록 설정
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/mileage`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+    },
+    payload: {
+      phone: customerPhone,
+    },
+  });
+  console.log(response);
+  expect(response.statusCode).toBe(400);
+  const body = JSON.parse(response.body) as ErrorInterface;
+  expect(body.message).toBe('헤더에 storeid가 없습니다');
+});
+
 test('register mileage', async () => {
   const response = await app.inject({
     method: 'POST',
