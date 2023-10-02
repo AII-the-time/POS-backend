@@ -8,7 +8,7 @@ import test400 from './400test';
 
 let app: FastifyInstance;
 
-const phone = '010-1111-2222';
+const phone = '01011112222';
 const businessRegistrationNumber = '1122233444';
 let accessToken: string;
 

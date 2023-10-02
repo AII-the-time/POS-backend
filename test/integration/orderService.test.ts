@@ -31,8 +31,8 @@ test('400 test', async () => {
   ]);
 });
 
-const customerPhone = '010-4321-8765';
-const existPhone = '010-1234-5678';
+const customerPhone = '01043218765';
+const existPhone = '01023456789';
 const notCorrectPhone = '010-1234-567';
 let mileageId: number;
 test('mileage', async () => {
@@ -102,7 +102,6 @@ test('exist mileage check', async () => {
   });
   expect(response.statusCode).toBe(409);
   const body = JSON.parse(response.body) as ErrorInterface;
-  console.log(body);
   expect(body.message).toBe('입력된 전화번호가 이미 존재합니다.');
   expect(body.toast).toBe('입력된 전화번호가 이미 존재합니다.');
 });

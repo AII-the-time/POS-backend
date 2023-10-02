@@ -5,7 +5,7 @@ async function main() {
     data: {
       id: 1,
       businessRegistrationNumber: '0123456789',
-      phoneNumber: '010-1234-5678',
+      phoneNumber: '01012345678',
     },
   }); //user id 1
 
@@ -178,7 +178,7 @@ async function main() {
   });
   const mileage = await prisma.mileage.create({
     data: {
-      phone: '010-1234-5678',
+      phone: '01023456789',
       mileage: 0,
       storeId: store.id,
     },
