@@ -45,6 +45,13 @@ export class ExistError extends ErrorWithToast {
   }
 }
 
+export class NotEnoughError extends ErrorWithToast {
+  constructor(message: string) {
+    super(message);
+    this.name = 'NotEnoughError';
+  }
+}
+
 export const ValidationError = generateGenericError('ValidationError');
 
 export const UserAuthorizationError = generateGenericError(

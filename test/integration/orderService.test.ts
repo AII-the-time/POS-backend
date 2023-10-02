@@ -6,8 +6,9 @@ import * as Order from '@DTO/order.dto';
 import * as Mileage from '@DTO/mileage.dto';
 import { Prisma } from '@prisma/client';
 import test400 from './400test';
-import { ErrorInterface } from "@DTO/index.dto";
+import { ErrorInterface } from '@DTO/index.dto';
 import seedValues from './seedValues';
+import exp from 'constants';
 let app: FastifyInstance;
 
 const accessToken = new LoginToken(seedValues.user.id).signAccessToken();
@@ -83,7 +84,7 @@ test('register mileage with not correct phone check', async () => {
       phone: notCorrectPhone,
     },
   });
-  expect(response.statusCode).toBe(400);
+  expect(response.statusCode).toBe(409);
   const body = JSON.parse(response.body) as ErrorInterface;
   expect(body.message).toBe('입력된 전화번호이(가) 양식과 맞지 않습니다.');
 });
@@ -102,7 +103,6 @@ test('exist mileage check', async () => {
   });
   expect(response.statusCode).toBe(409);
   const body = JSON.parse(response.body) as ErrorInterface;
-  console.log(body);
   expect(body.message).toBe('입력된 전화번호가 이미 존재합니다.');
   expect(body.toast).toBe('입력된 전화번호가 이미 존재합니다.');
 });
@@ -185,6 +185,33 @@ test('order', async () => {
   ) as Order.newOrderInterface['Reply']['200'];
   orderId = body.orderId;
   expect(body.orderId).toBeDefined();
+});
+
+test('not pay cause not enough mileage', async () => {
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/order/pay`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    payload: {
+      orderId: orderId,
+      paymentMethod: 'CARD',
+      mileageId: mileageId,
+      useMileage: 10000,
+      saveMileage: Prisma.Decimal.mul(
+        Prisma.Decimal.sum(
+          Prisma.Decimal.mul(seedValues.menu[0].price, 2),
+          seedValues.menu[1].price
+        ),
+        0.1
+      ),
+    },
+  });
+  expect(response.statusCode).toBe(403);
+  const body = JSON.parse(response.body) as ErrorInterface;
+  expect(body.message).toBe('마일리지가 부족합니다.');
 });
 
 test('pay', async () => {

@@ -1,5 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import * as PreOrder from '@DTO/preOrder.dto';
+import { NotFoundError, ValidationError } from '@errors';
 const prisma = new PrismaClient();
 
 export default {
@@ -59,13 +60,13 @@ export default {
       },
     });
     if (preOrder === null) {
-      throw new Error('주문이 존재하지 않습니다.');
+      throw new NotFoundError('해당하는 주문이 없습니다.', '주문');
     }
     if (preOrder.storeId !== storeid) {
-      throw new Error('주문이 존재하지 않습니다.');
+      throw new NotFoundError('해당하는 주문이 없습니다.', '주문');
     }
     if (preOrder.reservationDateTime === null) {
-      throw new Error('예약 주문이 아닙니다.');
+      throw new ValidationError('예약 주문 날짜 및 시간이 누락되었습니다.');
     }
     const totalPrice = preOrder.totalPrice.toString();
     const createdAt = preOrder.createdAt;

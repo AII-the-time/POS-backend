@@ -53,7 +53,8 @@ export const newPreOrderSchema = {
       E.NotFoundError,
       E.UserAuthorizationError,
       E.StoreAuthorizationError,
-      E.NoAuthorizationInHeaderError
+      E.NoAuthorizationInHeaderError,
+      E.NotCorrectTypeError
     ),
   },
 } as const;
@@ -117,7 +118,8 @@ export const getPreOrderSchema = {
       E.NotFoundError,
       E.UserAuthorizationError,
       E.StoreAuthorizationError,
-      E.NoAuthorizationInHeaderError
+      E.NoAuthorizationInHeaderError,
+      E.NotCorrectTypeError
     ),
   },
 } as const;
@@ -171,7 +173,8 @@ export const getPreOrderListSchema = {
       E.NotFoundError,
       E.UserAuthorizationError,
       E.StoreAuthorizationError,
-      E.NoAuthorizationInHeaderError
+      E.NoAuthorizationInHeaderError,
+      E.NotCorrectTypeError
     ),
   },
 } as const;

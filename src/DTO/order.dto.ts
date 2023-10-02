@@ -46,7 +46,13 @@ export const newOrderSchema = {
         orderId: { type: 'number' },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError,
+      E.NotCorrectTypeError
+    ),
   },
 } as const;
 
@@ -122,7 +128,13 @@ export const getOrderSchema = {
         },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError,
+      E.NotCorrectTypeError
+    ),
   },
 } as const;
 
@@ -179,7 +191,13 @@ export const getOrderListSchema = {
         },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError,
+      E.NotCorrectTypeError
+    ),
   },
 } as const;
 
@@ -203,7 +221,14 @@ export const paySchema = {
       type: 'null',
       description: 'success response',
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError,
+      E.NotCorrectTypeError,
+      E.NotEnoughError
+    ),
   },
 } as const;
 
