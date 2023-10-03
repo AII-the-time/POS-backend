@@ -1,7 +1,11 @@
 import { LoginToken } from '@utils/jwt';
 import { PrismaClient } from '@prisma/client';
 import { FastifyRequest, FastifyReply, FastifyError } from 'fastify';
-import { UserAuthorizationError, StoreAuthorizationError, NoAuthorizationInHeaderError } from '@errors/index';
+import {
+  UserAuthorizationError,
+  StoreAuthorizationError,
+  NoAuthorizationInHeaderError,
+} from '@errors/index';
 
 const prisma = new PrismaClient();
 export default async (
@@ -15,6 +19,7 @@ export default async (
   }
   if (!storeid) {
     throw new NoAuthorizationInHeaderError('헤더에 storeid가 없습니다');
+    // 해당 에러는 test 중 orderService.test.ts 에서 테스트 함.
   }
   const replace_authorization = authorization.replace('Bearer ', '');
   let userId: number;

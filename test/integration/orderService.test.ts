@@ -65,7 +65,6 @@ test('register mileage without storeid header', async () => {
       phone: customerPhone,
     },
   });
-  console.log(response);
   expect(response.statusCode).toBe(400);
   const body = JSON.parse(response.body) as ErrorInterface;
   expect(body.message).toBe('헤더에 storeid가 없습니다');
