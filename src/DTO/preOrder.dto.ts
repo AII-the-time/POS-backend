@@ -78,8 +78,8 @@ export const getPreOrderSchema = {
         'totalPrice',
         'createdAt',
         'preOrderitems',
-        'reservationDateTime',
         'preOrderId',
+        'reservationDateTime',
       ],
       properties: {
         preOrderId: { type: 'number' },

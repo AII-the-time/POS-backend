@@ -197,6 +197,8 @@ test('get menu detail', async () => {
   });
 });
 test('get not exist menu detail', async () => {
+  // service 폴더 내 menuService.test.ts 에서 에러 체크
+  // getMenu에서 menu가 존재하지 않는 경우 에러를 던지도록 설정
   const response = await app.inject({
     method: 'GET',
     url: `/api/menu/100`,

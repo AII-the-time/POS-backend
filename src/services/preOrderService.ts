@@ -60,16 +60,13 @@ export default {
       },
     });
     if (preOrder === null) {
+      // preOrderService.test 에서 test
+      // test 이름은 get not exist preOrder
       throw new NotFoundError('해당하는 주문이 없습니다.', '주문');
-    }
-    if (preOrder.storeId !== storeid) {
-      throw new NotFoundError('해당하는 주문이 없습니다.', '주문');
-    }
-    if (preOrder.reservationDateTime === null) {
-      throw new ValidationError('예약 주문 날짜 및 시간이 누락되었습니다.');
     }
     const totalPrice = preOrder.totalPrice.toString();
     const createdAt = preOrder.createdAt;
+    const reservationDateTime = preOrder.reservationDateTime;
     const preOrderitems = preOrder.preOrderitems.map((orderitem) => {
       return {
         id: orderitem.id,
@@ -84,7 +81,7 @@ export default {
         })),
       };
     });
-    const reservationDateTime = preOrder.reservationDateTime;
+
     return {
       totalPrice,
       createdAt,

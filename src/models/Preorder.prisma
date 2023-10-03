@@ -1,7 +1,7 @@
 model PreOrder{
     id Int @id @default(autoincrement())
     totalPrice Decimal
-    reservationDateTime DateTime?
+    reservationDateTime DateTime
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     cancelledAt DateTime?

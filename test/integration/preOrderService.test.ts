@@ -7,6 +7,7 @@ import * as Order from '@DTO/order.dto';
 import { Prisma } from '@prisma/client';
 import test400 from './400test';
 import seedValues from './seedValues';
+import { ErrorInterface } from '@DTO/index.dto';
 
 let app: FastifyInstance;
 
@@ -89,6 +90,21 @@ test('get preOrder', async () => {
       seedValues.menu[1].price
     ).toString()
   );
+});
+
+test('get not exist preOrder', async () => {
+  // preOrderService.test 에서 getPreOrder에서 preOrder가 없을 때 에러 발생
+  const response = await app.inject({
+    method: 'GET',
+    url: `/api/preorder/${100}`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+  });
+  expect(response.statusCode).toBe(404);
+  const body = JSON.parse(response.body) as ErrorInterface;
+  expect(body.message).toEqual('해당하는 주문이 없습니다.');
 });
 
 test('get preorder list', async () => {
