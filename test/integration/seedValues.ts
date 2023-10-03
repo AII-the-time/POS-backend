@@ -1,7 +1,7 @@
 const user = {
     id: 1,
     businessRegistrationNumber: '0123456789',
-    phoneNumber: '010-1234-5678',
+    phoneNumber: '01012345678',
 };
 
 const store = {

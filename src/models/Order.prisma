@@ -16,3 +16,14 @@ model Order{
     payment Payment[]
     preOrderId Int?
 }
+
+model OrderItem{
+    id Int @id @default(autoincrement())
+    count Int
+    detail String?
+    menuId Int
+    menu Menu @relation(fields: [menuId], references: [id])
+    orderId Int
+    order Order @relation(fields: [orderId], references: [id])
+    optionOrderItems OptionOrderItem[]
+}
