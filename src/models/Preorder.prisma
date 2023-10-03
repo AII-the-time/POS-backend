@@ -1,11 +1,24 @@
 model PreOrder{
     id Int @id @default(autoincrement())
     totalPrice Decimal
-    reservationDateTime DateTime?
+    phone String
+    memo String?
+    orderedFor DateTime
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     cancelledAt DateTime?
     storeId Int
     store Store @relation(fields: [storeId], references: [id])
     preOrderitems PreOrderItem[]
+}
+
+model PreOrderItem{
+    id Int @id @default(autoincrement())
+    count Int
+    detail String?
+    menuId Int
+    menu Menu @relation(fields: [menuId], references: [id])
+    preOrderId Int
+    preOrder PreOrder @relation(fields: [preOrderId], references: [id])
+    optionOrderItems OptionOrderItem[]
 }

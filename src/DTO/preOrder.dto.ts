@@ -13,7 +13,7 @@ export const newPreOrderSchema = {
   headers: StoreAuthorizationHeader,
   body: {
     type: 'object',
-    required: ['totalPrice', 'menus', 'reservationDateTime'],
+    required: ['totalPrice','phone', 'menus', 'orderedFor'],
     properties: {
       totalPrice: {
         type: 'string',
@@ -34,7 +34,9 @@ export const newPreOrderSchema = {
           },
         },
       },
-      reservationDateTime: {
+      phone: { type: 'string' },
+      memo: { type: 'string', nullable: true },
+      orderedFor: {
         type: 'string',
         format: 'date-time',
       },
@@ -75,17 +77,20 @@ export const getPreOrderSchema = {
       description: 'success response',
       required: [
         'totalPrice',
+        'totalCount',
         'createdAt',
-        'preOrderitems',
-        'reservationDateTime',
-        'preOrderId',
+        'orderedFor',
+        'phone',
+        'orderitems',
       ],
       properties: {
-        preOrderId: { type: 'number' },
         totalPrice: { type: 'string' },
+        totalCount: { type: 'number' },
         createdAt: { type: 'string', format: 'date-time' },
-        reservationDateTime: { type: 'string', format: 'date-time' },
-        preOrderitems: {
+        orderedFor: { type: 'string', format: 'date-time' },
+        phone: { type: 'string' },
+        memo: { type: 'string', nullable: true },
+        orderitems: {
           type: 'array',
           items: {
             type: 'object',
@@ -151,17 +156,20 @@ export const getPreOrderListSchema = {
             type: 'object',
             required: [
               'preOrderId',
-              'totalPrice',
-              'createdAt',
-              'reservationDateTime',
               'totalCount',
+              'totalPrice',
+              'phone',
+              'orderedFor',
+              'createdAt',
             ],
             properties: {
               preOrderId: { type: 'number' },
               totalPrice: { type: 'string' },
               createdAt: { type: 'string', format: 'date-time' },
-              reservationDateTime: { type: 'string', format: 'date-time' },
               totalCount: { type: 'number' },
+              phone: { type: 'string' },
+              memo: { type: 'string', nullable: true },
+              orderedFor: { type: 'string', format: 'date-time' },
             },
           },
         },
