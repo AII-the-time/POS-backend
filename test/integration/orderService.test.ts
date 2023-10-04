@@ -102,7 +102,7 @@ test('register mileage with not correct phone check', async () => {
       phone: notCorrectPhone,
     },
   });
-  expect(response.statusCode).toBe(409);
+  expect(response.statusCode).toBe(400);
   const body = JSON.parse(response.body) as ErrorInterface;
   expect(body.message).toBe('입력된 전화번호이(가) 양식과 맞지 않습니다.');
 });
@@ -320,7 +320,7 @@ test('pay without useMileage and saveMileage', async () => {
     },
   });
 
-  expect(response.statusCode).toBe(409);
+  expect(response.statusCode).toBe(400);
   const body = JSON.parse(response.body) as ErrorInterface;
   expect(body.message).toBe(
     '사용할 마일리지와 적립할 마일리지를 입력해주세요.'
