@@ -137,7 +137,7 @@ export const getPreOrderListSchema = {
       date: {
         type: 'string',
         format: 'date-time',
-        nullable: true,
+        default: new Date().toISOString(),
       },
     },
   },

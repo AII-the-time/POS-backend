@@ -64,6 +64,11 @@ export default {
       // test 이름은 get not exist preOrder
       throw new NotFoundError('해당하는 주문이 없습니다.', '주문');
     }
+    if (preOrder.storeId !== storeid) {
+      // preOrderService.test 에서 test
+      // test 이름은 get not match preOrder
+      throw new NotFoundError('해당하는 주문이 없습니다.', '주문');
+    }
     const totalPrice = preOrder.totalPrice.toString();
     const createdAt = preOrder.createdAt;
     const reservationDateTime = preOrder.reservationDateTime;
@@ -121,9 +126,7 @@ export default {
     const list = preOrders.map((preOrder) => ({
       totalPrice: preOrder.totalPrice.toString(),
       createdAt: preOrder.createdAt,
-      reservationDateTime:
-        preOrder.reservationDateTime ?? new Date(reservationDate),
-      // reservationDateTime이 null일 경우에 현재 에러가 발생하는데 이를 어떻게 처리하는 것이 좋은지 잘 모르겠음...
+      reservationDateTime: preOrder.reservationDateTime,
       preOrderId: preOrder.id,
       totalCount: preOrder.preOrderitems.reduce(
         (acc, cur) => acc + cur.count,

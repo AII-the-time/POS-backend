@@ -205,6 +205,48 @@ test('order', async () => {
   expect(body.orderId).toBeDefined();
 });
 
+let orderId2: number;
+test('order 2', async () => {
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/order`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: '2',
+    },
+    payload: {
+      totalPrice: Prisma.Decimal.sum(
+        Prisma.Decimal.mul(seedValues.menu[0].price, 2),
+        seedValues.menu[1].price
+      ),
+      menus: [
+        {
+          id: seedValues.menu[0].id,
+          count: 2,
+          options: [
+            seedValues.option[0].id,
+            seedValues.option[2].id,
+            seedValues.option[4].id,
+          ],
+        },
+        {
+          id: seedValues.menu[1].id,
+          count: 1,
+          options: [seedValues.option[0].id],
+          detail: '얼음 따로 포장해주세요',
+        },
+      ],
+    },
+  });
+
+  expect(response.statusCode).toBe(200);
+  const body = JSON.parse(
+    response.body
+  ) as Order.newOrderInterface['Reply']['200'];
+  orderId2 = body.orderId;
+  expect(body.orderId).toBeDefined();
+});
+
 test('not pay cause not enough mileage', async () => {
   const response = await app.inject({
     method: 'POST',
@@ -232,6 +274,59 @@ test('not pay cause not enough mileage', async () => {
   expect(body.message).toBe('마일리지가 부족합니다.');
 });
 
+test('pay with not exist mileage', async () => {
+  // orderService.test 에서 pay에서 마일리지가 없는 경우 에러 발생
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/order/pay`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    payload: {
+      orderId: orderId,
+      paymentMethod: 'CARD',
+      mileageId: 500,
+      useMileage: 500,
+      saveMileage: Prisma.Decimal.mul(
+        Prisma.Decimal.sum(
+          Prisma.Decimal.mul(seedValues.menu[0].price, 2),
+          seedValues.menu[1].price,
+          -500
+        ),
+        0.1
+      ),
+    },
+  });
+
+  expect(response.statusCode).toBe(404);
+  const body = JSON.parse(response.body) as ErrorInterface;
+  expect(body.message).toBe('해당하는 마일리지가 없습니다.');
+});
+
+test('pay without useMileage and saveMileage', async () => {
+  // orderService.test 에서 pay에서 사용할 마일리지와 저장할 마일리지 값이 없는 경우 에러 발생
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/order/pay`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    payload: {
+      orderId: orderId,
+      paymentMethod: 'CARD',
+      mileageId: mileageId,
+    },
+  });
+
+  expect(response.statusCode).toBe(409);
+  const body = JSON.parse(response.body) as ErrorInterface;
+  expect(body.message).toBe(
+    '사용할 마일리지와 적립할 마일리지를 입력해주세요.'
+  );
+});
+
 test('pay', async () => {
   const response = await app.inject({
     method: 'POST',
@@ -257,6 +352,66 @@ test('pay', async () => {
   });
 
   expect(response.statusCode).toBe(200);
+});
+
+test('pay again', async () => {
+  // orderService.test 에서 pay에서 orderId paymentStatus가 WAITING이 아닐 때 에러 발생
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/order/pay`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    payload: {
+      orderId: orderId,
+      paymentMethod: 'CARD',
+      mileageId: mileageId,
+      useMileage: 500,
+      saveMileage: Prisma.Decimal.mul(
+        Prisma.Decimal.sum(
+          Prisma.Decimal.mul(seedValues.menu[0].price, 2),
+          seedValues.menu[1].price,
+          -500
+        ),
+        0.1
+      ),
+    },
+  });
+
+  expect(response.statusCode).toBe(404);
+  const body = JSON.parse(response.body) as ErrorInterface;
+  expect(body.message).toBe('이미 결제된 주문입니다.');
+});
+
+test('pay not exist order', async () => {
+  // orderService.test 에서 pay에서 없는 order를 결제할 때 에러 발생
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/order/pay`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    payload: {
+      orderId: 100,
+      paymentMethod: 'CARD',
+      mileageId: mileageId,
+      useMileage: 500,
+      saveMileage: Prisma.Decimal.mul(
+        Prisma.Decimal.sum(
+          Prisma.Decimal.mul(seedValues.menu[0].price, 2),
+          seedValues.menu[1].price,
+          -500
+        ),
+        0.1
+      ),
+    },
+  });
+
+  expect(response.statusCode).toBe(404);
+  const body = JSON.parse(response.body) as ErrorInterface;
+  expect(body.message).toBe('해당하는 주문이 없습니다.');
 });
 
 //TODO: milage 없는 경우, 이미 결제된 주문을 다시 결제하는 경우 테스트 필요
@@ -303,6 +458,36 @@ test('get order', async () => {
       0.1
     ).toString()
   );
+});
+
+test('get not exist order', async () => {
+  // orderService.test 에서 getOrder에서 order가 없을 때 에러 발생
+  const response = await app.inject({
+    method: 'GET',
+    url: `/api/order/${100}`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+  });
+  expect(response.statusCode).toBe(404);
+  const body = JSON.parse(response.body) as ErrorInterface;
+  expect(body.message).toEqual('해당하는 주문이 없습니다.');
+});
+
+test('get order but wrong storeId', async () => {
+  // orderService.test 에서 getOrder에서 order가 없을 때 에러 발생
+  const response = await app.inject({
+    method: 'GET',
+    url: `/api/order/${orderId2}`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+  });
+  expect(response.statusCode).toBe(404);
+  const body = JSON.parse(response.body) as ErrorInterface;
+  expect(body.message).toEqual('해당하는 주문이 없습니다.');
 });
 
 test('get order list', async () => {
