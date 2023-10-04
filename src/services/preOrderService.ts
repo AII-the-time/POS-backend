@@ -105,13 +105,10 @@ export default {
     { storeid }: { storeid: number },
     { page, count, date }: PreOrder.getPreOrderListInterface['Querystring']
   ): Promise<PreOrder.getPreOrderListInterface['Reply']['200']> {
-    const reservationDate = date ? new Date(date) : new Date();
+    const reservationDate = new Date(date);
     const krDate = new Date(reservationDate.getTime() + 9 * 60 * 60 * 1000);
     const krDateStr = new Date(krDate.toISOString().split('T')[0]);
     const krDateEnd = new Date(krDateStr.getTime() + 24 * 60 * 60 * 1000);
-
-    if (count === undefined || count === null) count = 10;
-    if (page === undefined || page === null) page = 1;
 
     const preOrders = await prisma.preOrder.findMany({
       where: {

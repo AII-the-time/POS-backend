@@ -1,10 +1,10 @@
 import { FastifyRequest,FastifyReply,FastifyError} from "fastify";
-import { ErrorWithToast } from "@errors";
+import { ErrorWithToast, ValidationError } from "@errors";
 import ErrorConfig from "@errors/config";
 export default (request: FastifyRequest, reply: FastifyReply, error: FastifyError &{toast?:string}) => {
     if(!(error instanceof ErrorWithToast)){
         if(error.validation){
-            error.toast = '누락된 정보가 있습니다.';
+            error.toast = ErrorConfig.find((config) => config.error === ValidationError)?.toast(error);
             return reply.code(400).send(error);
         }
         error.toast = '알 수 없는 에러가 발생했습니다.';

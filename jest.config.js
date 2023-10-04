@@ -2,7 +2,7 @@
 export default {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  collectCoverageFrom: ['src/**/*.[jt]s?(x)', '!**/*.d.ts'],
+  collectCoverageFrom: ['src/**/*.[jt]s?(x)', '!**/*.d.ts','!src/index.ts','!src/loaders/index.ts'],
   moduleNameMapper: {
     "^@api$": "<rootDir>/src/api",
     "^@config$": "<rootDir>/src/config",
