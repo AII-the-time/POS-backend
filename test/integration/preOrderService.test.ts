@@ -28,6 +28,8 @@ test('400 test', async () => {
   ]);
 });
 
+const preOrderCustomerPhone = '01074185263';
+const current = new Date().toISOString();
 let preOrderId: number;
 test('preOrder', async () => {
   const response = await app.inject({
@@ -38,7 +40,9 @@ test('preOrder', async () => {
       storeid: seedValues.store.id.toString(),
     },
     payload: {
-      reservationDateTime: '2023-09-18T10:01:12.301Z',
+      phone: preOrderCustomerPhone,
+      memo: '얼음 따로 포장해주세요',
+      orderedFor: current,
       totalPrice: Prisma.Decimal.sum(
         Prisma.Decimal.mul(seedValues.menu[0].price, 2),
         seedValues.menu[1].price
@@ -77,10 +81,12 @@ test('preOrder 2', async () => {
     url: `/api/preorder`,
     headers: {
       authorization: `Bearer ${accessToken}`,
-      storeid: '2',
+      storeid: seedValues.store2.id.toString(),
     },
     payload: {
-      reservationDateTime: '2023-09-18T10:01:12.303Z',
+      phone: preOrderCustomerPhone,
+      memo: '얼음 따로 포장해주세요',
+      orderedFor: current,
       totalPrice: Prisma.Decimal.sum(
         Prisma.Decimal.mul(seedValues.menu[0].price, 2),
         seedValues.menu[1].price
@@ -147,7 +153,7 @@ test('get not exist preOrder', async () => {
   });
   expect(response.statusCode).toBe(404);
   const body = JSON.parse(response.body) as ErrorInterface;
-  expect(body.message).toEqual('해당하는 주문이 없습니다.');
+  expect(body.message).toEqual('해당하는 예약 주문이 없습니다.');
 });
 
 test('get exist preOrder but wrong storeId', async () => {
@@ -162,13 +168,13 @@ test('get exist preOrder but wrong storeId', async () => {
   });
   expect(response.statusCode).toBe(404);
   const body = JSON.parse(response.body) as ErrorInterface;
-  expect(body.message).toEqual('해당하는 주문이 없습니다.');
+  expect(body.message).toEqual('해당하는 예약 주문이 없습니다.');
 });
 
 test('get preorder list', async () => {
   const response = await app.inject({
     method: 'GET',
-    url: `/api/preorder?page=1&count=10&date=2023-09-18T10:01:12.301Z`,
+    url: `/api/preorder?page=1&count=10&date=${current}`,
 
     headers: {
       authorization: `Bearer ${accessToken}`,
@@ -179,7 +185,6 @@ test('get preorder list', async () => {
   const body = JSON.parse(
     response.body
   ) as PreOrder.getPreOrderListInterface['Reply']['200'];
-  if (body.preOrders.length === 0) return;
   expect(body.preOrders.length).toBeGreaterThan(0);
   const order = body.preOrders[0];
   expect(order.preOrderId).toEqual(preOrderId);
@@ -208,12 +213,13 @@ test('get preorder list without date', async () => {
 });
 
 test('preOrder to order', async () => {
-  preOrderData.preOrderitems.forEach((item: any) => {
+  const orderMenus = preOrderData.orderitems.map((item: any) => {
     let optionList: any[] = [];
     item.options.forEach((option: any) => {
       optionList.push(option.id);
     });
     item.options = optionList;
+    return item;
   }); //각 options의 id만 배열로 바꿔줌
   const response = await app.inject({
     method: 'POST',
@@ -225,7 +231,7 @@ test('preOrder to order', async () => {
     payload: {
       preOrderId: preOrderId,
       totalPrice: preOrderData.totalPrice,
-      menus: preOrderData.preOrderitems,
+      menus: orderMenus,
     },
   });
   expect(response.statusCode).toBe(200);

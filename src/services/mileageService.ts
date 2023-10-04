@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { NotFoundError, NotCorrectTypeError, ExistError } from '@errors';
+import checkPhoneNumber from '@utils/checkPhoneNumber';
 import * as Mileage from '@DTO/mileage.dto';
 const prisma = new PrismaClient();
 
@@ -25,7 +26,7 @@ export default {
     { storeid }: { storeid: number },
     { phone }: Mileage.registerMileageInterface['Body']
   ): Promise<Mileage.registerMileageInterface['Reply']['200']> {
-    if (phone.length !== 13) {
+    if (!checkPhoneNumber(phone)) {
       throw new NotCorrectTypeError(
         '입력된 전화번호이(가) 양식과 맞지 않습니다.',
         '전화번호'

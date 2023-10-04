@@ -40,7 +40,7 @@ const ErrorConfig: ErrorConfigType = [
   {
     describtion: '입력된 값이 양식에 맞지 않습니다.',
     error: E.NotCorrectTypeError,
-    code: 409,
+    code: 400,
     toast: (error: E.NotCorrectTypeError) =>
       `입력된 ${error.unCorrect}이(가) 양식과 맞지 않습니다.`,
   },
