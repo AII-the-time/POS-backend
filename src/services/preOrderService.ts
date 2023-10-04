@@ -106,7 +106,7 @@ export default {
     { page, count, date }: PreOrder.getPreOrderListInterface['Querystring']
   ): Promise<PreOrder.getPreOrderListInterface['Reply']['200']> {
     const reservationDate = new Date(date);
-    const krDate = new Date(reservationDate.getTime() + 9 * 60 * 60 * 1000);
+    const krDate = new Date(reservationDate.getTime() - 9 * 60 * 60 * 1000);
     const krDateStr = new Date(krDate.toISOString().split('T')[0]);
     const krDateEnd = new Date(krDateStr.getTime() + 24 * 60 * 60 * 1000);
 

@@ -184,8 +184,8 @@ export default {
         ? undefined
         : {
             mileageId: order.mileageId,
-            use: order.useMileage?.toString() ?? '0',
-            save: order.saveMileage?.toString() ?? '0',
+            use: order.useMileage!.toString(),
+            save: order.saveMileage!.toString(),
           };
 
     return { paymentStatus, totalPrice, createdAt, orderitems, pay, mileage };
@@ -194,14 +194,18 @@ export default {
     { storeid }: { storeid: number },
     { page, endPage, count, date }: Order.getOrderListInterface['Querystring']
   ): Promise<Order.getOrderListInterface['Reply']['200']> {
-    const splitDate = date
-      ? date.split('T')
-      : new Date().toISOString().split('T');
-    const orderDate = splitDate[0] + 'T00:00:00.000Z';
+    const orderDate = new Date(date);
+    const krDate = new Date(orderDate.getTime() - 9 * 60 * 60 * 1000);
+    const krDateStr = new Date(krDate.toISOString().split('T')[0]);
+    const krDateEnd = new Date(krDateStr.getTime() + 24 * 60 * 60 * 1000);
+
     const orders = await prisma.order.findMany({
       where: {
         storeId: storeid,
-        createdAt: { gte: orderDate },
+        createdAt: {
+          gte: krDateStr,
+          lt: krDateEnd,
+        },
       },
       orderBy: {
         createdAt: 'desc',

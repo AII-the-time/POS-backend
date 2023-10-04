@@ -144,6 +144,7 @@ export const getOrderListSchema = {
   headers: StoreAuthorizationHeader,
   querystring: {
     type: 'object',
+    required: ['page', 'count', 'date'],
     properties: {
       page: { type: 'number', default: 1 },
       endPage: { type: 'number', default: 1 },
