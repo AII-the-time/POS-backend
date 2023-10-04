@@ -74,6 +74,40 @@ test('preOrder', async () => {
   expect(body.preOrderId).toBeDefined();
 });
 
+let preOrderWithoutMemoId: number;
+test('preOrder without memo', async () => {
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/preorder`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    payload: {
+      phone: preOrderCustomerPhone,
+      orderedFor: current,
+      totalPrice: Prisma.Decimal.mul(seedValues.menu[0].price, 3),
+      menus: [
+        {
+          id: seedValues.menu[0].id,
+          count: 3,
+          options: [
+            seedValues.option[0].id,
+            seedValues.option[2].id,
+            seedValues.option[4].id,
+          ],
+        }
+      ],
+    },
+  });
+  expect(response.statusCode).toBe(200);
+  const body = JSON.parse(
+    response.body
+  ) as PreOrder.newPreOrderInterface['Reply']['200'];
+  expect(body.preOrderId).toBeDefined();
+  preOrderWithoutMemoId = body.preOrderId;
+});
+
 let preOrderId2: number;
 test('preOrder 2', async () => {
   const response = await app.inject({
@@ -141,6 +175,25 @@ test('get preOrder', async () => {
   );
 });
 
+test('get preOrder without memo', async () => {
+  const response = await app.inject({
+    method: 'GET',
+    url: `/api/preorder/${preOrderWithoutMemoId}`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+  });
+  expect(response.statusCode).toBe(200);
+  const body = JSON.parse(
+    response.body
+  ) as PreOrder.getPreOrderInterface['Reply']['200'];
+  expect(body.totalPrice).toEqual(
+      Prisma.Decimal.mul(seedValues.menu[0].price, 3).toString()
+  );
+  expect(body.memo).toEqual("");
+});
+
 test('get not exist preOrder', async () => {
   // preOrderService.test 에서 getPreOrder에서 preOrder가 없을 때 에러 발생
   const response = await app.inject({
@@ -186,15 +239,15 @@ test('get preorder list', async () => {
     response.body
   ) as PreOrder.getPreOrderListInterface['Reply']['200'];
   expect(body.preOrders.length).toBeGreaterThan(0);
-  const order = body.preOrders[0];
+  const order = body.preOrders[1];
   expect(order.preOrderId).toEqual(preOrderId);
   expect(order.totalCount).toEqual(3);
 });
 
-test('get preorder list without date', async () => {
+test('get preorder list without options', async () => {
   const response = await app.inject({
     method: 'GET',
-    url: `/api/preorder?page=1&count=10`,
+    url: `/api/preorder`,
 
     headers: {
       authorization: `Bearer ${accessToken}`,
@@ -207,7 +260,7 @@ test('get preorder list without date', async () => {
   ) as PreOrder.getPreOrderListInterface['Reply']['200'];
   if (body.preOrders.length === 0) return;
   expect(body.preOrders.length).toBeGreaterThan(0);
-  const order = body.preOrders[0];
+  const order = body.preOrders[1];
   expect(order.preOrderId).toEqual(preOrderId);
   expect(order.totalCount).toEqual(3);
 });

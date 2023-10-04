@@ -48,16 +48,12 @@ export default {
     const certificatedPhone = CertificatedPhoneToken.decode(
       certificatedPhoneToken
     );
-    try {
-      return await prisma.user.create({
-        data: {
-          businessRegistrationNumber: businessRegistrationNumber,
-          phoneNumber: certificatedPhone.phone,
-        },
-      });
-    } catch (e) {
-      throw new Error('db error');
-    }
+    return await prisma.user.create({
+      data: {
+        businessRegistrationNumber: businessRegistrationNumber,
+        phoneNumber: certificatedPhone.phone,
+      },
+    });
   },
 
   async login({
@@ -80,14 +76,10 @@ export default {
       },
     });
     if (!user) {
-      try {
-        user = await this.create({
-          businessRegistrationNumber,
-          certificatedPhoneToken,
-        });
-      } catch (e) {
-        throw e;
-      }
+      user = await this.create({
+        businessRegistrationNumber,
+        certificatedPhoneToken,
+      });
     }
 
     const loginToken = new LoginToken(user.id);

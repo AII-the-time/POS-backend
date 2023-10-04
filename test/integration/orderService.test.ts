@@ -70,6 +70,44 @@ test('register mileage without storeid header', async () => {
   expect(body.message).toBe('헤더에 storeid가 없습니다');
 });
 
+test('register mileage without storeid header', async () => {
+  // api 폴더 hooks 폴더 checkStoreIdUser.ts 에서 에러 체크
+  // 잘못된 토큰 확인
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/mileage`,
+    headers: {
+      authorization: `Bearer ${accessToken}1`,
+      storeid: seedValues.store.id.toString(),
+    },
+    payload: {
+      phone: customerPhone,
+    },
+  });
+  expect(response.statusCode).toBe(401);
+  const body = JSON.parse(response.body) as ErrorInterface;
+  expect(body.message).toBe('유저 인증에 실패했습니다');
+});
+
+test('register mileage without storeid header', async () => {
+  // api 폴더 hooks 폴더 checkStoreIdUser.ts 에서 에러 체크
+  // 잘못된 스토어 아이디 확인
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/mileage`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: '123242214',
+    },
+    payload: {
+      phone: customerPhone,
+    },
+  });
+  expect(response.statusCode).toBe(401);
+  const body = JSON.parse(response.body) as ErrorInterface;
+  expect(body.message).toBe('가게 인증에 실패했습니다');
+});
+
 test('register mileage', async () => {
   const response = await app.inject({
     method: 'POST',

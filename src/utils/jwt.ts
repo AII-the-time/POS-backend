@@ -33,23 +33,16 @@ export class TokenForCertificatePhone {
     phone: string,
     certificationCode: string
   ): boolean {
-    try {
-      const decoded = jwt.verify(
-        token,
-        config.jwtSecretKey
-      ) as TokenForCertificatePhone;
-      const hash = crypto.createHash('sha512');
-      hash.update(`${phone}${certificationCode}${config.salt}`);
-      const encryptedCertificationCode = hash.digest('hex');
-      if (decoded.encryptedCertificationCode == encryptedCertificationCode) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch (err) {
-      //TODO: 에러 타입마다 다른 처리
-      return false;
-    }
+    const decoded = jwt.verify(
+      token,
+      config.jwtSecretKey
+    ) as TokenForCertificatePhone;
+    const hash = crypto.createHash('sha512');
+    hash.update(`${phone}${certificationCode}${config.salt}`);
+    const encryptedCertificationCode = hash.digest('hex');
+    if (decoded.encryptedCertificationCode == encryptedCertificationCode)
+      return true;
+    return false;
   }
 }
 

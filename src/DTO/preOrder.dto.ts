@@ -135,9 +135,9 @@ export const getPreOrderListSchema = {
   headers: StoreAuthorizationHeader,
   querystring: {
     type: 'object',
+    required: ['page', 'count', 'date'],
     properties: {
       page: { type: 'number', default: 1 },
-      endPage: { type: 'number', default: 1 },
       count: { type: 'number', default: 10 },
       date: {
         type: 'string',
@@ -150,8 +150,9 @@ export const getPreOrderListSchema = {
     200: {
       type: 'object',
       description: 'success response',
-      required: ['preOrders'],
+      required: ['preOrders', 'endPage'],
       properties: {
+        endPage: { type: 'number' },
         preOrders: {
           type: 'array',
           items: {
