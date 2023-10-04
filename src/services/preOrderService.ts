@@ -11,7 +11,7 @@ export default {
       totalPrice,
       phone,
       memo,
-      orderedFor
+      orderedFor,
     }: PreOrder.newPreOrderInterface['Body']
   ): Promise<PreOrder.newPreOrderInterface['Reply']['200']> {
     const preOrder = await prisma.preOrder.create({
@@ -65,10 +65,13 @@ export default {
       },
     });
     if (preOrder === null) {
-      throw new NotFoundError('주문이 존재하지 않습니다.');
+      throw new NotFoundError('해당하는 예약 주문이 없습니다.', '예약 주문');
     }
     const totalPrice = preOrder.totalPrice.toString();
-    const totalCount = preOrder.preOrderitems.reduce((acc, cur) => acc + cur.count,0);
+    const totalCount = preOrder.preOrderitems.reduce(
+      (acc, cur) => acc + cur.count,
+      0
+    );
     const createdAt = preOrder.createdAt;
     const orderedFor = preOrder.orderedFor;
     const phone = preOrder.phone;
@@ -94,25 +97,21 @@ export default {
       orderedFor,
       phone,
       memo,
-      orderitems
+      orderitems,
     };
   },
 
   async getPreOrderList(
     { storeid }: { storeid: number },
-    {
-      page,
-      count,
-      date,
-    }: PreOrder.getPreOrderListInterface['Querystring']
+    { page, count, date }: PreOrder.getPreOrderListInterface['Querystring']
   ): Promise<PreOrder.getPreOrderListInterface['Reply']['200']> {
     const reservationDate = date ? new Date(date) : new Date();
     const krDate = new Date(reservationDate.getTime() + 9 * 60 * 60 * 1000);
     const krDateStr = new Date(krDate.toISOString().split('T')[0]);
     const krDateEnd = new Date(krDateStr.getTime() + 24 * 60 * 60 * 1000);
-  
-    if(count === undefined || count === null) count = 10;
-    if(page === undefined || page === null) page = 1;
+
+    if (count === undefined || count === null) count = 10;
+    if (page === undefined || page === null) page = 1;
 
     const preOrders = await prisma.preOrder.findMany({
       where: {
@@ -120,7 +119,7 @@ export default {
         createdAt: {
           gte: krDateStr,
           lt: krDateEnd,
-        }
+        },
       },
       orderBy: {
         createdAt: 'desc',
@@ -139,21 +138,24 @@ export default {
           createdAt: {
             gte: krDateStr,
             lt: krDateEnd,
-          }
+          },
         },
       })) / count
     );
 
     const list = preOrders.map((preOrder) => ({
       preOrderId: preOrder.id,
-      totalCount: preOrder.preOrderitems.reduce((acc, cur) => acc + cur.count,0),
+      totalCount: preOrder.preOrderitems.reduce(
+        (acc, cur) => acc + cur.count,
+        0
+      ),
       totalPrice: preOrder.totalPrice.toString(),
       phone: preOrder.phone,
       memo: preOrder.memo ?? '',
       createdAt: preOrder.createdAt,
       orderedFor: preOrder.orderedFor,
     }));
-    return { 
+    return {
       preOrders: list,
       endPage,
     };

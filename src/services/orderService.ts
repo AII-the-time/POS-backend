@@ -1,5 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import * as Order from '@DTO/order.dto';
+import { NotFoundError, NotCorrectTypeError, NotEnoughError } from '@errors';
 const prisma = new PrismaClient();
 
 export default {
@@ -52,10 +53,14 @@ export default {
       },
     });
     if (order === null) {
-      throw new Error('주문이 존재하지 않습니다.');
+      // orderService.test 에서 test
+      // test 이름은 pay not exist order
+      throw new NotFoundError('해당하는 주문이 없습니다.', '주문');
     }
     if (order.paymentStatus !== 'WAITING') {
-      throw new Error('이미 결제된 주문입니다.');
+      // orderService.test 에서 test
+      // test 이름은 pay again
+      throw new NotFoundError('이미 결제된 주문입니다.', '결제 예정 주문');
     }
 
     if (mileageId !== undefined && mileageId !== null) {
@@ -65,10 +70,9 @@ export default {
         },
       });
       if (mileage === null) {
-        throw new Error('마일리지가 존재하지 않습니다.');
-      }
-      if (mileage.storeId !== storeid) {
-        throw new Error('마일리지가 존재하지 않습니다.');
+        // orderService.test 에서 test
+        // test 이름은 pay with not exist mileage
+        throw new NotFoundError('해당하는 마일리지가 없습니다.', '마일리지');
       }
       if (
         useMileage === undefined ||
@@ -76,12 +80,15 @@ export default {
         useMileage === null ||
         saveMileage === null
       ) {
-        throw new Error('사용할 마일리지와 적립할 마일리지를 입력해주세요.');
+        // orderService.test 에서 test
+        // test 이름은 pay without useMileage and saveMileage
+        throw new NotCorrectTypeError(
+          '사용할 마일리지와 적립할 마일리지를 입력해주세요.',
+          '사용할 마일리지와 적립할 마일리지'
+        );
       }
-      if (
-        mileage.mileage.comparedTo(useMileage) < 0
-      ) {
-        throw new Error('마일리지가 부족합니다.');
+      if (mileage.mileage.comparedTo(useMileage) < 0) {
+        throw new NotEnoughError('마일리지가 부족합니다.');
       }
       await prisma.mileage.update({
         where: {
@@ -142,10 +149,12 @@ export default {
       },
     });
     if (order === null) {
-      throw new Error('주문이 존재하지 않습니다.');
+      // orderService.test 에서 test
+      // test 이름은 get not exist order
+      throw new NotFoundError('해당하는 주문이 없습니다.', '주문');
     }
     if (order.storeId !== storeid) {
-      throw new Error('주문이 존재하지 않습니다.');
+      throw new NotFoundError('해당하는 주문이 없습니다.', '주문');
     }
 
     const paymentStatus = order.paymentStatus as

@@ -32,6 +32,29 @@ async function main() {
     },
   }); //store id 1
 
+  const store2 = await prisma.store.create({
+    data: {
+      id: 2,
+      userId: 1,
+      name: '소예다방',
+      address: '고려대 근처',
+      defaultOpeningHours: [
+        {
+          yoil: '일',
+          start: null,
+          end: null, //휴무일은 시작시간과 종료시간 모두 null 이어야함
+        },
+        {
+          yoil: '월',
+          start: '09:00',
+          end: '18:00',
+        },
+      ],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  }); //store id 2
+
   const category1 = await prisma.category.create({
     data: {
       id: 1,
@@ -60,43 +83,43 @@ async function main() {
         optionName: 'ice',
         optionPrice: 0,
         optionCategory: '온도',
-        storeId: 1
+        storeId: 1,
       },
       {
         optionName: 'hot',
         optionPrice: 0,
         optionCategory: '온도',
-        storeId: 1
+        storeId: 1,
       },
       {
         optionName: '케냐',
         optionPrice: 0,
         optionCategory: '원두',
-        storeId: 1
+        storeId: 1,
       },
       {
         optionName: '콜롬비아',
         optionPrice: 300,
         optionCategory: '원두',
-        storeId: 1
+        storeId: 1,
       },
       {
         optionName: '1샷 추가',
         optionPrice: 500,
         optionCategory: '샷',
-        storeId: 1
+        storeId: 1,
       },
       {
         optionName: '연하게',
         optionPrice: 0,
         optionCategory: '샷',
-        storeId: 1
+        storeId: 1,
       },
-    ].map(async (option,index) => {
+    ].map(async (option, index) => {
       return await prisma.option.create({
         data: {
-          id: index+1,
-          ...option
+          id: index + 1,
+          ...option,
         },
       });
     })
@@ -131,27 +154,25 @@ async function main() {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-    ].map(async (menu,index) => {
+    ].map(async (menu, index) => {
       return await prisma.menu.create({
-        data: {id:index+1,...menu},
+        data: { id: index + 1, ...menu },
       });
     })
   );
 
   await Promise.all(
     menu.flatMap((menu) => {
-      return option.map((option) =>
-        {
-          if(menu.name==='아이스티' && option.optionName==='hot') return;
-          if(menu.name==='아이스티' && option.optionName==='연하게') return;
-          return prisma.optionMenu.create({
-            data: {
-              menuId: menu.id,
-              optionId: option.id,
-            },
-          })
-        }
-      );
+      return option.map((option) => {
+        if (menu.name === '아이스티' && option.optionName === 'hot') return;
+        if (menu.name === '아이스티' && option.optionName === '연하게') return;
+        return prisma.optionMenu.create({
+          data: {
+            menuId: menu.id,
+            optionId: option.id,
+          },
+        });
+      });
     })
   );
 

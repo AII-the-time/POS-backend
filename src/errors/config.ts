@@ -47,8 +47,20 @@ const ErrorConfig: ErrorConfigType = [
   {
     describtion: '이미 등록된 값이 있습니다.',
     error: E.ExistError,
-    code: 409, // 추후 이 에러 409로 바꿔야함. 현재 409로 변경할 경우 에러 발생. 이슈에 있음
+    code: 409,
     toast: (error: E.ExistError) => `입력된 ${error.exist}가 이미 존재합니다.`,
+  },
+  {
+    describtion: '잔액이 부족합니다.',
+    error: E.NotEnoughError,
+    code: 403,
+    toast: (error: E.NotEnoughError) => `잔액이 부족합니다.`,
+  },
+  {
+    describtion: '토큰이 유효하지 않습니다.',
+    error: E.UncorrectTokenError,
+    code: 403,
+    toast: (error: E.UncorrectTokenError) => '토큰이 유효하지 않습니다.',
   },
 ];
 export default ErrorConfig;

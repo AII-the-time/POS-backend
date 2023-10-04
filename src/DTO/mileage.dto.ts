@@ -28,7 +28,12 @@ export const getMileageSchema = {
         mileage: { type: 'string' },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
   },
 } as const;
 
@@ -52,7 +57,13 @@ export const registerMileageSchema = {
         mileageId: { type: 'number' },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError,E.ExistError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError,
+      E.ExistError
+    ),
   },
 } as const;
 
@@ -77,7 +88,12 @@ export const saveMileageSchema = {
         mileage: { type: 'string' },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
   },
 } as const;
 

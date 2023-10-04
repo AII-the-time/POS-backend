@@ -13,7 +13,7 @@ export const newPreOrderSchema = {
   headers: StoreAuthorizationHeader,
   body: {
     type: 'object',
-    required: ['totalPrice','phone', 'menus', 'orderedFor'],
+    required: ['totalPrice', 'phone', 'menus', 'orderedFor'],
     properties: {
       totalPrice: {
         type: 'string',
@@ -55,7 +55,8 @@ export const newPreOrderSchema = {
       E.NotFoundError,
       E.UserAuthorizationError,
       E.StoreAuthorizationError,
-      E.NoAuthorizationInHeaderError
+      E.NoAuthorizationInHeaderError,
+      E.NotCorrectTypeError
     ),
   },
 } as const;
@@ -122,7 +123,8 @@ export const getPreOrderSchema = {
       E.NotFoundError,
       E.UserAuthorizationError,
       E.StoreAuthorizationError,
-      E.NoAuthorizationInHeaderError
+      E.NoAuthorizationInHeaderError,
+      E.NotCorrectTypeError
     ),
   },
 } as const;
@@ -140,7 +142,7 @@ export const getPreOrderListSchema = {
       date: {
         type: 'string',
         format: 'date-time',
-        nullable: true,
+        default: new Date().toISOString(),
       },
     },
   },
@@ -179,7 +181,8 @@ export const getPreOrderListSchema = {
       E.NotFoundError,
       E.UserAuthorizationError,
       E.StoreAuthorizationError,
-      E.NoAuthorizationInHeaderError
+      E.NoAuthorizationInHeaderError,
+      E.NotCorrectTypeError
     ),
   },
 } as const;
