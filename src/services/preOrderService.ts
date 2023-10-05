@@ -78,7 +78,7 @@ export default {
     const memo = preOrder.memo ?? '';
     const orderitems = preOrder.preOrderitems.map((orderitem) => {
       return {
-        id: orderitem.id,
+        id: orderitem.menu.id,
         count: orderitem.count,
         price: orderitem.menu.price.toString(),
         menuName: orderitem.menu.name,
