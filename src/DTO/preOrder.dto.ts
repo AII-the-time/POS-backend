@@ -150,7 +150,7 @@ export const getPreOrderListSchema = {
     200: {
       type: 'object',
       description: 'success response',
-      required: ['preOrders', 'endPage'],
+      required: ['preOrders', 'lastPage', 'totalPreOrderCount'],
       properties: {
         endPage: { type: 'number' },
         preOrders: {

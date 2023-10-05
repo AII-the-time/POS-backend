@@ -10,6 +10,7 @@ model PreOrder{
     storeId Int
     store Store @relation(fields: [storeId], references: [id])
     preOrderitems PreOrderItem[]
+    order Order?
 }
 
 model PreOrderItem{

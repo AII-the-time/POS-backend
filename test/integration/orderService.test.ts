@@ -35,7 +35,7 @@ test('400 test', async () => {
 const customerPhone = '01043218765';
 const existPhone = '01023456789';
 const notCorrectPhone = '010-1234-567';
-const current = new Date().toISOString();
+const current = () => new Date().toISOString();
 let mileageId: number;
 test('mileage', async () => {
   const response = await app.inject({
@@ -562,7 +562,7 @@ test('get order but wrong storeId', async () => {
 test('get order list', async () => {
   const response = await app.inject({
     method: 'GET',
-    url: `/api/order?page=1&count=10&date=${current}`,
+    url: `/api/order?page=1&count=10&date=${current()}`,
 
     headers: {
       authorization: `Bearer ${accessToken}`,

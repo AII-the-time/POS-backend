@@ -47,6 +47,7 @@ export default {
     const order = await prisma.order.findUnique({
       where: {
         id: orderId,
+        storeId: storeid,
       },
       include: {
         payment: true,
@@ -187,12 +188,12 @@ export default {
             use: order.useMileage!.toString(),
             save: order.saveMileage!.toString(),
           };
-
-    return { paymentStatus, totalPrice, createdAt, orderitems, pay, mileage };
+    const isPreOrdered = order.preOrderId !== null;
+    return { paymentStatus, totalPrice, createdAt, orderitems, pay, mileage, isPreOrdered };
   },
   async getOrderList(
     { storeid }: { storeid: number },
-    { page, endPage, count, date }: Order.getOrderListInterface['Querystring']
+    { page, count, date }: Order.getOrderListInterface['Querystring']
   ): Promise<Order.getOrderListInterface['Reply']['200']> {
     const reservationDate = new Date(date);
     const krDate = new Date(reservationDate.getTime() + 9 * 60 * 60 * 1000);
@@ -212,7 +213,7 @@ export default {
       orderBy: {
         createdAt: 'desc',
       },
-      skip: (page! - 1) * count!,
+      skip: (page - 1) * count,
       take: count,
       include: {
         payment: true,
@@ -234,7 +235,20 @@ export default {
       totalPrice: order.totalPrice.toString(),
       createdAt: order.createdAt,
       orderId: order.id,
+      isPreOrdered: order.preOrderId !== null,
     }));
-    return { orders: list };
+
+    const totalOrderCount = await prisma.order.count({
+      where: {
+        storeId: storeid,
+        createdAt: {
+          gte: krDateStr,
+          lt: krDateEnd,
+        },
+      },
+    });
+
+    const lastPage = Math.ceil(totalOrderCount / count);
+    return { orders: list, lastPage, totalOrderCount };
   },
 };

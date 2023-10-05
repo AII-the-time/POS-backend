@@ -112,35 +112,39 @@ export default {
     const utcDateStr = new Date(krDateStr.getTime() - 9 * 60 * 60 * 1000);
     const utcDateEnd = new Date(krDateEnd.getTime() - 9 * 60 * 60 * 1000);
 
-    const preOrders = await prisma.preOrder.findMany({
-      where: {
-        storeId: storeid,
-        createdAt: {
-          gte: utcDateStr,
-          lt: utcDateEnd,
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      skip: (page - 1) * count,
-      take: count,
-      include: {
-        preOrderitems: true,
-      },
-    });
-
-    const endPage = Math.ceil(
-      (await prisma.preOrder.count({
+    const [preOrders, totalPreOrderCount] = await Promise.all([
+      prisma.preOrder.findMany({
         where: {
           storeId: storeid,
-          createdAt: {
-            gte: krDateStr,
-            lt: krDateEnd,
+          orderedFor: {
+            gte: utcDateStr,
+            lt: utcDateEnd,
+          },
+          order:{
+            is: null
+          }
+        },
+        orderBy: {
+          orderedFor: 'desc',
+        },
+        skip: (page - 1) * count,
+        take: count,
+        include: {
+          preOrderitems: true,
+        },
+      }),
+      prisma.preOrder.count({
+        where: {
+          storeId: storeid,
+          orderedFor: {
+            gte: utcDateStr,
+            lt: utcDateEnd,
           },
         },
-      })) / count
-    );
+      })
+    ]);
+
+    const lastPage = Math.ceil(totalPreOrderCount / count);
 
     const list = preOrders.map((preOrder) => ({
       preOrderId: preOrder.id,
@@ -154,9 +158,11 @@ export default {
       createdAt: preOrder.createdAt,
       orderedFor: preOrder.orderedFor,
     }));
+
     return {
       preOrders: list,
-      endPage,
+      lastPage,
+      totalPreOrderCount
     };
   },
 };
