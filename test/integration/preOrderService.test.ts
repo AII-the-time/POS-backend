@@ -29,7 +29,7 @@ test('400 test', async () => {
 });
 
 const preOrderCustomerPhone = '01074185263';
-const current = new Date().toISOString();
+const current = () => new Date().toISOString();
 let preOrderId: number;
 test('preOrder', async () => {
   const response = await app.inject({
@@ -42,7 +42,7 @@ test('preOrder', async () => {
     payload: {
       phone: preOrderCustomerPhone,
       memo: '얼음 따로 포장해주세요',
-      orderedFor: current,
+      orderedFor: current(),
       totalPrice: Prisma.Decimal.sum(
         Prisma.Decimal.mul(seedValues.menu[0].price, 2),
         seedValues.menu[1].price
@@ -85,7 +85,7 @@ test('preOrder without memo', async () => {
     },
     payload: {
       phone: preOrderCustomerPhone,
-      orderedFor: current,
+      orderedFor: current(),
       totalPrice: Prisma.Decimal.mul(seedValues.menu[0].price, 3),
       menus: [
         {
@@ -120,7 +120,7 @@ test('preOrder 2', async () => {
     payload: {
       phone: preOrderCustomerPhone,
       memo: '얼음 따로 포장해주세요',
-      orderedFor: current,
+      orderedFor: current(),
       totalPrice: Prisma.Decimal.sum(
         Prisma.Decimal.mul(seedValues.menu[0].price, 2),
         seedValues.menu[1].price
@@ -227,7 +227,7 @@ test('get exist preOrder but wrong storeId', async () => {
 test('get preorder list', async () => {
   const response = await app.inject({
     method: 'GET',
-    url: `/api/preorder?page=1&count=10&date=${current}`,
+    url: `/api/preorder?page=1&count=10&date=${current()}`,
 
     headers: {
       authorization: `Bearer ${accessToken}`,
