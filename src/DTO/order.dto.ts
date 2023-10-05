@@ -77,6 +77,7 @@ export const getOrderSchema = {
         'createdAt',
         'orderitems',
         'pay',
+        'isPreOrdered',
       ],
       properties: {
         paymentStatus: {
@@ -147,7 +148,6 @@ export const getOrderListSchema = {
     required: ['page', 'count', 'date'],
     properties: {
       page: { type: 'number', default: 1 },
-      endPage: { type: 'number', default: 1 },
       count: { type: 'number', default: 10 },
       date: {
         type: 'string',
@@ -160,7 +160,7 @@ export const getOrderListSchema = {
     200: {
       type: 'object',
       description: 'success response',
-      required: ['orders'],
+      required: ['orders', 'lastPage', 'totalOrderCount'],
       properties: {
         orders: {
           type: 'array',
@@ -172,6 +172,7 @@ export const getOrderListSchema = {
               'totalPrice',
               'createdAt',
               'totalCount',
+              'isPreOrdered',
             ],
             properties: {
               orderId: { type: 'number' },

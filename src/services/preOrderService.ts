@@ -130,17 +130,17 @@ export default {
       },
     });
 
-    const endPage = Math.ceil(
-      (await prisma.preOrder.count({
-        where: {
-          storeId: storeid,
-          createdAt: {
-            gte: krDateStr,
-            lt: krDateEnd,
-          },
+    const totalPreOrderCount = await prisma.preOrder.count({
+      where: {
+        storeId: storeid,
+        createdAt: {
+          gte: utcDateStr,
+          lt: utcDateEnd,
         },
-      })) / count
-    );
+      },
+    });
+
+    const lastPage = Math.ceil(totalPreOrderCount / count);
 
     const list = preOrders.map((preOrder) => ({
       preOrderId: preOrder.id,
@@ -154,9 +154,11 @@ export default {
       createdAt: preOrder.createdAt,
       orderedFor: preOrder.orderedFor,
     }));
+
     return {
       preOrders: list,
-      endPage,
+      lastPage,
+      totalPreOrderCount
     };
   },
 };
