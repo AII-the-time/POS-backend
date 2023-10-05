@@ -120,6 +120,9 @@ export default {
             gte: utcDateStr,
             lt: utcDateEnd,
           },
+          order:{
+            is: null
+          }
         },
         orderBy: {
           orderedFor: 'desc',

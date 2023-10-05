@@ -238,7 +238,7 @@ test('get preorder list', async () => {
   const body = JSON.parse(
     response.body
   ) as PreOrder.getPreOrderListInterface['Reply']['200'];
-  expect(body.preOrders.length).toBeGreaterThan(0);
+  expect(body.preOrders.length).toBeGreaterThan(1);
   const order = body.preOrders[1];
   expect(order.preOrderId).toEqual(preOrderId);
   expect(order.totalCount).toEqual(3);
@@ -259,10 +259,15 @@ test('get preorder list without options', async () => {
     response.body
   ) as PreOrder.getPreOrderListInterface['Reply']['200'];
   if (body.preOrders.length === 0) return;
-  expect(body.preOrders.length).toBeGreaterThan(0);
+  expect(body.preOrders.length).toBeGreaterThan(1);
   const order = body.preOrders[1];
   expect(order.preOrderId).toEqual(preOrderId);
-  expect(order.totalCount).toEqual(3);
+  expect(order.totalPrice).toEqual(
+    Prisma.Decimal.sum(
+      Prisma.Decimal.mul(seedValues.menu[0].price, 2),
+      seedValues.menu[1].price
+    ).toString()
+  );
 });
 
 test('preOrder to order', async () => {
@@ -292,4 +297,26 @@ test('preOrder to order', async () => {
     response.body
   ) as Order.newOrderInterface['Reply']['200'];
   expect(body.orderId).toBeDefined();
+});
+
+test('get preOrder list after order', async () => {
+  const response = await app.inject({
+    method: 'GET',
+    url: `/api/preorder?page=1&count=10&date=${current()}`,
+
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+  });
+  expect(response.statusCode).toBe(200);
+  const body = JSON.parse(
+    response.body
+  ) as PreOrder.getPreOrderListInterface['Reply']['200'];
+  expect(body.preOrders.length).toEqual(1);
+  const order = body.preOrders[0];
+  expect(order.preOrderId).toEqual(preOrderWithoutMemoId);
+  expect(order.totalPrice).toEqual(
+      Prisma.Decimal.mul(seedValues.menu[0].price, 3).toString()
+  );
 });

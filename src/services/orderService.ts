@@ -47,6 +47,7 @@ export default {
     const order = await prisma.order.findUnique({
       where: {
         id: orderId,
+        storeId: storeid,
       },
       include: {
         payment: true,

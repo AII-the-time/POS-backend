@@ -14,7 +14,8 @@ model Order{
     store Store @relation(fields: [storeId], references: [id])
     orderitems OrderItem[]
     payment Payment[]
-    preOrderId Int?
+    preOrderId Int? @unique
+    preOrder PreOrder? @relation(fields: [preOrderId], references: [id])
 }
 
 model OrderItem{
