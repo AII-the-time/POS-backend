@@ -194,17 +194,19 @@ export default {
     { storeid }: { storeid: number },
     { page, endPage, count, date }: Order.getOrderListInterface['Querystring']
   ): Promise<Order.getOrderListInterface['Reply']['200']> {
-    const orderDate = new Date(date);
-    const krDate = new Date(orderDate.getTime() - 9 * 60 * 60 * 1000);
+    const reservationDate = new Date(date);
+    const krDate = new Date(reservationDate.getTime() + 9 * 60 * 60 * 1000);
     const krDateStr = new Date(krDate.toISOString().split('T')[0]);
     const krDateEnd = new Date(krDateStr.getTime() + 24 * 60 * 60 * 1000);
+    const utcDateStr = new Date(krDateStr.getTime() - 9 * 60 * 60 * 1000);
+    const utcDateEnd = new Date(krDateEnd.getTime() - 9 * 60 * 60 * 1000);
 
     const orders = await prisma.order.findMany({
       where: {
         storeId: storeid,
         createdAt: {
-          gte: krDateStr,
-          lt: krDateEnd,
+          gte: utcDateStr,
+          lt: utcDateEnd,
         },
       },
       orderBy: {
