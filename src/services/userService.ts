@@ -99,4 +99,5 @@ export default {
 
     return { accessToken, refreshToken };
   },
+  humanError: new E.NotDefinedOnConfigError('humanError'),
 };

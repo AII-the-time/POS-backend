@@ -59,6 +59,13 @@ export class UncorrectTokenError extends ErrorWithToast {
   }
 }
 
+export class NotDefinedOnConfigError extends ErrorWithToast {
+  constructor(message: string) {
+    super(message);
+    this.name = 'NotDefinedOnConfigError';
+  }
+}
+
 export const ValidationError = generateGenericError('ValidationError');
 
 export const UserAuthorizationError = generateGenericError(

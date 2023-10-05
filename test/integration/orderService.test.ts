@@ -35,6 +35,7 @@ test('400 test', async () => {
 const customerPhone = '01043218765';
 const existPhone = '01023456789';
 const notCorrectPhone = '010-1234-567';
+const current = new Date().toISOString();
 let mileageId: number;
 test('mileage', async () => {
   const response = await app.inject({
@@ -50,62 +51,6 @@ test('mileage', async () => {
   const body = JSON.parse(response.body) as ErrorInterface;
   expect(body.message).toBe('해당하는 마일리지가 없습니다.');
   expect(body.toast).toBe('마일리지을(를) 찾을 수 없습니다.');
-});
-
-test('register mileage without storeid header', async () => {
-  // api 폴더 hooks 폴더 checkStoreIdUser.ts 에서 에러 체크
-  // storeid가 없는 경우 에러를 던지도록 설정
-  const response = await app.inject({
-    method: 'POST',
-    url: `/api/mileage`,
-    headers: {
-      authorization: `Bearer ${accessToken}`,
-    },
-    payload: {
-      phone: customerPhone,
-    },
-  });
-  expect(response.statusCode).toBe(400);
-  const body = JSON.parse(response.body) as ErrorInterface;
-  expect(body.message).toBe('헤더에 storeid가 없습니다');
-});
-
-test('register mileage without storeid header', async () => {
-  // api 폴더 hooks 폴더 checkStoreIdUser.ts 에서 에러 체크
-  // 잘못된 토큰 확인
-  const response = await app.inject({
-    method: 'POST',
-    url: `/api/mileage`,
-    headers: {
-      authorization: `Bearer ${accessToken}1`,
-      storeid: seedValues.store.id.toString(),
-    },
-    payload: {
-      phone: customerPhone,
-    },
-  });
-  expect(response.statusCode).toBe(401);
-  const body = JSON.parse(response.body) as ErrorInterface;
-  expect(body.message).toBe('유저 인증에 실패했습니다');
-});
-
-test('register mileage without storeid header', async () => {
-  // api 폴더 hooks 폴더 checkStoreIdUser.ts 에서 에러 체크
-  // 잘못된 스토어 아이디 확인
-  const response = await app.inject({
-    method: 'POST',
-    url: `/api/mileage`,
-    headers: {
-      authorization: `Bearer ${accessToken}`,
-      storeid: '123242214',
-    },
-    payload: {
-      phone: customerPhone,
-    },
-  });
-  expect(response.statusCode).toBe(401);
-  const body = JSON.parse(response.body) as ErrorInterface;
-  expect(body.message).toBe('가게 인증에 실패했습니다');
 });
 
 test('register mileage', async () => {
@@ -250,7 +195,7 @@ test('order 2', async () => {
     url: `/api/order`,
     headers: {
       authorization: `Bearer ${accessToken}`,
-      storeid: '2',
+      storeid: seedValues.store2.id.toString(),
     },
     payload: {
       totalPrice: Prisma.Decimal.sum(
@@ -282,6 +227,46 @@ test('order 2', async () => {
     response.body
   ) as Order.newOrderInterface['Reply']['200'];
   orderId2 = body.orderId;
+  expect(body.orderId).toBeDefined();
+});
+
+test('order 3', async () => {
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/order`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    payload: {
+      totalPrice: Prisma.Decimal.sum(
+        Prisma.Decimal.mul(seedValues.menu[0].price, 2),
+        seedValues.menu[1].price
+      ),
+      menus: [
+        {
+          id: seedValues.menu[0].id,
+          count: 2,
+          options: [
+            seedValues.option[0].id,
+            seedValues.option[2].id,
+            seedValues.option[4].id,
+          ],
+        },
+        {
+          id: seedValues.menu[1].id,
+          count: 1,
+          options: [seedValues.option[0].id],
+          detail: '얼음 따로 포장해주세요',
+        },
+      ],
+    },
+  });
+
+  expect(response.statusCode).toBe(200);
+  const body = JSON.parse(
+    response.body
+  ) as Order.newOrderInterface['Reply']['200'];
   expect(body.orderId).toBeDefined();
 });
 
@@ -452,6 +437,22 @@ test('pay not exist order', async () => {
   expect(body.message).toBe('해당하는 주문이 없습니다.');
 });
 
+test('pay with not use mileage and save mileage', async () => {
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/order/pay`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store2.id.toString(),
+    },
+    payload: {
+      orderId: orderId2,
+      paymentMethod: 'CARD',
+    },
+  });
+  expect(response.statusCode).toBe(200);
+});
+
 //TODO: milage 없는 경우, 이미 결제된 주문을 다시 결제하는 경우 테스트 필요
 
 test('get order', async () => {
@@ -498,6 +499,36 @@ test('get order', async () => {
   );
 });
 
+test('get order without mileage', async () => {
+  const response = await app.inject({
+    method: 'GET',
+    url: `/api/order/${orderId2}`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store2.id.toString(),
+    },
+  });
+  expect(response.statusCode).toBe(200);
+  const body = JSON.parse(
+    response.body
+  ) as Order.getOrderInterface['Reply']['200'];
+  expect(body.paymentStatus).toEqual('PAID');
+  expect(body.pay.paymentMethod).toEqual('CARD');
+  expect(body.pay.price).toEqual(
+    Prisma.Decimal.sum(
+      Prisma.Decimal.mul(seedValues.menu[0].price, 2),
+      seedValues.menu[1].price
+    ).toString()
+  );
+  expect(body.totalPrice).toEqual(
+    Prisma.Decimal.sum(
+      Prisma.Decimal.mul(seedValues.menu[0].price, 2),
+      seedValues.menu[1].price
+    ).toString()
+  );
+  expect(body.mileage).toEqual(undefined);
+});
+
 test('get not exist order', async () => {
   // orderService.test 에서 getOrder에서 order가 없을 때 에러 발생
   const response = await app.inject({
@@ -531,7 +562,7 @@ test('get order but wrong storeId', async () => {
 test('get order list', async () => {
   const response = await app.inject({
     method: 'GET',
-    url: `/api/order?page=1&count=10&date=2023-09-18T10:01:12.301Z`,
+    url: `/api/order?page=1&count=10&date=${current}`,
 
     headers: {
       authorization: `Bearer ${accessToken}`,
@@ -542,9 +573,8 @@ test('get order list', async () => {
   const body = JSON.parse(
     response.body
   ) as Order.getOrderListInterface['Reply']['200'];
-  if (body.orders.length === 0) return;
   expect(body.orders.length).toBeGreaterThan(0);
-  const order = body.orders[0];
+  const order = body.orders[1];
   expect(order.orderId).toEqual(orderId);
   expect(order.totalCount).toEqual(3);
 });
