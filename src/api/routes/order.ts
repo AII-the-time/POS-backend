@@ -12,10 +12,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      const result = await orderService.order(
-        { storeid: Number(request.headers.storeid) },
-        request.body
-      );
+      const result = await orderService.order(request.body);
       reply.code(200).send(result);
     }
   );
@@ -27,10 +24,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      await orderService.pay(
-        { storeid: Number(request.headers.storeid) },
-        request.body
-      );
+      await orderService.pay(request.body);
       reply.code(200).send();
     }
   );
@@ -43,7 +37,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     },
     async (request, reply) => {
       const result = await orderService.getOrder(
-        { storeid: Number(request.headers.storeid) },
+        request.body,
         request.params
       );
       reply.code(200).send(result);
@@ -58,7 +52,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     },
     async (request, reply) => {
         const result = await orderService.getOrderList(
-          { storeid: Number(request.headers.storeid) },
+          request.body,
           request.query
         );
         reply.code(200).send(result);

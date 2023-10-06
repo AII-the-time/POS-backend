@@ -39,9 +39,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkUser,
     },
     async (request, reply) => {
-      const result = await userService.refresh({
-        userid: Number(request.headers.userid),
-      });
+      const result = await userService.refresh(request.body);
       reply.code(200).send(result);
     }
   );

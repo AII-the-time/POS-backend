@@ -13,7 +13,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
             preValidation: checkStoreIdUser
         },
         async (request, reply) => {
-            const result = await menuService.getMenuList({ storeid: Number(request.headers.storeid) });
+            const result = await menuService.getMenuList(request.body);
             reply
                 .code(200)
                 .send(result);
@@ -28,7 +28,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
             preValidation: checkStoreIdUser
         },
         async (request, reply) => {
-            const result = await menuService.getMenu({ storeid: Number(request.headers.storeid)}, request.params);
+            const result = await menuService.getMenu(request.body, request.params);
             reply
                 .code(200)
                 .send(result);
@@ -43,7 +43,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
             preValidation: checkStoreIdUser
         },
         async (request, reply) => {
-            const result = await menuService.createCategory({ storeid: Number(request.headers.storeid)}, request.body);
+            const result = await menuService.createCategory(request.body);
             reply
                 .code(201)
                 .send(result);
@@ -58,7 +58,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
             preValidation: checkStoreIdUser
         },
         async (request, reply) => {
-            const result = await menuService.createMenu({ storeid: Number(request.headers.storeid)}, request.body);
+            const result = await menuService.createMenu(request.body);
             reply
                 .code(201)
                 .send(result);

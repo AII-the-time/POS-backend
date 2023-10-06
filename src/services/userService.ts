@@ -89,11 +89,10 @@ export default {
     return { accessToken, refreshToken };
   },
   async refresh({
-    userid,
-  }: {
-    userid: number;
-  }): Promise<User.refreshInterface['Reply']['200']> {
-    const loginToken = new LoginToken(userid);
+    userId,
+  }: User.refreshInterface['Body']
+  ): Promise<User.refreshInterface['Reply']['200']> {
+    const loginToken = new LoginToken(userId);
     const accessToken = loginToken.signAccessToken();
     const refreshToken = loginToken.signRefreshToken();
 

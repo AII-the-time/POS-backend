@@ -175,7 +175,7 @@ export const createMenuSchema = {
   },
 } as const;
 
-export type getMenuListInterface = SchemaToInterfase<typeof getMenuListSchema>;
-export type getMenuInterface = SchemaToInterfase<typeof getMenuSchema>;
-export type createCategoryInterface = SchemaToInterfase<typeof createCategorySchema>;
-export type createMenuInterface = SchemaToInterfase<typeof createMenuSchema>;
+export type getMenuListInterface = SchemaToInterfase<typeof getMenuListSchema>&{Body: {storeId: number, userId: number}};
+export type getMenuInterface = SchemaToInterfase<typeof getMenuSchema>&{Body: {storeId: number, userId: number}};
+export type createCategoryInterface = SchemaToInterfase<typeof createCategorySchema>&{Body: {storeId: number, userId: number}};
+export type createMenuInterface = SchemaToInterfase<typeof createMenuSchema>&{Body: {storeId: number, userId: number}};

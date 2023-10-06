@@ -5,14 +5,12 @@ import * as Menu from '@DTO/menu.dto';
 const prisma = new PrismaClient();
 
 export default {
-  async getMenuList({
-    storeid,
-  }: {
-    storeid: number;
-  }): Promise<Menu.getMenuListInterface['Reply']['200']> {
+  async getMenuList(
+    { storeId }: Menu.getMenuListInterface['Body']
+  ): Promise<Menu.getMenuListInterface['Reply']['200']> {
     const categories = await prisma.category.findMany({
       where: {
-        storeId: Number(storeid),
+        storeId
       },
       include: {
         menu: {
@@ -42,7 +40,7 @@ export default {
   },
 
   async getMenu(
-    { storeid }: { storeid: number },
+    { storeId }: Menu.getMenuInterface['Body'],
     { menuId }: Menu.getMenuInterface['Params']
   ): Promise<Menu.getMenuInterface['Reply']['200']> {
     const menu = await prisma.menu.findUnique({
@@ -62,7 +60,7 @@ export default {
 
     const allOption = await prisma.option.findMany({
       where: {
-        storeId: Number(storeid),
+        storeId
       },
     });
 
@@ -103,18 +101,17 @@ export default {
   },
 
   async createCategory(
-    { storeid }: { storeid: number },
-    { name }: Menu.createCategoryInterface['Body']
+    { name, storeId }: Menu.createCategoryInterface['Body']
   ): Promise<Menu.createCategoryInterface['Reply']['201']> {
     const categoryCount = await prisma.category.count({
       where: {
-        storeId: Number(storeid),
+        storeId
       },
     });
     const result = await prisma.category.create({
       data: {
         name: name,
-        storeId: Number(storeid),
+        storeId,
         sort: categoryCount + 1,
       },
     });
@@ -125,8 +122,8 @@ export default {
   },
 
   async createMenu(
-    { storeid }: { storeid: number },
-    {
+    { 
+      storeId,
       name,
       price,
       categoryId,
@@ -136,7 +133,7 @@ export default {
   ): Promise<Menu.createMenuInterface['Reply']['201']> {
     const menuCount = await prisma.menu.count({
       where: {
-        storeId: Number(storeid),
+        storeId,
         categoryId: categoryId,
       },
     });
@@ -144,7 +141,7 @@ export default {
       data: {
         name,
         price,
-        storeId: Number(storeid),
+        storeId,
         categoryId,
         sort: menuCount + 1,
         optionMenu: {

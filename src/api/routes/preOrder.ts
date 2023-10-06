@@ -13,10 +13,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      const result = await preOrderService.preOrder(
-        { storeid: Number(request.headers.storeid) },
-        request.body
-      );
+      const result = await preOrderService.preOrder(request.body);
       reply.code(200).send(result);
     }
   );
@@ -29,10 +26,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      const result = await preOrderService.getPreOrder(
-        { storeid: Number(request.headers.storeid) },
-        request.params
-      );
+      const result = await preOrderService.getPreOrder(request.body, request.params);
       reply.code(200).send(result);
     }
   );
@@ -45,10 +39,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      const result = await preOrderService.getPreOrderList(
-        { storeid: Number(request.headers.storeid) },
-        request.query
-      );
+      const result = await preOrderService.getPreOrderList(request.body, request.query);
       reply.code(200).send(result);
     }
   );

@@ -72,5 +72,5 @@ export const storeListSchema = {
     }
 } as const;
 
-export type newStoreInterface = SchemaToInterfase<typeof newStoreSchema>;
-export type storeListInterface = SchemaToInterfase<typeof storeListSchema>;
+export type newStoreInterface = SchemaToInterfase<typeof newStoreSchema>&{Body:{userId:number}};
+export type storeListInterface = SchemaToInterfase<typeof storeListSchema>&{Body:{userId:number}};
