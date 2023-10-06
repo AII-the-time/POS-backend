@@ -6,13 +6,13 @@ const prisma = new PrismaClient();
 
 export default {
   async getMileage(
-    { storeid }: { storeid: number },
+    { storeId }: Mileage.getMileageInterface['Body'],
     { phone }: Mileage.getMileageInterface['Querystring']
   ): Promise<Mileage.getMileageInterface['Reply']['200']> {
     const mileage = await prisma.mileage.findFirst({
       where: {
         phone: phone,
-        storeId: storeid,
+        storeId,
       },
     });
 
@@ -23,8 +23,7 @@ export default {
   },
 
   async registerMileage(
-    { storeid }: { storeid: number },
-    { phone }: Mileage.registerMileageInterface['Body']
+    { storeId, phone }: Mileage.registerMileageInterface['Body']
   ): Promise<Mileage.registerMileageInterface['Reply']['200']> {
     if (!checkPhoneNumber(phone)) {
       throw new NotCorrectTypeError(
@@ -34,8 +33,8 @@ export default {
     }
     const existMileage = await prisma.mileage.findFirst({
       where: {
-        phone: phone,
-        storeId: storeid,
+        phone,
+        storeId,
       },
     });
     if (existMileage) {
@@ -43,9 +42,9 @@ export default {
     }
     const mileage = await prisma.mileage.create({
       data: {
-        phone: phone,
+        phone,
         mileage: 0,
-        storeId: storeid,
+        storeId,
       },
     });
 
@@ -53,6 +52,7 @@ export default {
   },
 
   async saveMileage({
+    storeId,
     mileageId,
     mileage,
   }: Mileage.saveMileageInterface['Body']): Promise<
@@ -61,6 +61,7 @@ export default {
     const savedMileage = await prisma.mileage.update({
       where: {
         id: mileageId,
+        storeId,
       },
       data: {
         mileage: {

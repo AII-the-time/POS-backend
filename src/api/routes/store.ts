@@ -12,10 +12,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkUser,
     },
     async (request, reply) => {
-      const result = await storeService.newStore(
-        { userid: Number(request.headers.userid) },
-        request.body
-      );
+      const result = await storeService.newStore(request.body);
       reply.code(200).send(result);
     }
   );
@@ -27,9 +24,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkUser,
     },
     async (request, reply) => {
-      const result = await storeService.getStoreList({
-        userid: Number(request.headers.userid),
-      });
+      const result = await storeService.getStoreList(request.body);
       reply.code(200).send(result);
     }
   );

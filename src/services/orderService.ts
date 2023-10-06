@@ -5,12 +5,11 @@ const prisma = new PrismaClient();
 
 export default {
   async order(
-    { storeid }: { storeid: number },
-    { menus, totalPrice, preOrderId }: Order.newOrderInterface['Body']
+    { storeId, menus, totalPrice, preOrderId }: Order.newOrderInterface['Body']
   ): Promise<Order.newOrderInterface['Reply']['200']> {
     const order = await prisma.order.create({
       data: {
-        storeId: storeid,
+        storeId,
         paymentStatus: 'WAITING',
         totalPrice: totalPrice,
         preOrderId: preOrderId ?? undefined,
@@ -35,8 +34,8 @@ export default {
     return { orderId: order.id };
   },
   async pay(
-    { storeid }: { storeid: number },
     {
+      storeId,
       orderId,
       paymentMethod,
       useMileage,
@@ -47,7 +46,7 @@ export default {
     const order = await prisma.order.findUnique({
       where: {
         id: orderId,
-        storeId: storeid,
+        storeId,
       },
       include: {
         payment: true,
@@ -128,12 +127,13 @@ export default {
   },
 
   async getOrder(
-    { storeid }: { storeid: number },
+    { storeId }: Order.getOrderInterface['Body'],
     { orderId }: Order.getOrderInterface['Params']
   ): Promise<Order.getOrderInterface['Reply']['200']> {
     const order = await prisma.order.findUnique({
       where: {
-        id: Number(orderId),
+        id: orderId,
+        storeId: storeId,
       },
       include: {
         orderitems: {
@@ -152,9 +152,6 @@ export default {
     if (order === null) {
       // orderService.test 에서 test
       // test 이름은 get not exist order
-      throw new NotFoundError('해당하는 주문이 없습니다.', '주문');
-    }
-    if (order.storeId !== storeid) {
       throw new NotFoundError('해당하는 주문이 없습니다.', '주문');
     }
 
@@ -192,7 +189,7 @@ export default {
     return { paymentStatus, totalPrice, createdAt, orderitems, pay, mileage, isPreOrdered };
   },
   async getOrderList(
-    { storeid }: { storeid: number },
+    { storeId }: Order.getOrderListInterface['Body'],
     { page, count, date }: Order.getOrderListInterface['Querystring']
   ): Promise<Order.getOrderListInterface['Reply']['200']> {
     const reservationDate = new Date(date);
@@ -204,7 +201,7 @@ export default {
 
     const orders = await prisma.order.findMany({
       where: {
-        storeId: storeid,
+        storeId: storeId,
         createdAt: {
           gte: utcDateStr,
           lt: utcDateEnd,
@@ -240,7 +237,7 @@ export default {
 
     const totalOrderCount = await prisma.order.count({
       where: {
-        storeId: storeid,
+        storeId,
         createdAt: {
           gte: krDateStr,
           lt: krDateEnd,

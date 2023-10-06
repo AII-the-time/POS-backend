@@ -20,7 +20,7 @@ const ErrorConfig: ErrorConfigType = [
       `${error.missing}을(를) 찾을 수 없습니다.`,
   },
   {
-    describtion: '토큰이 만료되었습니다.',
+    describtion: '토큰이 만료되었거나, 유효하지 않습니다.',
     error: E.UserAuthorizationError,
     code: 401,
     toast: (error: E.ErrorWithToast) => `다시 로그인 해주세요.`,

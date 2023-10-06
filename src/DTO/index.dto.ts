@@ -74,14 +74,14 @@ export type SchemaToInterfase<
   },
   Option extends [{ pattern: unknown; output: unknown }] | false = false
 > = {
-  Body: T['body'] extends JSONSchema ? FromSchema<T['body']> : undefined;
+  Body: T['body'] extends JSONSchema ? FromSchema<T['body']> : unknown;
   Querystring: T['querystring'] extends JSONSchema
     ? FromSchema<T['querystring']>
-    : undefined;
-  Params: T['params'] extends JSONSchema ? FromSchema<T['params']> : undefined;
+    : unknown;
+  Params: T['params'] extends JSONSchema ? FromSchema<T['params']> : unknown;
   Headers: T['headers'] extends JSONSchema
     ? FromSchema<T['headers']>
-    : undefined;
+    : unknown;
   Reply: {
     [key in keyof T['response']]: FromSchema<
       T['response'][key],

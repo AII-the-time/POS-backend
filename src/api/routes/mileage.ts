@@ -6,7 +6,7 @@ import checkStoreIdUser from '@hooks/checkStoreIdUser';
 
 const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
     server.get<Mileage.getMileageInterface>('/',{schema:Mileage.getMileageSchema,onError,preValidation: checkStoreIdUser}, async (request, reply) => {
-        const result = await mileageService.getMileage({ storeid: Number(request.headers.storeid) }, request.query);
+        const result = await mileageService.getMileage(request.body, request.query);
         reply
             .code(200)
             .send(result);
@@ -19,10 +19,7 @@ const api: FastifyPluginAsync =  async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-        const result = await mileageService.registerMileage(
-          { storeid: Number(request.headers.storeid) },
-          request.body
-        );
+        const result = await mileageService.registerMileage(request.body);
         reply.code(200).send(result);
     }
   );

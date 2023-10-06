@@ -3,7 +3,7 @@ import { FastifyRequest, FastifyReply, FastifyError } from 'fastify';
 import { UserAuthorizationError, NoAuthorizationInHeaderError } from '@errors/index';
 
 export default async (
-  request: FastifyRequest,
+  request: FastifyRequest<{ Body: { userId: number } }>,
   reply: FastifyReply,
   done: (err?: FastifyError) => void
 ) => {
@@ -14,13 +14,7 @@ export default async (
 
   const replace_authorization = authorization.replace('Bearer ', '');
 
-  try {
-    const userId = LoginToken.getUserId(replace_authorization);
-    request.headers = {
-      ...request.headers,
-      userid: userId + '',
-    };
-  } catch (e) {
-    throw new UserAuthorizationError('유저 인증에 실패했습니다');
-  }
+  if(!request.body)
+    request.body = { userId: 0 };
+  request.body.userId = LoginToken.getUserId(replace_authorization);
 };

@@ -162,6 +162,8 @@ export const getOrderListSchema = {
       description: 'success response',
       required: ['orders', 'lastPage', 'totalOrderCount'],
       properties: {
+        lastPage: { type: 'number' },
+        totalOrderCount: { type: 'number' },
         orders: {
           type: 'array',
           items: {
@@ -234,13 +236,13 @@ export const paySchema = {
   },
 } as const;
 
-export type newOrderInterface = SchemaToInterfase<typeof newOrderSchema>;
+export type newOrderInterface = SchemaToInterfase<typeof newOrderSchema>&{Body: {storeId: number, userId: number}};
 export type getOrderInterface = SchemaToInterfase<
   typeof getOrderSchema,
   [{ pattern: { type: 'string'; format: 'date-time' }; output: Date }]
->;
+>&{Body: {storeId: number, userId: number}};
 export type getOrderListInterface = SchemaToInterfase<
   typeof getOrderListSchema,
   [{ pattern: { type: 'string'; format: 'date-time' }; output: Date }]
->;
-export type payInterface = SchemaToInterfase<typeof paySchema>;
+>&{Body: {storeId: number, userId: number}};
+export type payInterface = SchemaToInterfase<typeof paySchema>&{Body: {storeId: number, userId: number}};

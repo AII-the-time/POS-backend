@@ -152,7 +152,8 @@ export const getPreOrderListSchema = {
       description: 'success response',
       required: ['preOrders', 'lastPage', 'totalPreOrderCount'],
       properties: {
-        endPage: { type: 'number' },
+        lastPage: { type: 'number' },
+        totalPreOrderCount: { type: 'number' },
         preOrders: {
           type: 'array',
           items: {
@@ -188,7 +189,7 @@ export const getPreOrderListSchema = {
   },
 } as const;
 
-export type newPreOrderInterface = SchemaToInterfase<typeof newPreOrderSchema>;
+export type newPreOrderInterface = SchemaToInterfase<typeof newPreOrderSchema>&{Body: {storeId: number, userId: number}};
 export type getPreOrderInterface = SchemaToInterfase<
   typeof getPreOrderSchema,
   [
@@ -200,7 +201,7 @@ export type getPreOrderInterface = SchemaToInterfase<
       output: Date;
     }
   ]
->;
+>&{Body: {storeId: number, userId: number}};
 export type getPreOrderListInterface = SchemaToInterfase<
   typeof getPreOrderListSchema,
   [
@@ -212,4 +213,4 @@ export type getPreOrderListInterface = SchemaToInterfase<
       output: Date;
     }
   ]
->;
+>&{Body: {storeId: number, userId: number}};

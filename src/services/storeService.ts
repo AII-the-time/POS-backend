@@ -4,8 +4,7 @@ const prisma = new PrismaClient();
 
 export default {
   async newStore(
-    { userid }: { userid: number },
-    { name, address, openingHours }: Store.newStoreInterface['Body']
+    { userId, name, address, openingHours }: Store.newStoreInterface['Body']
   ): Promise<Store.newStoreInterface['Reply']['200']> {
     const store = await prisma.store.create({
       data: {
@@ -14,7 +13,7 @@ export default {
         defaultOpeningHours: openingHours as any,
         user: {
           connect: {
-            id: userid,
+            id: userId,
           },
         },
       },
@@ -24,13 +23,12 @@ export default {
   },
 
   async getStoreList({
-    userid,
-  }: {
-    userid: number;
-  }): Promise<Store.storeListInterface['Reply']['200']> {
+    userId,
+  }: Store.storeListInterface['Body']
+  ): Promise<Store.storeListInterface['Reply']['200']> {
     const stores = await prisma.store.findMany({
       where: {
-        userId: userid,
+        userId,
       },
       select: {
         id: true,

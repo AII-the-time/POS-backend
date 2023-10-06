@@ -97,8 +97,8 @@ export const saveMileageSchema = {
   },
 } as const;
 
-export type getMileageInterface = SchemaToInterfase<typeof getMileageSchema>;
+export type getMileageInterface = SchemaToInterfase<typeof getMileageSchema>&{Body: {storeId: number, userId: number}};
 export type registerMileageInterface = SchemaToInterfase<
   typeof registerMileageSchema
->;
-export type saveMileageInterface = SchemaToInterfase<typeof saveMileageSchema>;
+>&{Body: {storeId: number, userId: number}};
+export type saveMileageInterface = SchemaToInterfase<typeof saveMileageSchema>&{Body: {storeId: number, userId: number}};

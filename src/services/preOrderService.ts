@@ -5,8 +5,8 @@ const prisma = new PrismaClient();
 
 export default {
   async preOrder(
-    { storeid }: { storeid: number },
     {
+      storeId,
       menus,
       totalPrice,
       phone,
@@ -16,7 +16,7 @@ export default {
   ): Promise<PreOrder.newPreOrderInterface['Reply']['200']> {
     const preOrder = await prisma.preOrder.create({
       data: {
-        storeId: storeid,
+        storeId,
         totalPrice,
         phone,
         memo,
@@ -43,13 +43,13 @@ export default {
   },
 
   async getPreOrder(
-    { storeid }: { storeid: number },
+    { storeId }: PreOrder.getPreOrderInterface['Body'],
     { preOrderId }: PreOrder.getPreOrderInterface['Params']
   ): Promise<PreOrder.getPreOrderInterface['Reply']['200']> {
     const preOrder = await prisma.preOrder.findUnique({
       where: {
         id: preOrderId,
-        storeId: storeid,
+        storeId,
       },
       include: {
         preOrderitems: {
@@ -102,7 +102,7 @@ export default {
   },
 
   async getPreOrderList(
-    { storeid }: { storeid: number },
+    { storeId }: PreOrder.getPreOrderListInterface['Body'],
     { page, count, date }: PreOrder.getPreOrderListInterface['Querystring']
   ): Promise<PreOrder.getPreOrderListInterface['Reply']['200']> {
     const reservationDate = new Date(date);
@@ -115,7 +115,7 @@ export default {
     const [preOrders, totalPreOrderCount] = await Promise.all([
       prisma.preOrder.findMany({
         where: {
-          storeId: storeid,
+          storeId,
           orderedFor: {
             gte: utcDateStr,
             lt: utcDateEnd,
@@ -135,7 +135,7 @@ export default {
       }),
       prisma.preOrder.count({
         where: {
-          storeId: storeid,
+          storeId,
           orderedFor: {
             gte: utcDateStr,
             lt: utcDateEnd,

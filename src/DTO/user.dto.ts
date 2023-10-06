@@ -122,4 +122,4 @@ export type certificatePhoneInterface = SchemaToInterfase<
   typeof certificatePhoneSchema
 >;
 export type loginInterface = SchemaToInterfase<typeof loginSchema>;
-export type refreshInterface = SchemaToInterfase<typeof refreshSchema>;
+export type refreshInterface = SchemaToInterfase<typeof refreshSchema>&{Body: {userId: number}}

@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import config from '@config';
 import crypto from 'crypto';
-import { UncorrectTokenError } from '@errors';
+import { UserAuthorizationError, UncorrectTokenError } from '@errors';
 
 export class TokenForCertificatePhone {
   phone: string;
@@ -90,7 +90,7 @@ export class LoginToken {
       const decoded = jwt.verify(token, config.jwtSecretKey) as LoginToken;
       return decoded.userId;
     } catch (err) {
-      throw new UncorrectTokenError('토큰이 유효하지 않습니다.');
+      throw new UserAuthorizationError('유저 인증에 실패했습니다');
     }
   }
 }
