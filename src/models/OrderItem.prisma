@@ -1,9 +1,0 @@
-model OrderItem{
-    id Int @id @default(autoincrement())
-    count Int
-    menuId Int
-    menu Menu @relation(fields: [menuId], references: [id])
-    orderId Int
-    order Order @relation(fields: [orderId], references: [id])
-    optionOrderItems OptionOrderItem[]
-}

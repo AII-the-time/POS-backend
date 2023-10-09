@@ -1,5 +1,6 @@
 import { Store as prismaStore } from '@prisma/client';
 import { AuthorizationHeader, errorSchema, SchemaToInterfase } from '@DTO/index.dto';
+import * as E from '@errors';
 export type Store = prismaStore;
 
 export const newStoreSchema ={
@@ -39,7 +40,7 @@ export const newStoreSchema ={
                 storeId: { type: 'number' }
             }
         },
-        401: errorSchema('토큰이 만료되었습니다.')
+        ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
     }
 } as const;
 
@@ -67,9 +68,9 @@ export const storeListSchema = {
                 }
             }
         },
-        401: errorSchema('토큰이 만료되었습니다.')
+        ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
     }
 } as const;
 
-export type newStoreInterface = SchemaToInterfase<typeof newStoreSchema>;
-export type storeListInterface = SchemaToInterfase<typeof storeListSchema>;
+export type newStoreInterface = SchemaToInterfase<typeof newStoreSchema>&{Body:{userId:number}};
+export type storeListInterface = SchemaToInterfase<typeof storeListSchema>&{Body:{userId:number}};

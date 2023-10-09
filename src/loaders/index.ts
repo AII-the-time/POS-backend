@@ -1,12 +1,10 @@
 import { FastifyInstance } from 'fastify';
-import { initEnvFromDotEnv } from '@config';
 import api from '@api';
 import swagger from '@fastify/swagger';
 import swaggerUI from '@fastify/swagger-ui';
 import {LoginToken} from '@utils/jwt';
 
 export default async (server: FastifyInstance): Promise<void> => {
-    initEnvFromDotEnv();
     server.register(swagger, {
         prefix: '/docs',
         swagger: {

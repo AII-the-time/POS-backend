@@ -2,7 +2,7 @@ model Mileage{
     id Int @id @default(autoincrement())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    mileage Int
+    mileage Decimal
     phone String
     storeId Int
     store Store @relation(fields: [storeId], references: [id])

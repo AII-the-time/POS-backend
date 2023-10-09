@@ -1,7 +1,8 @@
+
 model Payment{
     id Int @id @default(autoincrement())
     paymentMethod String
-    price Int
+    price Decimal
     createdAt DateTime @default(now())
     orderId Int
     order Order @relation(fields: [orderId], references: [id])

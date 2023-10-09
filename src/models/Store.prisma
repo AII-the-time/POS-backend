@@ -1,3 +1,4 @@
+
 model Store{
     id Int @id @default(autoincrement())
     user User @relation(fields: [userId], references: [id])
@@ -8,6 +9,7 @@ model Store{
     category Category[]
     menu Menu[]
     order Order[]
+    preOrder PreOrder[]
     mileage Mileage[]
     option Option[]
     createdAt DateTime @default(now())

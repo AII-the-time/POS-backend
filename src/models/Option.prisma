@@ -1,8 +1,9 @@
+
 model Option{
     id Int @id @default(autoincrement())
     createdAt DateTime @default(now())
     optionName String
-    optionPrice Int
+    optionPrice Decimal
     optionCategory String
     storeId Int
     store Store @relation(fields: [storeId], references: [id])
@@ -22,6 +23,8 @@ model OptionOrderItem{
     id Int @id @default(autoincrement())
     optionId Int
     option Option @relation(fields: [optionId], references: [id])
-    orderItemId Int
-    orderItem OrderItem @relation(fields: [orderItemId], references: [id])
+    orderItemId Int?
+    orderItem OrderItem? @relation(fields: [orderItemId], references: [id])
+    preOrderItemId Int?
+    preOrderItem PreOrderItem? @relation(fields: [preOrderItemId], references: [id])
 }

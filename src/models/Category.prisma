@@ -1,3 +1,4 @@
+
 model Category {
     id Int @id @default(autoincrement())
     store Store @relation(fields: [storeId], references: [id])

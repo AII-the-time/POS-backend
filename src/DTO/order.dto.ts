@@ -1,178 +1,248 @@
 import { Order as prismaOrder } from '@prisma/client';
-import { StoreAuthorizationHeader, errorSchema, SchemaToInterfase } from '@DTO/index.dto';
+import {
+  StoreAuthorizationHeader,
+  errorSchema,
+  SchemaToInterfase,
+} from '@DTO/index.dto';
+import * as E from '@errors';
 export type Order = prismaOrder;
 
-export const newOrderSchema ={
-    tags: ['order'],
-    summary: '새로운 주문 등록',
-    headers: StoreAuthorizationHeader,
-    body: {
-        type: 'object',
-        required: ['totalPrice','menus'],
-        properties: {
-            totalPrice: {
-                type: 'number',
+export const newOrderSchema = {
+  tags: ['order'],
+  summary: '새로운 주문 등록',
+  headers: StoreAuthorizationHeader,
+  body: {
+    type: 'object',
+    required: ['totalPrice', 'menus'],
+    properties: {
+      totalPrice: {
+        type: 'string',
+      },
+      preOrderId: { type: 'number', nullable: true },
+      menus: {
+        type: 'array',
+        items: {
+          type: 'object',
+          required: ['id', 'count', 'options'],
+          properties: {
+            id: { type: 'number' },
+            count: { type: 'number' },
+            detail: { type: 'string', nullable: true },
+            options: {
+              type: 'array',
+              items: { type: 'number' },
             },
-            menus: {
-                type: 'array',
-                items: {
-                    type: 'object',
-                    required: ['id','count','options'],
-                    properties: {
-                        id: { type: 'number' },
-                        count: { type: 'number' },
-                        options: {
-                            type: 'array',
-                            items: { type: 'number' }
-                        }
-                    }
-                }
-            }
-        }
-    },
-    response: {
-        200: {
-            type: 'object',
-            description: 'success response',
-            required: ['orderId'],
-            properties: {
-                orderId: { type: 'number' }
-            }
+          },
         },
-        401: errorSchema('토큰이 만료되었습니다.')
-    }
+      },
+    },
+  },
+  response: {
+    200: {
+      type: 'object',
+      description: 'success response',
+      required: ['orderId'],
+      properties: {
+        orderId: { type: 'number' },
+      },
+    },
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError,
+      E.NotCorrectTypeError
+    ),
+  },
 } as const;
 
 export const getOrderSchema = {
-    tags: ['order'],
-    summary: '주문 내역 가져오기',
-    headers: StoreAuthorizationHeader,
-    params: {
-        type: 'object',
-        required: ['orderId'],
-        properties: {
-            orderId: { type: 'string' },
-        }
+  tags: ['order'],
+  summary: '주문 내역 가져오기',
+  headers: StoreAuthorizationHeader,
+  params: {
+    type: 'object',
+    required: ['orderId'],
+    properties: {
+      orderId: { type: 'number' },
     },
-    response: {
-        200: {
-            type: 'object',
-            description: 'success response',
-            required: ['paymentStatus','totalPrice','createdAt','orderitems','pay'],
-            properties: {
-                paymentStatus: { type: 'string', enum: ["WAITING", "PAID", "FAILED", "CANCELED"] },
-                totalPrice: { type: 'number' },
-                createdAt: { type: 'string', format: 'date-time' },
-                orderitems: {
-                    type: 'array',
-                    items: {
-                        type: 'object',
-                        required: ['count','price','menuName','options'],
-                        properties: {
-                            count: { type: 'number' },
-                            price: { type: 'number' },
-                            menuName: { type: 'string' },
-                            options: {
-                                type: 'array',
-                                items: {
-                                    type: 'object',
-                                    required: ['name','price'],
-                                    properties: {
-                                        name: { type: 'string' },
-                                        price: { type: 'number' }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                mileage: {
-                    type: 'object',
-                    required: ['mileageId','use','save',],
-                    properties: {
-                        mileageId: { type: 'number' },
-                        use: { type: 'number' },
-                        save: { type: 'number' }
-                    }
-                },
-                pay: {
-                    type: 'object',
-                    required: ['paymentMethod','price'],
-                    properties: {
-                        paymentMethod: { type: 'string', enum: ["CARD", "CASH", "BANK"] },
-                        price: { type: 'number' }
-                    }
-                }
-            }
+  },
+  response: {
+    200: {
+      type: 'object',
+      description: 'success response',
+      required: [
+        'paymentStatus',
+        'totalPrice',
+        'createdAt',
+        'orderitems',
+        'pay',
+        'isPreOrdered',
+      ],
+      properties: {
+        paymentStatus: {
+          type: 'string',
+          enum: ['WAITING', 'PAID', 'FAILED', 'CANCELED'],
         },
-        401: errorSchema('토큰이 만료되었습니다.')
-    }
+        totalPrice: { type: 'string' },
+        createdAt: { type: 'string', format: 'date-time' },
+        orderitems: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['count', 'price', 'menuName', 'options'],
+            properties: {
+              count: { type: 'number' },
+              price: { type: 'string' },
+              detail: { type: 'string', nullable: true },
+              menuName: { type: 'string' },
+              options: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: ['name', 'price'],
+                  properties: {
+                    name: { type: 'string' },
+                    price: { type: 'string' },
+                  },
+                },
+              },
+            },
+          },
+        },
+        mileage: {
+          type: 'object',
+          required: ['mileageId', 'use', 'save'],
+          properties: {
+            mileageId: { type: 'number' },
+            use: { type: 'string' },
+            save: { type: 'string' },
+          },
+        },
+        pay: {
+          type: 'object',
+          required: ['paymentMethod', 'price'],
+          properties: {
+            paymentMethod: { type: 'string', enum: ['CARD', 'CASH', 'BANK'] },
+            price: { type: 'string' },
+          },
+        },
+      },
+    },
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError,
+      E.NotCorrectTypeError
+    ),
+  },
 } as const;
 
 export const getOrderListSchema = {
-    tags: ['order'],
-    summary: '주문 내역 리스트 가져오기',
-    headers: StoreAuthorizationHeader,
-    querystring: {
-        type: 'object',
-        required: ['page','count'],
-        properties: {
-            page: { type: 'number' },
-            count: { type: 'number' }
-        }
+  tags: ['order'],
+  summary: '주문 내역 리스트 가져오기',
+  headers: StoreAuthorizationHeader,
+  querystring: {
+    type: 'object',
+    required: ['page', 'count', 'date'],
+    properties: {
+      page: { type: 'number', default: 1 },
+      count: { type: 'number', default: 10 },
+      date: {
+        type: 'string',
+        format: 'date-time',
+        default: new Date().toISOString(),
+      },
     },
-    response: {
-        200: {
+  },
+  response: {
+    200: {
+      type: 'object',
+      description: 'success response',
+      required: ['orders', 'lastPage', 'totalOrderCount'],
+      properties: {
+        lastPage: { type: 'number' },
+        totalOrderCount: { type: 'number' },
+        orders: {
+          type: 'array',
+          items: {
             type: 'object',
-            description: 'success response',
-            required: ['orders'],
+            required: [
+              'orderId',
+              'paymentStatus',
+              'totalPrice',
+              'createdAt',
+              'totalCount',
+              'isPreOrdered',
+            ],
             properties: {
-                orders: {
-                    type: 'array',
-                    items: {
-                        type: 'object',
-                        required: ['orderId','paymentStatus','paymentMethod','totalPrice','createdAt','totalCount'],
-                        properties: {
-                            orderId: { type: 'number' },
-                            paymentStatus: { type: 'string' , enum: ["WAITING", "PAID", "FAILED", "CANCELED"] },
-                            paymentMethod: { type: 'string' , enum: ["CARD", "CASH", "BANK"] },
-                            totalCount: { type: 'number' },
-                            totalPrice: { type: 'number' },
-                            createdAt: { type: 'string', format: 'date-time' }
-                        }
-                    }
-                }
-            }
+              orderId: { type: 'number' },
+              paymentStatus: {
+                type: 'string',
+                enum: ['WAITING', 'PAID', 'FAILED', 'CANCELED'],
+              },
+              paymentMethod: {
+                type: 'string',
+                enum: ['CARD', 'CASH', 'BANK'],
+                nullable: true,
+              },
+              totalCount: { type: 'number' },
+              totalPrice: { type: 'string' },
+              createdAt: { type: 'string', format: 'date-time' },
+            },
+          },
         },
-        401: errorSchema('토큰이 만료되었습니다.')
-    }
+      },
+    },
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError,
+      E.NotCorrectTypeError
+    ),
+  },
 } as const;
 
 export const paySchema = {
-    tags: ['order'],
-    summary: '결제하기',
-    headers: StoreAuthorizationHeader,
-    body: {
-        type: 'object',
-        required: ['orderId','paymentMethod'],
-        properties: {
-            orderId: { type: 'number' },
-            paymentMethod: { type: 'string',enum: ["CARD", "CASH", "BANK"] },
-            mileageId: { type: 'number' },
-            useMileage: { type: 'number' },
-            saveMileage: { type: 'number' }
-        }
+  tags: ['order'],
+  summary: '결제하기',
+  headers: StoreAuthorizationHeader,
+  body: {
+    type: 'object',
+    required: ['orderId', 'paymentMethod'],
+    properties: {
+      orderId: { type: 'number' },
+      paymentMethod: { type: 'string', enum: ['CARD', 'CASH', 'BANK'] },
+      mileageId: { type: 'number', nullable: true },
+      useMileage: { type: 'string', nullable: true },
+      saveMileage: { type: 'string', nullable: true },
     },
-    response: {
-        200: {
-            type: 'null',
-            description: 'success response',
-        },
-        401: errorSchema('토큰이 만료되었습니다.')
-    }
+  },
+  response: {
+    200: {
+      type: 'null',
+      description: 'success response',
+    },
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError,
+      E.NotCorrectTypeError,
+      E.NotEnoughError
+    ),
+  },
 } as const;
 
-export type newOrderInterface = SchemaToInterfase<typeof newOrderSchema>;
-export type getOrderInterface = SchemaToInterfase<typeof getOrderSchema, [{pattern: {type: 'string'; format: 'date-time'}; output: Date }]>;
-export type getOrderListInterface = SchemaToInterfase<typeof getOrderListSchema, [{pattern: {type: 'string'; format: 'date-time'}; output: Date }]>;
-export type payInterface = SchemaToInterfase<typeof paySchema>;
+export type newOrderInterface = SchemaToInterfase<typeof newOrderSchema>&{Body: {storeId: number, userId: number}};
+export type getOrderInterface = SchemaToInterfase<
+  typeof getOrderSchema,
+  [{ pattern: { type: 'string'; format: 'date-time' }; output: Date }]
+>&{Body: {storeId: number, userId: number}};
+export type getOrderListInterface = SchemaToInterfase<
+  typeof getOrderListSchema,
+  [{ pattern: { type: 'string'; format: 'date-time' }; output: Date }]
+>&{Body: {storeId: number, userId: number}};
+export type payInterface = SchemaToInterfase<typeof paySchema>&{Body: {storeId: number, userId: number}};

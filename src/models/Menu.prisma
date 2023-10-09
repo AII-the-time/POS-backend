@@ -1,3 +1,4 @@
+
 model Menu {
     id Int @id @default(autoincrement())
     store Store @relation(fields: [storeId], references: [id])
@@ -5,10 +6,11 @@ model Menu {
     category Category @relation(fields: [categoryId], references: [id])
     categoryId Int
     name String
-    price Int
+    price Decimal
     sort Int
     optionMenu OptionMenu[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     orderitems OrderItem[]
+    preOrderitems PreOrderItem[]
 }

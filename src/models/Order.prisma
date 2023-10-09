@@ -1,11 +1,12 @@
+
 model Order{
     id Int @id @default(autoincrement())
     paymentStatus String
-    totalPrice Int
+    totalPrice Decimal
     mileageId Int?
     mileage Mileage? @relation(fields: [mileageId], references: [id])
-    useMileage Int?
-    saveMileage Int?
+    useMileage Decimal?
+    saveMileage Decimal?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     cancelledAt DateTime?
@@ -13,4 +14,17 @@ model Order{
     store Store @relation(fields: [storeId], references: [id])
     orderitems OrderItem[]
     payment Payment[]
+    preOrderId Int? @unique
+    preOrder PreOrder? @relation(fields: [preOrderId], references: [id])
+}
+
+model OrderItem{
+    id Int @id @default(autoincrement())
+    count Int
+    detail String?
+    menuId Int
+    menu Menu @relation(fields: [menuId], references: [id])
+    orderId Int
+    order Order @relation(fields: [orderId], references: [id])
+    optionOrderItems OptionOrderItem[]
 }
