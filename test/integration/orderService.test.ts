@@ -8,7 +8,6 @@ import { Prisma } from '@prisma/client';
 import test400 from './400test';
 import { ErrorInterface } from '@DTO/index.dto';
 import seedValues from './seedValues';
-import exp from 'constants';
 let app: FastifyInstance;
 
 const accessToken = new LoginToken(seedValues.user.id).signAccessToken();
