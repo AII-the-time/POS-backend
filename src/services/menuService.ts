@@ -137,6 +137,8 @@ export default {
         categoryId: categoryId,
       },
     });
+    if(!option)
+      option = [];
     const result = await prisma.menu.create({
       data: {
         name,
@@ -156,4 +158,60 @@ export default {
       menuId: result.id,
     };
   },
+
+  async updateMenu(
+    {
+      storeId,
+      name,
+      price,
+      categoryId,
+      option,
+      recipe,
+      id,
+    }: Menu.updateMenuInterface['Body']
+  ): Promise<Menu.updateMenuInterface['Reply']['201']> {
+    const result = await prisma.menu.update({
+      where: {
+        id,
+        storeId,
+      },
+      data: {
+        name,
+        price,
+        categoryId
+      },
+      include: {
+        optionMenu: true,
+      },
+    });
+
+    if(!option)
+      option = [];
+    const optionIds = option.map((id) => ({ optionId: id }));
+    const optionMenuIds = result.optionMenu.map(({ optionId }) => ({ optionId }));
+
+    const deleteOptionMenu = optionMenuIds.filter(({ optionId }) => !optionIds.some((id) => id.optionId === optionId));
+    const createOptionMenu = optionIds.filter(({ optionId }) => !optionMenuIds.some((id) => id.optionId === optionId));
+
+    await Promise.all([
+      prisma.optionMenu.deleteMany({
+        where: {
+          menuId: id,
+          optionId: {
+            in: deleteOptionMenu.map(({ optionId }) => optionId),
+          },
+        },
+      }),
+      prisma.optionMenu.createMany({
+        data: createOptionMenu.map(({ optionId }) => ({
+          menuId: id,
+          optionId,
+        })),
+      }),
+    ]);
+
+    return {
+      menuId: result.id,
+    };
+  }
 };

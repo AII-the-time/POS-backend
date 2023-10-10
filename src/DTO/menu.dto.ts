@@ -137,7 +137,7 @@ export const createMenuSchema = {
   headers: StoreAuthorizationHeader,
   body: {
     type: 'object',
-    required: ['name', 'price', 'categoryId', 'option', 'recipe'],
+    required: ['name', 'price', 'categoryId'],
     properties: {
       name: { type: 'string' },
       price: { type: 'number' },
@@ -147,18 +147,67 @@ export const createMenuSchema = {
         items: {
           type: 'number'
         },
+        nullable: true,
       },
       recipe: {
         type: 'array',
         items: {
           type: 'object',
-          required: ['id', 'amount', 'unit'],
+          required: ['name', 'amount', 'unit'],
           properties: {
-            id: { type: 'number' },
+            name: { type: 'string' },
             amount: { type: 'number' },
             unit: { type: 'string' },
           },
         },
+        nullable: true,
+      },
+    },
+  },
+  response: {
+    201: {
+      type: 'object',
+      description: 'success response',
+      required: ['menuId'],
+      properties: {
+        menuId: { type: 'number' },
+      },
+    },
+    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+  },
+} as const;
+
+export const updateMenuSchema = {
+  tags: ['menu'],
+  summary: '메뉴 생성',
+  headers: StoreAuthorizationHeader,
+  body: {
+    type: 'object',
+    required: ['id', 'name', 'price', 'categoryId', ],
+    properties: {
+      id: { type: 'number' },
+      name: { type: 'string' },
+      price: { type: 'number' },
+      categoryId: { type: 'number' },
+      option: {
+        type: 'array',
+        items: {
+          type: 'number'
+        },
+        nullable: true,
+      },
+      recipe: {
+        type: 'array',
+        items: {
+          type: 'object',
+          required: ['name', 'amount', 'unit'],
+          properties: {
+            name: { type: 'string' },
+            amount: { type: 'number' },
+            unit: { type: 'string' },
+          },
+        },
+        nullable: true,
       },
     },
   },
@@ -179,3 +228,4 @@ export type getMenuListInterface = SchemaToInterface<typeof getMenuListSchema>&{
 export type getMenuInterface = SchemaToInterface<typeof getMenuSchema>&{Body: {storeId: number, userId: number}};
 export type createCategoryInterface = SchemaToInterface<typeof createCategorySchema>&{Body: {storeId: number, userId: number}};
 export type createMenuInterface = SchemaToInterface<typeof createMenuSchema>&{Body: {storeId: number, userId: number}};
+export type updateMenuInterface = SchemaToInterface<typeof updateMenuSchema>&{Body: {storeId: number, userId: number}};
