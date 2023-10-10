@@ -2,7 +2,7 @@ import { Mileage as prismaMileage } from '@prisma/client';
 import {
   StoreAuthorizationHeader,
   errorSchema,
-  SchemaToInterfase,
+  SchemaToInterface,
 } from '@DTO/index.dto';
 import * as E from '@errors';
 export type Mileage = prismaMileage;
@@ -97,8 +97,8 @@ export const saveMileageSchema = {
   },
 } as const;
 
-export type getMileageInterface = SchemaToInterfase<typeof getMileageSchema>&{Body: {storeId: number, userId: number}};
-export type registerMileageInterface = SchemaToInterfase<
+export type getMileageInterface = SchemaToInterface<typeof getMileageSchema>&{Body: {storeId: number, userId: number}};
+export type registerMileageInterface = SchemaToInterface<
   typeof registerMileageSchema
 >&{Body: {storeId: number, userId: number}};
-export type saveMileageInterface = SchemaToInterfase<typeof saveMileageSchema>&{Body: {storeId: number, userId: number}};
+export type saveMileageInterface = SchemaToInterface<typeof saveMileageSchema>&{Body: {storeId: number, userId: number}};

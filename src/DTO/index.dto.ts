@@ -64,7 +64,7 @@ export type ErrorInterface = FromSchema<{
   }
 }>;
 
-export type SchemaToInterfase<
+export type SchemaToInterface<
   T extends {
     body?: JSONSchema;
     querystring?: JSONSchema;

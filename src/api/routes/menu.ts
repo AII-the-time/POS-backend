@@ -64,6 +64,21 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
                 .send(result);
         }
     );
+
+    server.put<Menu.updateMenuInterface>(
+        '/',
+        {
+            schema: Menu.updateMenuSchema,
+            onError,
+            preValidation: checkStoreIdUser
+        },
+        async (request, reply) => {
+            const result = await menuService.updateMenu(request.body);
+            reply
+                .code(201)
+                .send(result);
+        }
+    );
 }
 
 export default api;
