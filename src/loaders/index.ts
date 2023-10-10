@@ -2,7 +2,19 @@ import { FastifyInstance } from 'fastify';
 import api from '@api';
 import swagger from '@fastify/swagger';
 import swaggerUI from '@fastify/swagger-ui';
-import {LoginToken} from '@utils/jwt';
+import * as Sentry from "@sentry/node";
+import { ProfilingIntegration } from "@sentry/profiling-node";
+import config from '@config';
+
+Sentry.init({
+  dsn: config.sentryDSN,
+  integrations: [
+    new ProfilingIntegration(),
+  ],
+  tracesSampleRate: 1.0,
+  profilesSampleRate: 1.0,
+  enabled: config.nodeEnv !== 'test',
+});
 
 export default async (server: FastifyInstance): Promise<void> => {
     server.register(swagger, {
