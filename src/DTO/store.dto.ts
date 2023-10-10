@@ -1,5 +1,5 @@
 import { Store as prismaStore } from '@prisma/client';
-import { AuthorizationHeader, errorSchema, SchemaToInterfase } from '@DTO/index.dto';
+import { AuthorizationHeader, errorSchema, SchemaToInterface } from '@DTO/index.dto';
 import * as E from '@errors';
 export type Store = prismaStore;
 
@@ -72,5 +72,5 @@ export const storeListSchema = {
     }
 } as const;
 
-export type newStoreInterface = SchemaToInterfase<typeof newStoreSchema>&{Body:{userId:number}};
-export type storeListInterface = SchemaToInterfase<typeof storeListSchema>&{Body:{userId:number}};
+export type newStoreInterface = SchemaToInterface<typeof newStoreSchema>&{Body:{userId:number}};
+export type storeListInterface = SchemaToInterface<typeof storeListSchema>&{Body:{userId:number}};

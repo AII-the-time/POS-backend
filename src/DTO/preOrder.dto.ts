@@ -2,7 +2,7 @@ import { PreOrder as prismaPreOrder } from '@prisma/client';
 import {
   StoreAuthorizationHeader,
   errorSchema,
-  SchemaToInterfase,
+  SchemaToInterface,
 } from '@DTO/index.dto';
 import * as E from '@errors';
 export type PreOrder = prismaPreOrder;
@@ -189,8 +189,8 @@ export const getPreOrderListSchema = {
   },
 } as const;
 
-export type newPreOrderInterface = SchemaToInterfase<typeof newPreOrderSchema>&{Body: {storeId: number, userId: number}};
-export type getPreOrderInterface = SchemaToInterfase<
+export type newPreOrderInterface = SchemaToInterface<typeof newPreOrderSchema>&{Body: {storeId: number, userId: number}};
+export type getPreOrderInterface = SchemaToInterface<
   typeof getPreOrderSchema,
   [
     {
@@ -202,7 +202,7 @@ export type getPreOrderInterface = SchemaToInterfase<
     }
   ]
 >&{Body: {storeId: number, userId: number}};
-export type getPreOrderListInterface = SchemaToInterfase<
+export type getPreOrderListInterface = SchemaToInterface<
   typeof getPreOrderListSchema,
   [
     {

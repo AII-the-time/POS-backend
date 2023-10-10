@@ -1,7 +1,7 @@
 import {
   StoreAuthorizationHeader,
   errorSchema,
-  SchemaToInterfase,
+  SchemaToInterface,
 } from '@DTO/index.dto';
 import * as E from '@errors';
 
@@ -175,7 +175,7 @@ export const createMenuSchema = {
   },
 } as const;
 
-export type getMenuListInterface = SchemaToInterfase<typeof getMenuListSchema>&{Body: {storeId: number, userId: number}};
-export type getMenuInterface = SchemaToInterfase<typeof getMenuSchema>&{Body: {storeId: number, userId: number}};
-export type createCategoryInterface = SchemaToInterfase<typeof createCategorySchema>&{Body: {storeId: number, userId: number}};
-export type createMenuInterface = SchemaToInterfase<typeof createMenuSchema>&{Body: {storeId: number, userId: number}};
+export type getMenuListInterface = SchemaToInterface<typeof getMenuListSchema>&{Body: {storeId: number, userId: number}};
+export type getMenuInterface = SchemaToInterface<typeof getMenuSchema>&{Body: {storeId: number, userId: number}};
+export type createCategoryInterface = SchemaToInterface<typeof createCategorySchema>&{Body: {storeId: number, userId: number}};
+export type createMenuInterface = SchemaToInterface<typeof createMenuSchema>&{Body: {storeId: number, userId: number}};

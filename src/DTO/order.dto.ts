@@ -2,7 +2,7 @@ import { Order as prismaOrder } from '@prisma/client';
 import {
   StoreAuthorizationHeader,
   errorSchema,
-  SchemaToInterfase,
+  SchemaToInterface,
 } from '@DTO/index.dto';
 import * as E from '@errors';
 export type Order = prismaOrder;
@@ -236,13 +236,13 @@ export const paySchema = {
   },
 } as const;
 
-export type newOrderInterface = SchemaToInterfase<typeof newOrderSchema>&{Body: {storeId: number, userId: number}};
-export type getOrderInterface = SchemaToInterfase<
+export type newOrderInterface = SchemaToInterface<typeof newOrderSchema>&{Body: {storeId: number, userId: number}};
+export type getOrderInterface = SchemaToInterface<
   typeof getOrderSchema,
   [{ pattern: { type: 'string'; format: 'date-time' }; output: Date }]
 >&{Body: {storeId: number, userId: number}};
-export type getOrderListInterface = SchemaToInterfase<
+export type getOrderListInterface = SchemaToInterface<
   typeof getOrderListSchema,
   [{ pattern: { type: 'string'; format: 'date-time' }; output: Date }]
 >&{Body: {storeId: number, userId: number}};
-export type payInterface = SchemaToInterfase<typeof paySchema>&{Body: {storeId: number, userId: number}};
+export type payInterface = SchemaToInterface<typeof paySchema>&{Body: {storeId: number, userId: number}};
