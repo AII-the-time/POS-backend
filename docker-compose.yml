@@ -15,10 +15,8 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: reinpos
-    environment:
-      DB_HOST: db
-      DB_PORT: 3306
-      DATABASE_URL: mysql://root:root@db/db
+    env_file:
+      - .local.docker.env
     ports:
       - 3000:3000
     depends_on:

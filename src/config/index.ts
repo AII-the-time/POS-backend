@@ -1,9 +1,4 @@
 import { config } from 'dotenv';
-interface ConfigInterface {
-    port: number;
-    jwtSecretKey: string;
-    salt: string;
-}
 
 class Config{
     static instance: Config|null=null;
@@ -18,12 +13,14 @@ class Config{
         return Config.instance;
     }
 
-    config(): ConfigInterface {
+    config() {
         return {
             port: parseInt(process.env.NODE_ENV == 'test' ? '3001' : process.env.PORT || '3000'),
             jwtSecretKey: process.env.JWT_SECRET_KEY || 'secretKey',
-            salt: process.env.SALT || 'salt'
-        }
+            salt: process.env.SALT || 'salt',
+            sentryDSN: process.env.SENTRY_DSN || '',
+            nodeEnv: process.env.NODE_ENV,
+        } as const;
     }
 
 }

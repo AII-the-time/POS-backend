@@ -2,7 +2,7 @@ import { User as prismaUser } from '@prisma/client';
 import {
   AuthorizationHeader,
   errorSchema,
-  SchemaToInterfase,
+  SchemaToInterface,
 } from '@DTO/index.dto';
 import * as E from '@errors';
 export type User = prismaUser;
@@ -117,9 +117,9 @@ export const refreshSchema = {
   },
 } as const;
 
-export type phoneInterface = SchemaToInterfase<typeof phoneSchema>;
-export type certificatePhoneInterface = SchemaToInterfase<
+export type phoneInterface = SchemaToInterface<typeof phoneSchema>;
+export type certificatePhoneInterface = SchemaToInterface<
   typeof certificatePhoneSchema
 >;
-export type loginInterface = SchemaToInterfase<typeof loginSchema>;
-export type refreshInterface = SchemaToInterfase<typeof refreshSchema>&{Body: {userId: number}}
+export type loginInterface = SchemaToInterface<typeof loginSchema>;
+export type refreshInterface = SchemaToInterface<typeof refreshSchema>&{Body: {userId: number}}

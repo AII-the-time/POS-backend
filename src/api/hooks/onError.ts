@@ -1,11 +1,14 @@
 import { FastifyRequest, FastifyReply, FastifyError } from 'fastify';
 import { ErrorWithToast, ValidationError } from '@errors';
 import ErrorConfig from '@errors/config';
+import * as Sentry from "@sentry/node";
+
 export default (
   request: FastifyRequest,
   reply: FastifyReply,
   error: FastifyError & { toast?: string }
 ) => {
+  Sentry.captureException(error);
   if (!(error instanceof ErrorWithToast)) {
     if (error.validation) {
       error.toast = ErrorConfig.find(
