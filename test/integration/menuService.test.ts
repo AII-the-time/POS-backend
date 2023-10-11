@@ -64,6 +64,30 @@ test('new menu', async () => {
   });
 });
 
+test('new menu without option', async () => {
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/menu`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    body: {
+      name: '오렌지에이드',
+      price: 3000,
+      categoryId: 2,
+      recipe: [],
+    },
+  });
+  expect(response.statusCode).toBe(201);
+  const body = JSON.parse(
+    response.body
+  ) as Menu.createMenuInterface['Reply']['201'];
+  expect(body).toEqual({
+    menuId: 5,
+  });
+});
+
 test('get menu list', async () => {
   const response = await app.inject({
     method: 'GET',
@@ -108,6 +132,11 @@ test('get menu list', async () => {
           {
             id: 4,
             name: '자몽에이드',
+            price: '3000',
+          },
+          {
+            id: 5,
+            name: '오렌지에이드',
             price: '3000',
           },
         ],
@@ -235,6 +264,31 @@ test('update menu', async () => {
   ) as Menu.updateMenuInterface['Reply']['201'];
   expect(body).toEqual({
     menuId: 3,
+  });
+});
+
+test('update menu without option', async () => {
+  const response = await app.inject({
+    method: 'PUT',
+    url: `/api/menu`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    body: {
+      id: 5,
+      name: '오렌지에이드',
+      price: 2500,
+      categoryId: 2,
+      recipe: [],
+    },
+  });
+  expect(response.statusCode).toBe(201);
+  const body = JSON.parse(
+    response.body
+  ) as Menu.updateMenuInterface['Reply']['201'];
+  expect(body).toEqual({
+    menuId: 5,
   });
 });
 
