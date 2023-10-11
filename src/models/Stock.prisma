@@ -1,10 +1,8 @@
-
 model Stock {
     id Int @id @default(autoincrement())
     store Store @relation(fields: [storeId], references: [id])
     storeId Int
-    recipeId Int
-    recipe Recipe @relation(fields: [recipeId], references: [id])
+    recipes Recipe[]
     name String
     standard Int
     count Int
