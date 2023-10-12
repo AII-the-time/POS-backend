@@ -3,8 +3,30 @@ model Stock {
     store Store @relation(fields: [storeId], references: [id])
     storeId Int
     recipes Recipe[]
+    mixings Mixing[]
     name String
-    standard Int
-    count Int
-    sort Int
+    amount Int?
+    unit String?
+}
+
+model MixedStock {
+    id Int @id @default(autoincrement())
+    store Store @relation(fields: [storeId], references: [id])
+    storeId Int
+    recipes Recipe[]
+    mixings Mixing[]
+    name String
+    totalAmount Int?
+    unit String?
+}
+
+model Mixing {
+    id Int @id @default(autoincrement())
+    store Store @relation(fields: [storeId], references: [id])
+    storeId Int
+    mixedStockId Int
+    mixedStock MixedStock @relation(fields: [mixedStockId], references: [id])
+    stockId Int
+    stock Stock @relation(fields: [stockId], references: [id])
+    amount Int
 }
