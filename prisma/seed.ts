@@ -1,4 +1,5 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+import menuSeed from './menuSeed';
 const prisma = new PrismaClient();
 async function main() {
   const user = await prisma.user.create({
@@ -204,6 +205,7 @@ async function main() {
       storeId: store.id,
     },
   });
+  await menuSeed(prisma, store.id);
 }
 
 main()

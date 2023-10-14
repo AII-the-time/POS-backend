@@ -12,6 +12,10 @@ model Store{
     preOrder PreOrder[]
     mileage Mileage[]
     option Option[]
+    recipe Recipe[]
+    stock Stock[]
+    mixedStocks MixedStock[]
+    mixings Mixing[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
