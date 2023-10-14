@@ -38,7 +38,52 @@ test('new menu category', async () => {
     categoryId: 4,
   });
 });
+
+let mintChoco: number;
+test('create stock with name only', async () => {
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/menu/stock`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    body: {
+      name: '민트초코 시럽',
+    },
+  });
   
+  expect(response.statusCode).toBe(201);
+  const body = JSON.parse(
+    response.body
+  ) as Menu.createStockInterface['Reply']['201'];
+  mintChoco = body.stockId;
+});
+
+let cock: number;
+test('create stock with name and price', async () => {
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/menu/stock`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    body: {
+      name: '콜라',
+      amount: 8520,
+      unit: 'ml',
+      price: 23900
+    },
+  });
+  
+  expect(response.statusCode).toBe(201);
+  const body = JSON.parse(
+    response.body
+  ) as Menu.createStockInterface['Reply']['201'];
+  cock = body.stockId;
+});
+
 test('new menu', async () => {
   const response = await app.inject({
     method: 'POST',
@@ -48,11 +93,22 @@ test('new menu', async () => {
       storeid: seedValues.store.id.toString(),
     },
     body: {
-      name: '자몽에이드',
+      name: '민초콕',
       price: 3000,
       categoryId: 2,
       option: [1, 3, 4],
-      recipe: [],
+      recipe: [
+        {
+          id: mintChoco,
+          amount: 50,
+          unit: 'ml'
+        },
+        {
+          id:cock,
+          amount: 150,
+          unit: 'ml'
+        }
+      ]
     },
   });
   expect(response.statusCode).toBe(201);
@@ -64,6 +120,21 @@ test('new menu', async () => {
   });
 });
 
+let sparklingWater:number;
+test('search stock',async () => {
+  const response = await app.inject({
+    method: 'GET',
+    url: `/api/menu/stock?name=탄산수`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+  });
+  expect(response.statusCode).toBe(200);
+  const body = JSON.parse(response.body) as Menu.searchStockInterface['Reply']['200'];
+  sparklingWater = body.stocks[0].id;
+});
+
 test('new menu without option', async () => {
   const response = await app.inject({
     method: 'POST',
@@ -73,10 +144,21 @@ test('new menu without option', async () => {
       storeid: seedValues.store.id.toString(),
     },
     body: {
-      name: '오렌지에이드',
+      name: '민트초코 에이드',
       price: 3000,
       categoryId: 2,
-      recipe: [],
+      recipe: [
+        {
+          id: sparklingWater,
+          amount: 150,
+          unit: 'ml'
+        },
+        {
+          id:mintChoco,
+          amount: 50,
+          unit: 'ml'
+        }
+      ]
     },
   });
   expect(response.statusCode).toBe(201);
@@ -129,12 +211,12 @@ test('get menu list', async () => {
       },
       {
         id: 45,
-        name: '자몽에이드',
+        name: '민초콕',
         price: '3000',
       },
       {
         id: 46,
-        name: '오렌지에이드',
+        name: '민트초코 에이드',
         price: '3000',
       },
     ],

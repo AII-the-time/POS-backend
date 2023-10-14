@@ -213,5 +213,63 @@ export default {
     return {
       menuId: result.id,
     };
+  },
+  async createStock(
+    { storeId, name, price, amount, unit }: Menu.createStockInterface['Body']
+  ): Promise<Menu.createStockInterface['Reply']['201']> {
+    const result = await prisma.stock.create({
+      data: {
+        name,
+        price,
+        amount,
+        unit,
+        storeId,
+      },
+    });
+
+    return {
+      stockId: result.id,
+    };
+  },
+  async updateStockInfo(
+    { storeId, name, price, amount, unit, id }: Menu.updateStockInterface['Body']
+  ): Promise<Menu.updateStockInterface['Reply']['201']> {
+    const result = await prisma.stock.update({
+      where: {
+        id,
+        storeId,
+      },
+      data: {
+        name,
+        price,
+        amount,
+        unit,
+      },
+    });
+
+    return {
+      stockId: result.id,
+    };
+  },
+
+  async searchStock(
+    { storeId }: Menu.searchStockInterface['Body'],
+    { name }: Menu.searchStockInterface['Querystring'],
+  ): Promise<Menu.searchStockInterface['Reply']['200']> {
+    const result = await prisma.stock.findMany({
+      where: {
+        storeId,
+        name: {
+          contains: name,
+        },
+      },
+    });
+
+    return {
+      stocks: result.map((stock) => ({
+        id: stock.id,
+        name: stock.name
+      })),
+    };
   }
 };
