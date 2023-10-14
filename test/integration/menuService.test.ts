@@ -279,7 +279,7 @@ test('update menu without option', async () => {
     response.body
   ) as Menu.updateMenuInterface['Reply']['201'];
   expect(body).toEqual({
-    menuId: 5,
+    menuId: 46,
   });
 });
 
