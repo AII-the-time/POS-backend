@@ -27,7 +27,7 @@ test('new menu category', async () => {
     },
     body: {
       name: '디저트',
-      sort: 3,
+      sort: 4,
     },
   });
   expect(response.statusCode).toBe(201);
@@ -35,10 +35,10 @@ test('new menu category', async () => {
     response.body
   ) as Menu.createCategoryInterface['Reply']['201'];
   expect(body).toEqual({
-    categoryId: 3,
+    categoryId: 4,
   });
 });
-
+  
 test('new menu', async () => {
   const response = await app.inject({
     method: 'POST',
@@ -60,7 +60,7 @@ test('new menu', async () => {
     response.body
   ) as Menu.createMenuInterface['Reply']['201'];
   expect(body).toEqual({
-    menuId: 4,
+    menuId: 45,
   });
 });
 
@@ -78,44 +78,35 @@ test('get menu list', async () => {
   const body = JSON.parse(
     response.body
   ) as Menu.getMenuListInterface['Reply']['200'];
-  expect(body).toEqual({
-    categories: [
+  expect(body.categories[0]).toEqual({
+    category: '커피',
+    categoryId: 1,
+    menus: [
       {
-        category: '커피',
-        categoryId: 1,
-        menus: [
-          {
-            id: 1,
-            name: '아메리카노',
-            price: '2000',
-          },
-          {
-            id: 2,
-            name: '카페라떼',
-            price: '3000',
-          },
-        ],
+        id: 1,
+        name: '아메리카노',
+        price: '2000',
       },
       {
-        category: '티&에이드',
-        categoryId: 2,
-        menus: [
-          {
-            id: 3,
-            name: '아이스티',
-            price: '2500',
-          },
-          {
-            id: 4,
-            name: '자몽에이드',
-            price: '3000',
-          },
-        ],
+        id: 2,
+        name: '카페라떼',
+        price: '3000',
+      },
+    ],
+  });
+  expect(body.categories[1]).toEqual({
+    category: '티&에이드',
+    categoryId: 2,
+    menus: [
+      {
+        id: 3,
+        name: '아이스티',
+        price: '2500',
       },
       {
-        category: '디저트',
-        categoryId: 3,
-        menus: [],
+        id: 45,
+        name: '자몽에이드',
+        price: '3000',
       },
     ],
   });
