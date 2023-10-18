@@ -13,6 +13,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     },
     async (request, reply) => {
       const result = await storeService.newStore(request.body);
+      await storeService.registDefaultOption(result);
       reply.code(200).send(result);
     }
   );
