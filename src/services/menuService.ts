@@ -50,6 +50,12 @@ export default {
       include: {
         optionMenu: true,
         category: true,
+        recipes: {
+          include: {
+            stock: true,
+            mixedStock: true,
+          },
+        }
       },
     });
     if (!menu) {
@@ -85,6 +91,22 @@ export default {
       return acc;
     }, {} as Record<string, Menu.getMenuInterface['Reply']['200']['option'][0]['options']>);
 
+    const recipe = menu.recipes.map(({ stock, mixedStock, coldRegularAmount, coldSizeUpAmount, hotRegularAmount, hotSizeUpAmount }) => {
+      const recipeStock = stock ?? mixedStock;
+      if(!recipeStock)
+        throw new NotFoundError('재고가 존재하지 않습니다.', '재고');
+      const { id, name, unit } = recipeStock;
+      return {
+        id,
+        isMixed: stock === null,
+        name,
+        unit,
+        coldRegularAmount,
+        coldSizeUpAmount,
+        hotRegularAmount,
+        hotSizeUpAmount,
+      };
+    });
     return {
       name: menu.name,
       price: menu.price.toString(),
@@ -96,7 +118,7 @@ export default {
           options,
         })
       ),
-      recipe: [],
+      recipe,
     };
   },
 
@@ -139,6 +161,8 @@ export default {
     });
     if(!option)
       option = [];
+    if(!recipe)
+      recipe = [];
     const result = await prisma.menu.create({
       data: {
         name,
@@ -151,8 +175,53 @@ export default {
             optionId: id,
           })),
         },
+        recipes: {
+          create: recipe.map(({ id, isMixed, coldRegularAmount, coldSizeUpAmount, hotRegularAmount, hotSizeUpAmount}) => ({
+            storeId,
+            stockId: isMixed ? undefined : id,
+            mixedStockId: isMixed ? id : undefined,
+            coldRegularAmount,
+            coldSizeUpAmount,
+            hotRegularAmount,
+            hotSizeUpAmount,
+          })),
+        },
+      },
+      include: {
+        recipes: {
+          include: {
+            stock: true,
+            mixedStock: true,
+          },
+        }
       },
     });
+    
+    //레시피에 대한 재고에 unit 정보가 없는 경우, 재고에 unit 정보를 추가해준다.
+    await Promise.all(result.recipes.map(async ({ stockId, mixedStockId }) => {
+      if(stockId) {
+        const unit = recipe!.find(({ id, isMixed }) => id === stockId&&isMixed===false)?.unit;
+        await prisma.stock.update({
+          where: {
+            id: stockId,
+          },
+          data: {
+            unit,
+          },
+        });
+      }
+      if(mixedStockId) {
+        const unit = recipe!.find(({ id, isMixed }) => id === mixedStockId&&isMixed===true)?.unit;
+        await prisma.mixedStock.update({
+          where: {
+            id: mixedStockId,
+          },
+          data: {
+            unit,
+          },
+        });
+      }
+    }));
 
     return {
       menuId: result.id,
@@ -182,36 +251,96 @@ export default {
       },
       include: {
         optionMenu: true,
+        recipes: {
+          include: {
+            stock: true,
+            mixedStock: true,
+          },
+        }
       },
     });
 
     if(!option)
       option = [];
-    const optionIds = option.map((id) => ({ optionId: id }));
-    const optionMenuIds = result.optionMenu.map(({ optionId }) => ({ optionId }));
+    if(!recipe)
+      recipe = [];
 
-    const deleteOptionMenu = optionMenuIds.filter(({ optionId }) => !optionIds.some((id) => id.optionId === optionId));
-    const createOptionMenu = optionIds.filter(({ optionId }) => !optionMenuIds.some((id) => id.optionId === optionId));
-
-    await Promise.all([
-      prisma.optionMenu.deleteMany({
+    const optionMenuIds = result.optionMenu.map(({ optionId }) => optionId).sort();
+    const optionIds = option.sort();
+    if(optionMenuIds.toString() !== optionIds.toString()) {
+      await prisma.optionMenu.deleteMany({
         where: {
           menuId: id,
-          optionId: {
-            in: deleteOptionMenu.map(({ optionId }) => optionId),
-          },
         },
-      }),
-      prisma.optionMenu.createMany({
-        data: createOptionMenu.map(({ optionId }) => ({
+      });
+      await prisma.optionMenu.createMany({
+        data: option.map((optionId) => ({
           menuId: id,
           optionId,
         })),
-      }),
-    ]);
-
+      });
+    }
+    
     return {
       menuId: result.id,
+    };
+  },
+  async createStock(
+    { storeId, name, price, amount, unit }: Menu.createStockInterface['Body']
+  ): Promise<Menu.createStockInterface['Reply']['201']> {
+    const result = await prisma.stock.create({
+      data: {
+        name,
+        price,
+        amount,
+        unit,
+        storeId,
+      },
+    });
+
+    return {
+      stockId: result.id,
+    };
+  },
+  async updateStockInfo(
+    { storeId, name, price, amount, unit, id }: Menu.updateStockInterface['Body']
+  ): Promise<Menu.updateStockInterface['Reply']['201']> {
+    const result = await prisma.stock.update({
+      where: {
+        id,
+        storeId,
+      },
+      data: {
+        name,
+        price,
+        amount,
+        unit,
+      },
+    });
+
+    return {
+      stockId: result.id,
+    };
+  },
+
+  async searchStock(
+    { storeId }: Menu.searchStockInterface['Body'],
+    { name }: Menu.searchStockInterface['Querystring'],
+  ): Promise<Menu.searchStockInterface['Reply']['200']> {
+    const result = await prisma.stock.findMany({
+      where: {
+        storeId,
+        name: {
+          contains: name,
+        },
+      },
+    });
+
+    return {
+      stocks: result.map((stock) => ({
+        id: stock.id,
+        name: stock.name
+      })),
     };
   }
 };

@@ -92,12 +92,16 @@ export const getMenuSchema = {
           type: 'array',
           items: {
             type: 'object',
-            required: ['id', 'name', 'amount', 'unit'],
+            required: ['id', 'isMixed', 'name', 'unit', 'coldRegularAmount', 'coldSizeUpAmount', 'hotRegularAmount', 'hotSizeUpAmount'],
             properties: {
               id: { type: 'number' },
+              isMixed: { type: 'boolean' },
               name: { type: 'string' },
-              amount: { type: 'number' },
-              unit: { type: 'string' },
+              unit: { type: 'string', nullable: true },
+              coldRegularAmount: { type: 'number', nullable: true },
+              coldSizeUpAmount: { type: 'number', nullable: true },
+              hotRegularAmount: { type: 'number', nullable: true },
+              hotSizeUpAmount: { type: 'number', nullable: true },
             },
           },
         },
@@ -151,16 +155,21 @@ export const createMenuSchema = {
       },
       recipe: {
         type: 'array',
+        nullable: true,
         items: {
           type: 'object',
-          required: ['name', 'amount', 'unit'],
+          required: ['id', 'isMixed'],
+          additionalProperties: false,
           properties: {
-            name: { type: 'string' },
-            amount: { type: 'number' },
-            unit: { type: 'string' },
+            id: { type: 'number' },
+            isMixed: { type: 'boolean' },
+            unit: { type: 'string', nullable: true },
+            coldRegularAmount: { type: 'number', nullable: true },
+            coldSizeUpAmount: { type: 'number', nullable: true },
+            hotRegularAmount: { type: 'number', nullable: true },
+            hotSizeUpAmount: { type: 'number', nullable: true },
           },
         },
-        nullable: true,
       },
     },
   },
@@ -183,7 +192,7 @@ export const updateMenuSchema = {
   headers: StoreAuthorizationHeader,
   body: {
     type: 'object',
-    required: ['id', 'name', 'price', 'categoryId', ],
+    required: ['id', 'name', 'price', 'categoryId'],
     properties: {
       id: { type: 'number' },
       name: { type: 'string' },
@@ -200,11 +209,15 @@ export const updateMenuSchema = {
         type: 'array',
         items: {
           type: 'object',
-          required: ['name', 'amount', 'unit'],
+          required: ['id', 'isMixed'],
           properties: {
-            name: { type: 'string' },
-            amount: { type: 'number' },
-            unit: { type: 'string' },
+            id: { type: 'number' },
+            isMixed: { type: 'boolean' },
+            unit: { type: 'string', nullable: true },
+            coldRegularAmount: { type: 'number', nullable: true },
+            coldSizeUpAmount: { type: 'number', nullable: true },
+            hotRegularAmount: { type: 'number', nullable: true },
+            hotSizeUpAmount: { type: 'number', nullable: true },
           },
         },
         nullable: true,
@@ -224,8 +237,100 @@ export const updateMenuSchema = {
   },
 } as const;
 
+export const createStockSchema = {
+  tags: ['menu'],
+  summary: '재료 생성',
+  headers: StoreAuthorizationHeader,
+  body: {
+    type: 'object',
+    required: ['name'],
+    properties: {
+      name: { type: 'string' },
+      amount: { type: 'number', nullable: true },
+      unit: { type: 'string', nullable: true },
+      price: { type: 'number', nullable: true },
+    },
+  },
+  response: {
+    201: {
+      type: 'object',
+      description: 'success response',
+      required: ['stockId'],
+      properties: {
+        stockId: { type: 'number' },
+      },
+    },
+    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+  },
+} as const;
+
+export const updateStockSchema = {
+  tags: ['menu'],
+  summary: '재료 수정',
+  headers: StoreAuthorizationHeader,
+  body: {
+    type: 'object',
+    required: ['id', 'name'],
+    properties: {
+      id: { type: 'number' },
+      name: { type: 'string' },
+      amount: { type: 'number', nullable: true },
+      unit: { type: 'string', nullable: true },
+      price: { type: 'number', nullable: true },
+    },
+  },
+  response: {
+    201: {
+      type: 'object',
+      description: 'success response',
+      required: ['stockId'],
+      properties: {
+        stockId: { type: 'number' },
+      },
+    },
+    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+  },
+} as const;
+
+export const searchStockSchema = {
+  tags: ['menu'],
+  summary: '재료 검색',
+  headers: StoreAuthorizationHeader,
+  querystring: {
+    type: 'object',
+    required: ['name'],
+    properties: {
+      name: { type: 'string' },
+    },
+  },
+  response: {
+    200: {
+      type: 'object',
+      description: 'success response',
+      required: ['stocks'],
+      properties: {
+        stocks: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['id', 'name'],
+            properties: {
+              id: { type: 'number' },
+              name: { type: 'string' }
+            },
+          },
+        },
+      },
+    },
+    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+  },
+} as const;
+
 export type getMenuListInterface = SchemaToInterface<typeof getMenuListSchema>&{Body: {storeId: number, userId: number}};
 export type getMenuInterface = SchemaToInterface<typeof getMenuSchema>&{Body: {storeId: number, userId: number}};
 export type createCategoryInterface = SchemaToInterface<typeof createCategorySchema>&{Body: {storeId: number, userId: number}};
 export type createMenuInterface = SchemaToInterface<typeof createMenuSchema>&{Body: {storeId: number, userId: number}};
 export type updateMenuInterface = SchemaToInterface<typeof updateMenuSchema>&{Body: {storeId: number, userId: number}};
+export type createStockInterface = SchemaToInterface<typeof createStockSchema>&{Body: {storeId: number, userId: number}};
+export type updateStockInterface = SchemaToInterface<typeof updateStockSchema>&{Body: {storeId: number, userId: number}};
+export type searchStockInterface = SchemaToInterface<typeof searchStockSchema>&{Body: {storeId: number, userId: number}};
