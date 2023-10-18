@@ -21,6 +21,48 @@ export default {
 
     return { storeId: store.id };
   },
+  
+  async registDefaultOption(
+    { storeId }: { storeId: number }
+  ): Promise<void> {
+    await prisma.option.createMany({
+      data: [
+        {
+          optionName: 'ice',
+          optionPrice: 0,
+          optionCategory: '온도',
+        },
+        {
+          optionName: 'hot',
+          optionPrice: 0,
+          optionCategory: '온도',
+        },
+        {
+          optionName: '케냐',
+          optionPrice: 0,
+          optionCategory: '원두',
+        },
+        {
+          optionName: '콜롬비아',
+          optionPrice: 300,
+          optionCategory: '원두',
+        },
+        {
+          optionName: '1샷 추가',
+          optionPrice: 500,
+          optionCategory: '샷',
+        },
+        {
+          optionName: '연하게',
+          optionPrice: 0,
+          optionCategory: '샷',
+        },
+      ].map((option) => ({
+        ...option,
+        storeId,
+      })),
+    });
+  },
 
   async getStoreList({
     userId,
