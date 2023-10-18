@@ -100,13 +100,15 @@ test('new menu', async () => {
       recipe: [
         {
           id: mintChoco,
-          amount: 50,
-          unit: 'ml'
+          isMixed: false,
+          unit: 'ml',
+          coldRegularAmount: 50,
         },
         {
           id:cock,
-          amount: 150,
-          unit: 'ml'
+          isMixed: false,
+          unit: 'ml',
+          coldRegularAmount: 150,
         }
       ]
     },
@@ -150,13 +152,15 @@ test('new menu without option', async () => {
       recipe: [
         {
           id: sparklingWater,
-          amount: 150,
-          unit: 'ml'
+          isMixed: false,
+          unit: 'ml',
+          coldRegularAmount: 150,
         },
         {
           id:mintChoco,
-          amount: 50,
-          unit: 'ml'
+          isMixed: false,
+          unit: 'ml',
+          coldRegularAmount: 50,
         }
       ]
     },
@@ -226,7 +230,7 @@ test('get menu list', async () => {
 test('get menu detail', async () => {
   const response = await app.inject({
     method: 'GET',
-    url: `/api/menu/3`,
+    url: `/api/menu/45`,
     headers: {
       authorization: `Bearer ${accessToken}`,
       storeid: seedValues.store.id.toString(),
@@ -238,8 +242,8 @@ test('get menu detail', async () => {
     response.body
   ) as Menu.getMenuInterface['Reply']['200'];
   expect(body).toEqual({
-    name: '아이스티',
-    price: '2500',
+    name: '민초콕',
+    price: '3000',
     categoryId: 2,
     category: '티&에이드',
     option: [
@@ -284,7 +288,7 @@ test('get menu detail', async () => {
             id: 5,
             name: '1샷 추가',
             price: '500',
-            isSelectable: true,
+            isSelectable: false,
           },
           {
             id: 6,
@@ -295,7 +299,28 @@ test('get menu detail', async () => {
         ],
       },
     ],
-    recipe: expect.any(Array),
+    recipe: [
+      {
+        id: mintChoco,
+        name: '민트초코 시럽',
+        coldRegularAmount: 50,
+        coldSizeUpAmount: null,
+        hotRegularAmount: null,
+        hotSizeUpAmount: null,
+        isMixed: false,
+        unit: 'ml'
+      },
+      {
+        id: cock,
+        name: '콜라',
+        coldRegularAmount: 150,
+        coldSizeUpAmount: null,
+        hotRegularAmount: null,
+        hotSizeUpAmount: null,
+        isMixed: false,
+        unit: 'ml'
+      }
+    ]
   });
 });
 test('get not exist menu detail', async () => {
