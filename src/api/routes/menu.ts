@@ -80,51 +80,6 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
         }
     );
 
-    server.post<Menu.createStockInterface>(
-        '/stock',
-        {
-            schema: Menu.createStockSchema,
-            onError,
-            preValidation: checkStoreIdUser
-        },
-        async (request, reply) => {
-            const result = await menuService.createStock(request.body);
-            reply
-                .code(201)
-                .send(result);
-        }
-    );
-
-    server.put<Menu.updateStockInterface>(
-        '/stock',
-        {
-            schema: Menu.updateStockSchema,
-            onError,
-            preValidation: checkStoreIdUser
-        },
-        async (request, reply) => {
-            const result = await menuService.updateStockInfo(request.body);
-            reply
-                .code(201)
-                .send(result);
-        }
-    );
-
-    server.get<Menu.searchStockInterface>(
-        '/stock',
-        {
-            schema: Menu.searchStockSchema,
-            onError,
-            preValidation: checkStoreIdUser
-        },
-        async (request, reply) => {
-            const result = await menuService.searchStock(request.body, request.query);
-            reply
-                .code(200)
-                .send(result);
-        }
-    );
-
 }
 
 export default api;

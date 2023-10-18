@@ -92,7 +92,6 @@ export default async (prisma: PrismaClient, storeId: number) => {
           create: material.materials.map((material) => ({
             amount: parseInt(material.amount),
             stockId: material.stockId,
-            storeId
           }))
         }
       }
@@ -145,7 +144,6 @@ export default async (prisma: PrismaClient, storeId: number) => {
             hotRegularAmount: material.hotRegularAmount,
             hotSizeUpAmount: material.hotSizeUpAmount,
             stockId: material.stockId,
-            storeId
           }))
         }
       }

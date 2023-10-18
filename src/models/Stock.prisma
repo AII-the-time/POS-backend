@@ -8,6 +8,7 @@ model Stock {
     amount Int?
     unit String?
     price Decimal?
+    currentAmount Int @default(0)
 }
 
 model MixedStock {
@@ -23,8 +24,6 @@ model MixedStock {
 
 model Mixing {
     id Int @id @default(autoincrement())
-    store Store @relation(fields: [storeId], references: [id])
-    storeId Int
     mixedStockId Int
     mixedStock MixedStock @relation(fields: [mixedStockId], references: [id])
     stockId Int
