@@ -121,7 +121,43 @@ export default {
       recipe,
     };
   },
-
+  async getOptionList(
+    { storeId }: Menu.getOptionListInterface['Body']
+  ): Promise<Menu.getOptionListInterface['Reply']['200']> {
+    const options = await prisma.option.findMany({
+      where: {
+        storeId
+      },
+    });
+    const categorizedOption = options.reduce((acc, option) => {
+      const {
+        id,
+        optionCategory: type,
+        optionName: name,
+        optionPrice: price,
+      } = option;
+      const curOption = {
+        id,
+        name,
+        price: price.toString(),
+      };
+      if (acc[type]) {
+        acc[type].push(curOption);
+      } else {
+        acc[type] = [curOption];
+      }
+      return acc;
+    }, {} as Record<string, Menu.getOptionListInterface['Reply']['200']['option'][0]['options']>);
+    return {
+      option: Object.entries(categorizedOption).map(
+        ([optionType, options]) => ({
+          optionType,
+          options,
+        })
+      ),
+    };
+  },
+  
   async createCategory(
     { name, storeId }: Menu.createCategoryInterface['Body']
   ): Promise<Menu.createCategoryInterface['Reply']['201']> {
