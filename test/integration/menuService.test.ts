@@ -654,7 +654,12 @@ test('update menu', async () => {
       price: 2500,
       categoryId: 2,
       option: [1, 3, 5, 6],
-      recipe: [],
+      recipe: [{
+        id:sparklingWater,
+        isMixed: false,
+        unit: 'ml',
+        coldRegularAmount: 150,
+      }]
     },
   });
   expect(response.statusCode).toBe(201);
@@ -666,7 +671,30 @@ test('update menu', async () => {
   });
 });
 
-test('update menu without option', async () => {
+test('create menu without option and recipe', async () => {
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/menu`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    body: {
+      name: '오렌지에이드',
+      price: 2500,
+      categoryId: 2,
+    },
+  });
+  expect(response.statusCode).toBe(201);
+  const body = JSON.parse(
+    response.body
+  ) as Menu.updateMenuInterface['Reply']['201'];
+  expect(body).toEqual({
+    menuId: 47,
+  });
+});
+
+test('update menu without option and recipe', async () => {
   const response = await app.inject({
     method: 'PUT',
     url: `/api/menu`,
@@ -675,11 +703,10 @@ test('update menu without option', async () => {
       storeid: seedValues.store.id.toString(),
     },
     body: {
-      id: 46,
+      id: 47,
       name: '오렌지에이드',
       price: 2500,
       categoryId: 2,
-      recipe: [],
     },
   });
   expect(response.statusCode).toBe(201);
@@ -687,7 +714,7 @@ test('update menu without option', async () => {
     response.body
   ) as Menu.updateMenuInterface['Reply']['201'];
   expect(body).toEqual({
-    menuId: 46,
+    menuId: 47,
   });
 });
 

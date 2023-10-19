@@ -93,9 +93,7 @@ export default {
 
     const recipe = menu.recipes.map(({ stock, mixedStock, coldRegularAmount, coldSizeUpAmount, hotRegularAmount, hotSizeUpAmount }) => {
       const recipeStock = stock ?? mixedStock;
-      if(!recipeStock)
-        throw new NotFoundError('재고가 존재하지 않습니다.', '재고');
-      const { id, name, unit } = recipeStock;
+      const { id, name, unit } = recipeStock!;
       return {
         id,
         isMixed: stock === null,
@@ -284,8 +282,6 @@ export default {
 
     if(!option)
       option = [];
-    if(!recipe)
-      recipe = [];
 
     const optionMenuIds = result.optionMenu.map(({ optionId }) => optionId).sort();
     const optionIds = option.sort();
@@ -302,6 +298,35 @@ export default {
         })),
       });
     }
+
+    await Promise.all(result.recipes.map(async ({ stock, mixedStock }) => {
+      if(stock) {
+        if(stock.unit !== null)
+          return;
+        const unit = recipe!.find(({ id, isMixed }) => id === stock.id&&isMixed===false)?.unit;
+        await prisma.stock.update({
+          where: {
+            id: stock.id,
+          },
+          data: {
+            unit,
+          },
+        });
+      }
+      if(mixedStock) {
+        if(mixedStock.unit !== null)
+          return;
+        const unit = recipe!.find(({ id, isMixed }) => id === mixedStock.id&&isMixed===true)?.unit;
+        await prisma.mixedStock.update({
+          where: {
+            id: mixedStock.id,
+          },
+          data: {
+            unit,
+          },
+        });
+      }
+    }));
     
     return {
       menuId: result.id,

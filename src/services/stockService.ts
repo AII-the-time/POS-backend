@@ -117,7 +117,7 @@ export default {
     await Promise.all(result.mixings.map(async ({ stock }) => {
       if(stock.unit !== null)
         return;
-      const unit = mixing!.find(({ id }) => id === stock.id)!.unit;
+      const unit = mixing!.find(({ id }) => id === stock.id)?.unit;
       await prisma.stock.update({
         where: {
           id: stock.id,
@@ -173,7 +173,7 @@ export default {
     await Promise.all(result.mixings.map(async ({ stock }) => {
       if(stock.unit !== null)
         return;
-      const unit = mixing!.find(({ id }) => id === stock.id)!.unit;
+      const unit = mixing!.find(({ id }) => id === stock.id)?.unit;
       await prisma.stock.update({
         where: {
           id: stock.id,
