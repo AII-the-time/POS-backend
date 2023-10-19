@@ -13,4 +13,5 @@ model Menu {
     updatedAt DateTime @updatedAt
     orderitems OrderItem[]
     preOrderitems PreOrderItem[]
+    recipes Recipe[]
 }

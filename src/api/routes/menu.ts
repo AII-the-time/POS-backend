@@ -79,6 +79,20 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
                 .send(result);
         }
     );
+    server.get<Menu.getOptionListInterface>(
+        '/option',
+        {
+            schema: Menu.getOptionListSchema,
+            onError,
+            preValidation: checkStoreIdUser
+        },
+        async (request, reply) => {
+            const result = await menuService.getOptionList(request.body);
+            reply
+                .code(200)
+                .send(result);
+        }
+    );
 }
 
 export default api;

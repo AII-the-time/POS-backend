@@ -92,15 +92,57 @@ export const getMenuSchema = {
           type: 'array',
           items: {
             type: 'object',
-            required: ['id', 'name', 'amount', 'unit'],
+            required: ['id', 'isMixed', 'name', 'unit', 'coldRegularAmount', 'coldSizeUpAmount', 'hotRegularAmount', 'hotSizeUpAmount'],
             properties: {
               id: { type: 'number' },
+              isMixed: { type: 'boolean' },
               name: { type: 'string' },
-              amount: { type: 'number' },
-              unit: { type: 'string' },
+              unit: { type: 'string', nullable: true },
+              coldRegularAmount: { type: 'number', nullable: true },
+              coldSizeUpAmount: { type: 'number', nullable: true },
+              hotRegularAmount: { type: 'number', nullable: true },
+              hotSizeUpAmount: { type: 'number', nullable: true },
             },
           },
         },
+      },
+    },
+    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+  },
+} as const;
+
+export const getOptionListSchema = {
+  tags: ['menu'],
+  summary: '모든 옵션 조회',
+  headers: StoreAuthorizationHeader,
+  response: {
+    200: {
+      type: 'object',
+      description: 'success response',
+      required: ['option'],
+      properties: {
+        option: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['optionType', 'options'],
+            properties: {
+              optionType: { type: 'string' },
+              options: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: ['id', 'name', 'price'],
+                  properties: {
+                    id: { type: 'number' },
+                    name: { type: 'string' },
+                    price: { type: 'string' },
+                  },
+                },
+              },
+            },
+          },
+        }
       },
     },
     ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
@@ -151,16 +193,21 @@ export const createMenuSchema = {
       },
       recipe: {
         type: 'array',
+        nullable: true,
         items: {
           type: 'object',
-          required: ['name', 'amount', 'unit'],
+          required: ['id', 'isMixed'],
+          additionalProperties: false,
           properties: {
-            name: { type: 'string' },
-            amount: { type: 'number' },
-            unit: { type: 'string' },
+            id: { type: 'number' },
+            isMixed: { type: 'boolean' },
+            unit: { type: 'string', nullable: true },
+            coldRegularAmount: { type: 'number', nullable: true },
+            coldSizeUpAmount: { type: 'number', nullable: true },
+            hotRegularAmount: { type: 'number', nullable: true },
+            hotSizeUpAmount: { type: 'number', nullable: true },
           },
         },
-        nullable: true,
       },
     },
   },
@@ -183,7 +230,7 @@ export const updateMenuSchema = {
   headers: StoreAuthorizationHeader,
   body: {
     type: 'object',
-    required: ['id', 'name', 'price', 'categoryId', ],
+    required: ['id', 'name', 'price', 'categoryId'],
     properties: {
       id: { type: 'number' },
       name: { type: 'string' },
@@ -200,11 +247,15 @@ export const updateMenuSchema = {
         type: 'array',
         items: {
           type: 'object',
-          required: ['name', 'amount', 'unit'],
+          required: ['id', 'isMixed'],
           properties: {
-            name: { type: 'string' },
-            amount: { type: 'number' },
-            unit: { type: 'string' },
+            id: { type: 'number' },
+            isMixed: { type: 'boolean' },
+            unit: { type: 'string', nullable: true },
+            coldRegularAmount: { type: 'number', nullable: true },
+            coldSizeUpAmount: { type: 'number', nullable: true },
+            hotRegularAmount: { type: 'number', nullable: true },
+            hotSizeUpAmount: { type: 'number', nullable: true },
           },
         },
         nullable: true,
@@ -226,6 +277,7 @@ export const updateMenuSchema = {
 
 export type getMenuListInterface = SchemaToInterface<typeof getMenuListSchema>&{Body: {storeId: number, userId: number}};
 export type getMenuInterface = SchemaToInterface<typeof getMenuSchema>&{Body: {storeId: number, userId: number}};
+export type getOptionListInterface = SchemaToInterface<typeof getOptionListSchema>&{Body: {storeId: number, userId: number}};
 export type createCategoryInterface = SchemaToInterface<typeof createCategorySchema>&{Body: {storeId: number, userId: number}};
 export type createMenuInterface = SchemaToInterface<typeof createMenuSchema>&{Body: {storeId: number, userId: number}};
 export type updateMenuInterface = SchemaToInterface<typeof updateMenuSchema>&{Body: {storeId: number, userId: number}};
