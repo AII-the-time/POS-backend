@@ -111,6 +111,44 @@ export const getMenuSchema = {
   },
 } as const;
 
+export const getOptionListSchema = {
+  tags: ['menu'],
+  summary: '모든 옵션 조회',
+  headers: StoreAuthorizationHeader,
+  response: {
+    200: {
+      type: 'object',
+      description: 'success response',
+      required: ['option'],
+      properties: {
+        option: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['optionType', 'options'],
+            properties: {
+              optionType: { type: 'string' },
+              options: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: ['id', 'name', 'price'],
+                  properties: {
+                    id: { type: 'number' },
+                    name: { type: 'string' },
+                    price: { type: 'string' },
+                  },
+                },
+              },
+            },
+          },
+        }
+      },
+    },
+    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+  },
+} as const;
+
 export const createCategorySchema = {
   tags: ['menu'],
   summary: '카테고리 생성',
@@ -239,6 +277,7 @@ export const updateMenuSchema = {
 
 export type getMenuListInterface = SchemaToInterface<typeof getMenuListSchema>&{Body: {storeId: number, userId: number}};
 export type getMenuInterface = SchemaToInterface<typeof getMenuSchema>&{Body: {storeId: number, userId: number}};
+export type getOptionListInterface = SchemaToInterface<typeof getOptionListSchema>&{Body: {storeId: number, userId: number}};
 export type createCategoryInterface = SchemaToInterface<typeof createCategorySchema>&{Body: {storeId: number, userId: number}};
 export type createMenuInterface = SchemaToInterface<typeof createMenuSchema>&{Body: {storeId: number, userId: number}};
 export type updateMenuInterface = SchemaToInterface<typeof updateMenuSchema>&{Body: {storeId: number, userId: number}};

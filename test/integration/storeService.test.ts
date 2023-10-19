@@ -1,9 +1,10 @@
-import server from '../../src/server';
+import server from '@server';
 import { FastifyInstance } from 'fastify';
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
-import { CertificatedPhoneToken } from '../../src/utils/jwt';
-import userService from '../../src/services/userService';
-import * as Store from '../../src/DTO/store.dto';
+import { CertificatedPhoneToken } from '@utils/jwt';
+import userService from '@services/userService';
+import * as Store from '@DTO/store.dto';
+import * as Menu from '@DTO/menu.dto';
 import test400 from './400test';
 
 let app: FastifyInstance;
@@ -80,6 +81,71 @@ test('new store', async () => {
   expect(body).toHaveProperty('storeId');
   storeId = body.storeId;
 });
+
+test('default options',async () => {
+  const response = await app.inject({
+    method: 'GET',
+    url: '/api/menu/option',
+    headers: {
+      authorization: accessToken,
+      storeid: storeId.toString(),
+    },
+  });
+  expect(response.statusCode).toBe(200);
+
+  const body = JSON.parse(
+    response.body
+  ) as Menu.getOptionListInterface['Reply']['200'];
+  expect(body).toHaveProperty('option');
+  console.log(body.option);
+  expect(body.option).toEqual([
+    {
+      optionType: '온도',
+      options: [
+        {
+          id: expect.any(Number),
+          name: 'ice',
+          price: '0',
+        },
+        {
+          id: expect.any(Number),
+          name: 'hot',
+          price: '0',
+        },
+      ],
+    },
+    {
+      optionType: '원두',
+      options: [
+        {
+          id: expect.any(Number),
+          name: '케냐',
+          price: '0',
+        },
+        {
+          id: expect.any(Number),
+          name: '콜롬비아',
+          price: '300',
+        },
+      ],
+    },
+    {
+      optionType: '샷',
+      options: [
+        {
+          id: expect.any(Number),
+          name: '1샷 추가',
+          price: '500',
+        },
+        {
+          id: expect.any(Number),
+          name: '연하게',
+          price: '0',
+        },
+      ],
+    },
+  ]);
+})
 
 test('get store list', async () => {
   const response = await app.inject({
