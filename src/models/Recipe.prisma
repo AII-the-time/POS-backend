@@ -1,7 +1,5 @@
 model Recipe  {
     id Int @id @default(autoincrement())
-    store Store @relation(fields: [storeId], references: [id])
-    storeId Int
     menuId Int
     menu Menu @relation(fields: [menuId], references: [id])
     stockId Int?
