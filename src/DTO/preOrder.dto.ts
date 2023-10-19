@@ -135,14 +135,13 @@ export const getPreOrderListSchema = {
   headers: StoreAuthorizationHeader,
   querystring: {
     type: 'object',
-    required: ['page', 'count', 'date'],
+    required: ['page', 'count'],
     properties: {
       page: { type: 'number', default: 1 },
       count: { type: 'number', default: 10 },
       date: {
         type: 'string',
         format: 'date-time',
-        default: new Date().toISOString(),
       },
     },
   },
