@@ -51,7 +51,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     );
 
     server.get<Stock.getStockInterface>(
-        '/:id',
+        '/:stockId',
         {
             schema: Stock.getStockSchema,
             onError,
@@ -111,7 +111,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     );
     
     server.get<Stock.getMixedStockInterface>(
-        '/mixed/:id',
+        '/mixed/:mixedStockId',
         {
             schema: Stock.getMixedStockSchema,
             onError,

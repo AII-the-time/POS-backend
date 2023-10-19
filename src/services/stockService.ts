@@ -59,7 +59,7 @@ export default {
       stocks: result.map(({ id, name, currentAmount, unit }) => ({
         id,
         name,
-        status: currentAmount === 0 ? '없음' : currentAmount < 10 ? '부족' : '여유', // TODO: 재고 상태를 구하는 로직 필요
+        status: currentAmount === 0 ? '없음' : '여유', // TODO: 재고 상태를 구하는 로직 필요
         usingMenuCount: 0, // TODO: 재고를 사용하는 메뉴 개수를 구하는 로직 필요
       })),
     };
@@ -117,7 +117,7 @@ export default {
     await Promise.all(result.mixings.map(async ({ stock }) => {
       if(stock.unit !== null)
         return;
-      const unit = mixing!.find(({ id }) => id === stock.id)?.unit;
+      const unit = mixing!.find(({ id }) => id === stock.id)!.unit;
       await prisma.stock.update({
         where: {
           id: stock.id,
@@ -173,7 +173,7 @@ export default {
     await Promise.all(result.mixings.map(async ({ stock }) => {
       if(stock.unit !== null)
         return;
-      const unit = mixing!.find(({ id }) => id === stock.id)?.unit;
+      const unit = mixing!.find(({ id }) => id === stock.id)!.unit;
       await prisma.stock.update({
         where: {
           id: stock.id,
@@ -224,8 +224,6 @@ export default {
       },
     });
     if (!result) {
-      // 해당 에러는 test 중 menuService.test.ts 에서 테스트 함.
-      // test 이름은 get not exist menu detail
       throw new NotFoundError('재고가 존재하지 않습니다.', '재고');
     }
 
