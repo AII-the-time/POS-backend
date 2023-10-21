@@ -192,6 +192,7 @@ export default {
     { storeId }: Order.getOrderListInterface['Body'],
     { page, count, date }: Order.getOrderListInterface['Querystring']
   ): Promise<Order.getOrderListInterface['Reply']['200']> {
+    date = date ?? new Date().toISOString().split('T')[0];
     const reservationDate = new Date(date);
     const krDate = new Date(reservationDate.getTime() + 9 * 60 * 60 * 1000);
     const krDateStr = new Date(krDate.toISOString().split('T')[0]);
