@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export default {
   async createStock(
-    { storeId, name, price, amount,currentAmount, unit }: Stock.createStockInterface['Body']
+    { storeId, name, price, amount,currentAmount, noticeThreshold, unit }: Stock.createStockInterface['Body']
   ): Promise<Stock.createStockInterface['Reply']['201']> {
     const result = await prisma.stock.create({
       data: {
@@ -14,6 +14,7 @@ export default {
         price,
         amount,
         currentAmount,
+        noticeThreshold,
         unit,
         storeId,
       },
@@ -25,7 +26,7 @@ export default {
   },
 
   async updateStock(
-    { storeId, name, price, amount, currentAmount, unit, id }: Stock.updateStockInterface['Body']
+    { storeId, name, price, amount, currentAmount, noticeThreshold, unit, id }: Stock.updateStockInterface['Body']
   ): Promise<Stock.updateStockInterface['Reply']['201']> {
     const result = await prisma.stock.update({
       where: {
@@ -38,6 +39,7 @@ export default {
         amount,
         unit,
         currentAmount,
+        noticeThreshold,
       },
     });
 
@@ -52,16 +54,46 @@ export default {
     const result = await prisma.stock.findMany({
       where: {
         storeId,
+      },
+      include:{
+        _count:{
+          select:{
+            recipes:true
+          }
+        },
+        mixings:{
+          select:{
+            mixedStock:{
+              select:{
+                _count:{
+                  select:{
+                    recipes:true
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     });
 
     return {
-      stocks: result.map(({ id, name, currentAmount, unit }) => ({
-        id,
-        name,
-        status: currentAmount === 0 ? '없음' : '여유', // TODO: 재고 상태를 구하는 로직 필요
-        usingMenuCount: 0, // TODO: 재고를 사용하는 메뉴 개수를 구하는 로직 필요
-      })),
+      stocks: result.map(({ id, name, currentAmount,noticeThreshold,_count,mixings }) => {
+        const status = ((currentAmount:number|null, noticeThreshold:number) => {
+          if (currentAmount === null) return 'UNKNOWN';
+          if (currentAmount < noticeThreshold*0.1) return 'EMPTY';
+          if (currentAmount < noticeThreshold*0.3) return 'OUT_OF_STOCK';
+          if (currentAmount < noticeThreshold) return 'CAUTION';
+          return 'ENOUGH';
+        })(currentAmount, noticeThreshold);
+
+        return {
+          id,
+          name,
+          status,
+          usingMenuCount:_count.recipes+mixings.reduce((acc,{mixedStock:{_count:{recipes}}})=>acc+recipes,0)
+        }
+      }),
     };
   },
 
@@ -84,6 +116,7 @@ export default {
       price: result.price===null?"0":result.price.toString(),
       amount: result.amount,
       currentAmount: result.currentAmount,
+      noticeThreshold: result.noticeThreshold,
       unit: result.unit,
     };
   },
