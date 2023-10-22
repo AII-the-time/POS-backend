@@ -5,6 +5,7 @@ import { LoginToken } from '@utils/jwt';
 import seedValues from './seedValues';
 import * as Menu from '@DTO/menu.dto';
 import * as Stock from '@DTO/stock.dto';
+import * as Order from '@DTO/order.dto';
 import { ErrorInterface } from '@DTO/index.dto';
 
 let app: FastifyInstance;
@@ -796,5 +797,144 @@ test('get menu detail', async () => {
       },
     ],
     recipe: expect.any(Array),
+  });
+});
+
+let orderId: number;
+test('order', async () => {
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/order`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    payload: {
+      totalPrice: "3000",
+      menus: [
+        {
+          id: 45,
+          count: 1,
+          options: [],
+        },
+      ],
+    },
+  });
+  expect(response.statusCode).toBe(200);
+  const body = JSON.parse(
+    response.body
+  ) as Order.newOrderInterface['Reply']['200'];
+  orderId = body.orderId;
+  expect(body.orderId).toBeDefined();
+});
+
+test('pay', async () => {
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/order/pay`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    payload: {
+      orderId: orderId,
+      paymentMethod: 'CARD',
+    },
+  });
+
+  expect(response.statusCode).toBe(200);
+});
+
+test('get stock detail', async () => {
+  const response = await app.inject({
+    method: 'GET',
+    url: `/api/stock/${mintChoco}`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+  });
+  expect(response.statusCode).toBe(200);
+  const body = JSON.parse(
+    response.body
+  ) as Stock.getStockInterface['Reply']['200'];
+  expect(body).toEqual({
+    name: '민트초코 시럽',
+    price: '3000',
+    amount: 1000,
+    currentAmount: 950,
+    noticeThreshold:500,
+    unit: 'ml',
+    updatedAt: expect.any(String),
+  });
+});
+
+
+let mixedOrderId: number;
+test('order', async () => {
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/order`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    payload: {
+      totalPrice: "3000",
+      menus: [
+        {
+          id: 46,
+          count: 2,
+          options: [],
+        },
+      ],
+    },
+  });
+  expect(response.statusCode).toBe(200);
+  const body = JSON.parse(
+    response.body
+  ) as Order.newOrderInterface['Reply']['200'];
+  mixedOrderId = body.orderId;
+  expect(body.orderId).toBeDefined();
+});
+
+test('pay', async () => {
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/order/pay`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    payload: {
+      orderId: mixedOrderId,
+      paymentMethod: 'CARD',
+    },
+  });
+
+  expect(response.statusCode).toBe(200);
+});
+
+test('get stock detail', async () => {
+  const response = await app.inject({
+    method: 'GET',
+    url: `/api/stock/${mintChoco}`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+  });
+  expect(response.statusCode).toBe(200);
+  const body = JSON.parse(
+    response.body
+  ) as Stock.getStockInterface['Reply']['200'];
+  expect(body).toEqual({
+    name: '민트초코 시럽',
+    price: '3000',
+    amount: 1000,
+    currentAmount: 904,
+    noticeThreshold:500,
+    unit: 'ml',
+    updatedAt: expect.any(String),
   });
 });
