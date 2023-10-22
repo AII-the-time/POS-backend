@@ -118,6 +118,7 @@ export default {
       currentAmount: result.currentAmount,
       noticeThreshold: result.noticeThreshold,
       unit: result.unit,
+      updatedAt: result.updatedAt.toISOString(),
     };
   },
 

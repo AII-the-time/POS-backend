@@ -108,7 +108,7 @@ export const getStockSchema = {
     200: {
       type: 'object',
       description: 'success response',
-      required: ['name', 'amount', 'unit', 'price', 'currentAmount', 'noticeThreshold'],
+      required: ['name', 'amount', 'unit', 'price', 'currentAmount', 'noticeThreshold', 'updatedAt'],
       properties: {
         name: { type: 'string' },
         amount: { type: 'number', nullable: true },
@@ -116,6 +116,7 @@ export const getStockSchema = {
         price: { type: 'string', nullable: true },
         currentAmount: { type: 'number', nullable: true },
         noticeThreshold: { type: 'number' },
+        updatedAt: { type: 'string' },
       },
     },
     ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)

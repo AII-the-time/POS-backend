@@ -205,6 +205,7 @@ test('get stock detail', async () => {
     currentAmount: null,
     noticeThreshold: 0,
     unit: 'ml',
+    updatedAt: expect.any(String),
   });
 });
 
@@ -255,6 +256,7 @@ test('get stock detail', async () => {
     currentAmount: 1000,
     noticeThreshold:500,
     unit: 'ml',
+    updatedAt: expect.any(String),
   });
 });
 
