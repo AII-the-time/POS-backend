@@ -57,17 +57,20 @@ export const printAllStocks = () => {
 }
 
 export default async (prisma: PrismaClient, storeId: number) => {
-  const materials = await Promise.all(materialData.map(async (material) => {
-    return await prisma.stock.create({
-      data: {
-        name: material.name,
-        amount: isNaN(material.amount)?undefined:material.amount,
-        unit: material.unit===""?undefined:material.unit,
-        price: material.price===""?undefined:material.price,
-        storeId
-      }
-    });
-  }));
+  await prisma.stock.createMany({
+    data: materialData.map((material) => ({
+      name: material.name,
+      amount: isNaN(material.amount)?undefined:material.amount,
+      unit: material.unit===""?undefined:material.unit,
+      price: material.price===""?undefined:material.price,
+      storeId
+    }))
+  });
+  const materials = await prisma.stock.findMany({
+    where: {
+      storeId
+    }
+  });
 
   const mixedMaterialDataWithMaterials = mixedMaterialData.map((material) => {
     return {
@@ -83,20 +86,33 @@ export default async (prisma: PrismaClient, storeId: number) => {
       })
     };
   });
-  const mixedMaterials = await Promise.all(mixedMaterialDataWithMaterials.map(async (material) => {
-    return await prisma.mixedStock.create({
-      data: {
-        name: material.name,
-        storeId,
-        mixings: {
-          create: material.materials.map((material) => ({
-            amount: parseInt(material.amount),
-            stockId: material.stockId,
-          }))
+  await prisma.mixedStock.createMany({
+    data: mixedMaterialDataWithMaterials.map((material,index) => ({
+      name: material.name,
+      storeId,
+      id: index+1
+    }))
+  });
+  await prisma.mixing.createMany({
+    data: mixedMaterialDataWithMaterials.flatMap((material,index) => material.materials.map((material) => ({
+      amount: parseInt(material.amount),
+      mixedStockId: index+1,
+      stockId: material.stockId
+    })))
+  });
+
+  const mixedMaterials = await prisma.mixedStock.findMany({
+    where: {
+      storeId
+    },
+    include: {
+      mixings: {
+        include: {
+          stock: true
         }
       }
-    });
-  }));
+    }
+  });
 
   const menuDataWithMaterials = menuData.map((menu) => {
     return {
@@ -129,24 +145,30 @@ export default async (prisma: PrismaClient, storeId: number) => {
       updatedAt: new Date(),
     },
   });
-  const menus = await Promise.all(menuDataWithMaterials.map(async (menu,index) => {
-    return await prisma.menu.create({
-      data: {
-        name: menu.name,
-        price: menu.price,
-        categoryId: 3,
-        sort: index+1,
-        storeId,
-        recipes: {
-          create: menu.materials.map((material) => ({
-            coldRegularAmount: material.coldRegularAmount,
-            coldSizeUpAmount: material.coldSizeUpAmount,
-            hotRegularAmount: material.hotRegularAmount,
-            hotSizeUpAmount: material.hotSizeUpAmount,
-            stockId: material.stockId,
-          }))
-        }
-      }
-    });
-  }));
+  await prisma.menu.createMany({
+    data: menuDataWithMaterials.map((menu,index) => ({
+      name: menu.name,
+      price: menu.price,
+      categoryId: 3,
+      sort: index+1,
+      storeId,
+    }))
+  });
+
+  const menus = await prisma.menu.findMany({
+    where: {
+      storeId
+    }
+  });
+
+  await prisma.recipe.createMany({
+    data: menuDataWithMaterials.flatMap((menu) => menu.materials.map((material) => ({
+      coldRegularAmount: material.coldRegularAmount,
+      coldSizeUpAmount: material.coldSizeUpAmount,
+      hotRegularAmount: material.hotRegularAmount,
+      hotSizeUpAmount: material.hotSizeUpAmount,
+      menuId: menus.find((menu2) => menu2.name === menu.name)!.id,
+      stockId: material.stockId
+    })))
+  });
 }
