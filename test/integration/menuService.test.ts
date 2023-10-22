@@ -202,8 +202,10 @@ test('get stock detail', async () => {
     name: '민트초코 시럽',
     price: '0',
     amount: null,
-    currentAmount: 0,
+    currentAmount: null,
+    noticeThreshold: 0,
     unit: 'ml',
+    updatedAt: expect.any(String),
   });
 });
 
@@ -222,6 +224,7 @@ test('update stock', async () => {
       amount: 1000,
       unit: 'ml',
       currentAmount: 1000,
+      noticeThreshold: 500,
     },
   });
   expect(response.statusCode).toBe(201);
@@ -231,35 +234,6 @@ test('update stock', async () => {
   expect(body).toEqual({
     stockId: mintChoco,
   });
-});
-
-test('get stock list', async () => {
-  const response = await app.inject({
-    method: 'GET',
-    url: `/api/stock`,
-    headers: {
-      authorization: `Bearer ${accessToken}`,
-      storeid: seedValues.store.id.toString(),
-    },
-  });
-  expect(response.statusCode).toBe(200);
-  const body = JSON.parse(
-    response.body
-  ) as Stock.getStockListInterface['Reply']['200'];
-  const mintChoco = body.stocks.find((stock) => stock.name === '민트초코 시럽');
-  expect(mintChoco).toEqual({
-    id: expect.any(Number),
-    name: '민트초코 시럽',
-    status: '여유',
-    usingMenuCount: 0, // TODO: make this value to be 1
-  });
-  const cock = body.stocks.find((stock)=> stock.name === '콜라');
-  expect(cock).toEqual({
-    id: expect.any(Number),
-    name: '콜라',
-    status: '없음',
-    usingMenuCount: 0, // TODO: make this value to be 1
-  })
 });
 
 test('get stock detail', async () => {
@@ -280,7 +254,9 @@ test('get stock detail', async () => {
     price: '3000',
     amount: 1000,
     currentAmount: 1000,
+    noticeThreshold:500,
     unit: 'ml',
+    updatedAt: expect.any(String),
   });
 });
 
@@ -473,6 +449,35 @@ test('new menu without option', async () => {
   expect(body).toEqual({
     menuId: 46,
   });
+});
+
+test('get stock list', async () => {
+  const response = await app.inject({
+    method: 'GET',
+    url: `/api/stock`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+  });
+  expect(response.statusCode).toBe(200);
+  const body = JSON.parse(
+    response.body
+  ) as Stock.getStockListInterface['Reply']['200'];
+  const mintChoco = body.stocks.find((stock) => stock.name === '민트초코 시럽');
+  expect(mintChoco).toEqual({
+    id: expect.any(Number),
+    name: '민트초코 시럽',
+    status: 'ENOUGH',
+    usingMenuCount: 2,
+  });
+  const cock = body.stocks.find((stock)=> stock.name === '콜라');
+  expect(cock).toEqual({
+    id: expect.any(Number),
+    name: '콜라',
+    status: 'UNKNOWN',
+    usingMenuCount: 1,
+  })
 });
 
 test('get menu list', async () => {

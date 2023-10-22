@@ -1,5 +1,6 @@
 model Stock {
     id Int @id @default(autoincrement())
+    updatedAt DateTime @updatedAt
     store Store @relation(fields: [storeId], references: [id])
     storeId Int
     recipes Recipe[]
@@ -8,7 +9,8 @@ model Stock {
     amount Int?
     unit String?
     price Decimal?
-    currentAmount Int @default(0)
+    currentAmount Int?
+    noticeThreshold Int @default(0)
 }
 
 model MixedStock {
