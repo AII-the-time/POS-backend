@@ -97,7 +97,6 @@ test('default options',async () => {
     response.body
   ) as Menu.getOptionListInterface['Reply']['200'];
   expect(body).toHaveProperty('option');
-  console.log(body.option);
   expect(body.option).toEqual([
     {
       optionType: '온도',

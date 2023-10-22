@@ -6,7 +6,7 @@ import {
 import * as E from '@errors';
 
 export const createStockSchema = {
-  tags: ['menu'],
+  tags: ['stock'],
   summary: '재료 생성',
   headers: StoreAuthorizationHeader,
   body: {
@@ -17,7 +17,8 @@ export const createStockSchema = {
       amount: { type: 'number', nullable: true },
       unit: { type: 'string', nullable: true },
       price: { type: 'string', nullable: true },
-      currentAmount: { type: 'number' },
+      currentAmount: { type: 'number', nullable: true },
+      noticeThreshold: { type: 'number' },
     },
   },
   response: {
@@ -34,7 +35,7 @@ export const createStockSchema = {
 } as const;
 
 export const updateStockSchema = {
-  tags: ['menu'],
+  tags: ['stock'],
   summary: '재료 수정',
   headers: StoreAuthorizationHeader,
   body: {
@@ -46,7 +47,8 @@ export const updateStockSchema = {
       amount: { type: 'number', nullable: true },
       unit: { type: 'string', nullable: true },
       price: { type: 'string', nullable: true },
-      currentAmount: { type: 'number' },
+      currentAmount: { type: 'number', nullable: true },
+      noticeThreshold: { type: 'number' },
     },
   },
   response: {
@@ -63,7 +65,7 @@ export const updateStockSchema = {
 } as const;
 
 export const getStockListSchema = {
-  tags: ['menu'],
+  tags: ['stock'],
   summary: '원재료 목록 조회',
   headers: StoreAuthorizationHeader,
   response: {
@@ -80,7 +82,7 @@ export const getStockListSchema = {
             properties: {
               id: { type: 'number' },
               name: { type: 'string' },
-              status: { type: 'string', enum: ['여유', '주의', '부족', '없음'] },
+              status: { type: 'string', enum: ["EMPTY", "OUT_OF_STOCK", "CAUTION", "ENOUGH", "UNKNOWN"] },
               usingMenuCount: { type: 'number' },
             },
           },
@@ -92,7 +94,7 @@ export const getStockListSchema = {
 } as const;
 
 export const getStockSchema = {
-  tags: ['menu'],
+  tags: ['stock'],
   summary: '원재료 상세 조회',
   headers: StoreAuthorizationHeader,
   params: {
@@ -106,13 +108,15 @@ export const getStockSchema = {
     200: {
       type: 'object',
       description: 'success response',
-      required: ['name', 'amount', 'unit', 'price', 'currentAmount'],
+      required: ['name', 'amount', 'unit', 'price', 'currentAmount', 'noticeThreshold', 'updatedAt'],
       properties: {
         name: { type: 'string' },
         amount: { type: 'number', nullable: true },
         unit: { type: 'string', nullable: true },
         price: { type: 'string', nullable: true },
-        currentAmount: { type: 'number' },
+        currentAmount: { type: 'number', nullable: true },
+        noticeThreshold: { type: 'number' },
+        updatedAt: { type: 'string' },
       },
     },
     ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
@@ -120,7 +124,7 @@ export const getStockSchema = {
 } as const;
 
 export const createMixedStockSchema = {
-  tags: ['menu'],
+  tags: ['stock'],
   summary: '혼합 재료 생성',
   headers: StoreAuthorizationHeader,
   body: {
@@ -159,7 +163,7 @@ export const createMixedStockSchema = {
 } as const;
 
 export const updateMixedStockSchema = {
-  tags: ['menu'],
+  tags: ['stock'],
   summary: '혼합 재료 생성',
   headers: StoreAuthorizationHeader,
   body: {
@@ -199,7 +203,7 @@ export const updateMixedStockSchema = {
 } as const;
 
 export const getMixedStockListSchema = {
-  tags: ['menu'],
+  tags: ['stock'],
   summary: '혼합 재료 목록 조회',
   headers: StoreAuthorizationHeader,
   response: {
@@ -226,7 +230,7 @@ export const getMixedStockListSchema = {
 } as const;
 
 export const getMixedStockSchema = {
-  tags: ['menu'],
+  tags: ['stock'],
   summary: '혼합 재료 상세 조회',
   headers: StoreAuthorizationHeader,
   params: {
@@ -265,7 +269,7 @@ export const getMixedStockSchema = {
 } as const;
 
 export const searchStockSchema = {
-  tags: ['menu'],
+  tags: ['stock'],
   summary: '재료 검색',
   headers: StoreAuthorizationHeader,
   querystring: {
@@ -299,7 +303,7 @@ export const searchStockSchema = {
 } as const;
 
 export const searchStockAndMixedStockSchema = {
-  tags: ['menu'],
+  tags: ['stock'],
   summary: '재료 검색',
   headers: StoreAuthorizationHeader,
   querystring: {

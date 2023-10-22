@@ -5,6 +5,7 @@ import { LoginToken } from '@utils/jwt';
 import seedValues from './seedValues';
 import * as Menu from '@DTO/menu.dto';
 import * as Stock from '@DTO/stock.dto';
+import * as Order from '@DTO/order.dto';
 import { ErrorInterface } from '@DTO/index.dto';
 
 let app: FastifyInstance;
@@ -202,8 +203,10 @@ test('get stock detail', async () => {
     name: '민트초코 시럽',
     price: '0',
     amount: null,
-    currentAmount: 0,
+    currentAmount: null,
+    noticeThreshold: 0,
     unit: 'ml',
+    updatedAt: expect.any(String),
   });
 });
 
@@ -222,6 +225,7 @@ test('update stock', async () => {
       amount: 1000,
       unit: 'ml',
       currentAmount: 1000,
+      noticeThreshold: 500,
     },
   });
   expect(response.statusCode).toBe(201);
@@ -231,35 +235,6 @@ test('update stock', async () => {
   expect(body).toEqual({
     stockId: mintChoco,
   });
-});
-
-test('get stock list', async () => {
-  const response = await app.inject({
-    method: 'GET',
-    url: `/api/stock`,
-    headers: {
-      authorization: `Bearer ${accessToken}`,
-      storeid: seedValues.store.id.toString(),
-    },
-  });
-  expect(response.statusCode).toBe(200);
-  const body = JSON.parse(
-    response.body
-  ) as Stock.getStockListInterface['Reply']['200'];
-  const mintChoco = body.stocks.find((stock) => stock.name === '민트초코 시럽');
-  expect(mintChoco).toEqual({
-    id: expect.any(Number),
-    name: '민트초코 시럽',
-    status: '여유',
-    usingMenuCount: 0, // TODO: make this value to be 1
-  });
-  const cock = body.stocks.find((stock)=> stock.name === '콜라');
-  expect(cock).toEqual({
-    id: expect.any(Number),
-    name: '콜라',
-    status: '없음',
-    usingMenuCount: 0, // TODO: make this value to be 1
-  })
 });
 
 test('get stock detail', async () => {
@@ -280,7 +255,9 @@ test('get stock detail', async () => {
     price: '3000',
     amount: 1000,
     currentAmount: 1000,
+    noticeThreshold:500,
     unit: 'ml',
+    updatedAt: expect.any(String),
   });
 });
 
@@ -473,6 +450,35 @@ test('new menu without option', async () => {
   expect(body).toEqual({
     menuId: 46,
   });
+});
+
+test('get stock list', async () => {
+  const response = await app.inject({
+    method: 'GET',
+    url: `/api/stock`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+  });
+  expect(response.statusCode).toBe(200);
+  const body = JSON.parse(
+    response.body
+  ) as Stock.getStockListInterface['Reply']['200'];
+  const mintChoco = body.stocks.find((stock) => stock.name === '민트초코 시럽');
+  expect(mintChoco).toEqual({
+    id: expect.any(Number),
+    name: '민트초코 시럽',
+    status: 'ENOUGH',
+    usingMenuCount: 2,
+  });
+  const cock = body.stocks.find((stock)=> stock.name === '콜라');
+  expect(cock).toEqual({
+    id: expect.any(Number),
+    name: '콜라',
+    status: 'UNKNOWN',
+    usingMenuCount: 1,
+  })
 });
 
 test('get menu list', async () => {
@@ -791,5 +797,144 @@ test('get menu detail', async () => {
       },
     ],
     recipe: expect.any(Array),
+  });
+});
+
+let orderId: number;
+test('order', async () => {
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/order`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    payload: {
+      totalPrice: "3000",
+      menus: [
+        {
+          id: 45,
+          count: 1,
+          options: [],
+        },
+      ],
+    },
+  });
+  expect(response.statusCode).toBe(200);
+  const body = JSON.parse(
+    response.body
+  ) as Order.newOrderInterface['Reply']['200'];
+  orderId = body.orderId;
+  expect(body.orderId).toBeDefined();
+});
+
+test('pay', async () => {
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/order/pay`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    payload: {
+      orderId: orderId,
+      paymentMethod: 'CARD',
+    },
+  });
+
+  expect(response.statusCode).toBe(200);
+});
+
+test('get stock detail', async () => {
+  const response = await app.inject({
+    method: 'GET',
+    url: `/api/stock/${mintChoco}`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+  });
+  expect(response.statusCode).toBe(200);
+  const body = JSON.parse(
+    response.body
+  ) as Stock.getStockInterface['Reply']['200'];
+  expect(body).toEqual({
+    name: '민트초코 시럽',
+    price: '3000',
+    amount: 1000,
+    currentAmount: 950,
+    noticeThreshold:500,
+    unit: 'ml',
+    updatedAt: expect.any(String),
+  });
+});
+
+
+let mixedOrderId: number;
+test('order', async () => {
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/order`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    payload: {
+      totalPrice: "3000",
+      menus: [
+        {
+          id: 46,
+          count: 2,
+          options: [],
+        },
+      ],
+    },
+  });
+  expect(response.statusCode).toBe(200);
+  const body = JSON.parse(
+    response.body
+  ) as Order.newOrderInterface['Reply']['200'];
+  mixedOrderId = body.orderId;
+  expect(body.orderId).toBeDefined();
+});
+
+test('pay', async () => {
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/order/pay`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    payload: {
+      orderId: mixedOrderId,
+      paymentMethod: 'CARD',
+    },
+  });
+
+  expect(response.statusCode).toBe(200);
+});
+
+test('get stock detail', async () => {
+  const response = await app.inject({
+    method: 'GET',
+    url: `/api/stock/${mintChoco}`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+  });
+  expect(response.statusCode).toBe(200);
+  const body = JSON.parse(
+    response.body
+  ) as Stock.getStockInterface['Reply']['200'];
+  expect(body).toEqual({
+    name: '민트초코 시럽',
+    price: '3000',
+    amount: 1000,
+    currentAmount: 904,
+    noticeThreshold:500,
+    unit: 'ml',
+    updatedAt: expect.any(String),
   });
 });

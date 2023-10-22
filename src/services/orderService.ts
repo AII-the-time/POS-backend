@@ -111,7 +111,7 @@ export default {
       },
     });
 
-    await prisma.order.update({
+    const orders = await prisma.order.update({
       where: {
         id: orderId,
       },
@@ -121,8 +121,73 @@ export default {
         useMileage: useMileage,
         saveMileage: saveMileage,
       },
+      include:{
+        orderitems: {
+          include: {
+            menu: {
+              include: {
+                recipes: {
+                  include: {
+                    stock: true,
+                    mixedStock: {
+                      include: {
+                        mixings:{
+                          include: {
+                            stock: true,
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+        },
+      }
     });
 
+    const materials = orders.orderitems.flatMap((orderitem) => orderitem.menu.recipes.map(recipe=>({...recipe, count: orderitem.count})));
+    const stocks = materials
+      .filter(({stock, coldRegularAmount}) => stock !== null&&coldRegularAmount!==null&&stock.currentAmount!==null)
+      .map(({stock, count, coldRegularAmount})=>{
+        return {
+          id: stock!.id,
+          amount: coldRegularAmount! * count,
+          currentAmount: stock!.currentAmount!,
+        }
+      });
+    const mixedStocks = materials
+      .filter(({mixedStock, coldRegularAmount}) =>
+        mixedStock !== null
+        && coldRegularAmount!==null
+        && mixedStock.totalAmount!==null
+        && mixedStock.totalAmount!==0
+      )
+      .flatMap(({mixedStock, count, coldRegularAmount})=>{
+      
+      const totalAmount = mixedStock!.totalAmount!;
+      const useRate = coldRegularAmount! / totalAmount;
+      return mixedStock!.mixings
+        .filter(({stock:{currentAmount}})=>currentAmount!==null)
+        .map(({amount, stock:{id, currentAmount}})=>{
+        return {
+          id: id,
+          amount: amount * useRate * count,
+          currentAmount: currentAmount!,
+        }
+      })
+    });
+    await Promise.all(stocks.concat(mixedStocks).map(({id, amount, currentAmount}) =>{
+        return prisma.stock.update({
+          where: {
+            id
+          },
+          data: {
+            currentAmount: currentAmount - amount < 0 ? 0 : currentAmount - amount,
+          },
+        })
+      }));
     return null;
   },
 
