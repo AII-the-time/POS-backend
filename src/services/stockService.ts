@@ -77,7 +77,13 @@ export default {
       include: {
         _count: {
           select: {
-            recipes: true,
+            recipes: {
+              where: {
+                menu: {
+                  deletedAt: null,
+                },
+              },
+            },
           },
         },
         mixings: {
@@ -86,7 +92,13 @@ export default {
               select: {
                 _count: {
                   select: {
-                    recipes: true,
+                    recipes: {
+                      where: {
+                        menu: {
+                          deletedAt: null,
+                        },
+                      },
+                    },
                   },
                 },
               },
@@ -158,6 +170,7 @@ export default {
       where: {
         id: stockId,
         storeId,
+        deletedAt: null,
       },
     });
     if (!result) {
@@ -316,6 +329,7 @@ export default {
     const result = await prisma.mixedStock.findMany({
       where: {
         storeId,
+        deletedAt: null,
       },
     });
 
@@ -335,6 +349,7 @@ export default {
       where: {
         id: mixedStockId,
         storeId,
+        deletedAt: null,
       },
       include: {
         mixings: {
@@ -368,6 +383,7 @@ export default {
     const result = await prisma.stock.findMany({
       where: {
         storeId,
+        deletedAt: null,
         name: {
           contains: name,
         },
@@ -390,6 +406,7 @@ export default {
       prisma.stock.findMany({
         where: {
           storeId,
+          deletedAt: null,
           name: {
             contains: name,
           },
@@ -398,6 +415,7 @@ export default {
       prisma.mixedStock.findMany({
         where: {
           storeId,
+          deletedAt: null,
           name: {
             contains: name,
           },

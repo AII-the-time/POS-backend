@@ -26,8 +26,27 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      const result = await preOrderService.getPreOrder(request.body, request.params);
+      const result = await preOrderService.getPreOrder(
+        request.body,
+        request.params
+      );
       reply.code(200).send(result);
+    }
+  );
+
+  server.put<PreOrder.softDeletePreOrderInterface>(
+    '/:preOrderId',
+    {
+      schema: PreOrder.softDeletePreOrderSchema,
+      onError,
+      preValidation: checkStoreIdUser,
+    },
+    async (request, reply) => {
+      const result = await preOrderService.softDeletePreOrder(
+        request.body,
+        request.params
+      );
+      reply.code(204).send(result);
     }
   );
 
@@ -39,7 +58,10 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      const result = await preOrderService.getPreOrderList(request.body, request.query);
+      const result = await preOrderService.getPreOrderList(
+        request.body,
+        request.query
+      );
       reply.code(200).send(result);
     }
   );

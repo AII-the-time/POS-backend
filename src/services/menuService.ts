@@ -13,9 +13,14 @@ export default {
     const categories = await prisma.category.findMany({
       where: {
         storeId,
+        deletedAt: null,
       },
       include: {
         menu: {
+          where: {
+            deletedAt: null,
+          },
+
           orderBy: {
             sort: 'asc',
           },
@@ -48,6 +53,7 @@ export default {
     const menu = await prisma.menu.findUnique({
       where: {
         id: menuId,
+        deletedAt: null,
       },
       include: {
         optionMenu: true,
@@ -138,6 +144,7 @@ export default {
     const options = await prisma.option.findMany({
       where: {
         storeId,
+        deletedAt: null,
       },
     });
     const categorizedOption = options.reduce((acc, option) => {
@@ -193,12 +200,10 @@ export default {
     };
   },
 
-  async softDeleteCategory({
-    storeId,
-    categoryId,
-  }: Menu.softDeleteCategoryInterface['Body']): Promise<
-    Menu.softDeleteCategoryInterface['Reply']['204']
-  > {
+  async softDeleteCategory(
+    { storeId }: Menu.softDeleteCategoryInterface['Body'],
+    { categoryId }: Menu.softDeleteCategoryInterface['Params']
+  ): Promise<Menu.softDeleteCategoryInterface['Reply']['204']> {
     await prisma.category.update({
       where: {
         id: categoryId,
@@ -426,15 +431,14 @@ export default {
     };
   },
 
-  async softDeleteMenu({
-    storeId,
-    menuId,
-  }: Menu.softDeleteMenuInterface['Body']): Promise<
-    Menu.softDeleteMenuInterface['Reply']['204']
-  > {
+  async softDeleteMenu(
+    { storeId }: Menu.softDeleteMenuInterface['Body'],
+    { menuId }: Menu.softDeleteMenuInterface['Params']
+  ): Promise<Menu.softDeleteMenuInterface['Reply']['204']> {
     await prisma.menu.update({
       where: {
         id: menuId,
+        storeId,
       },
       data: {
         deletedAt: new Date(),

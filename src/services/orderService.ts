@@ -278,7 +278,7 @@ export default {
     };
   },
 
-  async sotfDeletePay(
+  async softDeletePay(
     { storeId }: Order.softDeletePayInterface['Body'],
     { orderId }: Order.softDeletePayInterface['Params']
   ): Promise<Order.softDeletePayInterface['Reply']['204']> {

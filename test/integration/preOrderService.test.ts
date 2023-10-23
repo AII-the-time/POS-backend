@@ -96,7 +96,7 @@ test('preOrder without memo', async () => {
             seedValues.option[2].id,
             seedValues.option[4].id,
           ],
-        }
+        },
       ],
     },
   });
@@ -189,9 +189,9 @@ test('get preOrder without memo', async () => {
     response.body
   ) as PreOrder.getPreOrderInterface['Reply']['200'];
   expect(body.totalPrice).toEqual(
-      Prisma.Decimal.mul(seedValues.menu[0].price, 3).toString()
+    Prisma.Decimal.mul(seedValues.menu[0].price, 3).toString()
   );
-  expect(body.memo).toEqual("");
+  expect(body.memo).toEqual('');
 });
 
 test('get not exist preOrder', async () => {
@@ -222,6 +222,22 @@ test('get exist preOrder but wrong storeId', async () => {
   expect(response.statusCode).toBe(404);
   const body = JSON.parse(response.body) as ErrorInterface;
   expect(body.message).toEqual('해당하는 예약 주문이 없습니다.');
+});
+
+test('soft delete preOrder2', async () => {
+  const response = await app.inject({
+    method: 'PUT',
+    url: `/api/preorder/${preOrderId2}`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store2.id.toString(),
+    },
+  });
+  expect(response.statusCode).toBe(204);
+  const body = JSON.parse(
+    response.body
+  ) as PreOrder.softDeletePreOrderInterface['Reply']['204'];
+  expect(body).toEqual({ preOrderId: preOrderId2 });
 });
 
 test('get preorder list', async () => {
@@ -317,6 +333,6 @@ test('get preOrder list after order', async () => {
   const order = body.preOrders[0];
   expect(order.preOrderId).toEqual(preOrderWithoutMemoId);
   expect(order.totalPrice).toEqual(
-      Prisma.Decimal.mul(seedValues.menu[0].price, 3).toString()
+    Prisma.Decimal.mul(seedValues.menu[0].price, 3).toString()
   );
 });
