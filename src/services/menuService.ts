@@ -325,23 +325,20 @@ export default {
   }: Menu.updateMenuInterface['Body']): Promise<
     Menu.updateMenuInterface['Reply']['201']
   > {
-    //delete all recipes
-    await prisma.recipe.deleteMany({
-      where: {
-        menuId: id,
-      },
-    });
-
+    if (!option) option = [];
     if (!recipe) recipe = [];
-    const result = await prisma.menu.update({
-      where: {
-        id,
-        storeId,
-      },
+    const createMenu = await prisma.menu.create({
       data: {
         name,
         price,
+        storeId,
         categoryId,
+        sort: 1,
+        optionMenu: {
+          create: option.map((id) => ({
+            optionId: id,
+          })),
+        },
         recipes: {
           create: recipe.map(
             ({
@@ -363,6 +360,23 @@ export default {
         },
       },
       include: {
+        recipes: {
+          include: {
+            stock: true,
+            mixedStock: true,
+          },
+        },
+      },
+    });
+    const softDeleteMenu = await prisma.menu.update({
+      where: {
+        id,
+        storeId,
+      },
+      data: {
+        deletedAt: new Date(),
+      },
+      include: {
         optionMenu: true,
         recipes: {
           include: {
@@ -375,7 +389,7 @@ export default {
 
     if (!option) option = [];
 
-    const optionMenuIds = result.optionMenu
+    const optionMenuIds = softDeleteMenu.optionMenu
       .map(({ optionId }) => optionId)
       .sort();
     const optionIds = option.sort();
@@ -394,7 +408,7 @@ export default {
     }
 
     await Promise.all(
-      result.recipes.map(async ({ stock, mixedStock }) => {
+      createMenu.recipes.map(async ({ stock, mixedStock }) => {
         if (stock) {
           if (stock.unit !== null) return;
           const unit = recipe!.find(
@@ -427,7 +441,7 @@ export default {
     );
 
     return {
-      menuId: result.id,
+      menuId: createMenu.id,
     };
   },
 

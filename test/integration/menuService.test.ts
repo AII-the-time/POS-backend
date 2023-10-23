@@ -838,7 +838,7 @@ test('update menu', async () => {
     response.body
   ) as Menu.updateMenuInterface['Reply']['201'];
   expect(body).toEqual({
-    menuId: 3,
+    menuId: 48,
   });
 });
 
@@ -861,7 +861,7 @@ test('create menu without option and recipe', async () => {
     response.body
   ) as Menu.updateMenuInterface['Reply']['201'];
   expect(body).toEqual({
-    menuId: 48,
+    menuId: 49,
   });
 });
 
@@ -874,7 +874,7 @@ test('update menu without option and recipe', async () => {
       storeid: seedValues.store.id.toString(),
     },
     body: {
-      id: 48,
+      id: 49,
       name: '오렌지에이드',
       price: 2500,
       categoryId: 2,
@@ -885,14 +885,14 @@ test('update menu without option and recipe', async () => {
     response.body
   ) as Menu.updateMenuInterface['Reply']['201'];
   expect(body).toEqual({
-    menuId: 48,
+    menuId: 50,
   });
 });
 
 test('get menu detail', async () => {
   const response = await app.inject({
     method: 'GET',
-    url: `/api/menu/3`,
+    url: `/api/menu/48`,
     headers: {
       authorization: `Bearer ${accessToken}`,
       storeid: seedValues.store.id.toString(),
