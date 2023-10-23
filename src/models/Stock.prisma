@@ -11,6 +11,7 @@ model Stock {
     price Decimal?
     currentAmount Int?
     noticeThreshold Int @default(0)
+    deletedAt DateTime?
 }
 
 model MixedStock {
@@ -22,6 +23,7 @@ model MixedStock {
     name String
     totalAmount Int?
     unit String?
+    deletedAt DateTime?
 }
 
 model Mixing {

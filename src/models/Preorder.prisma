@@ -11,6 +11,7 @@ model PreOrder{
     store Store @relation(fields: [storeId], references: [id])
     preOrderitems PreOrderItem[]
     order Order?
+    deletedAt DateTime?
 }
 
 model PreOrderItem{

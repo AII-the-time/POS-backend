@@ -4,16 +4,16 @@ import * as PreOrder from '@DTO/preOrder.dto';
 const prisma = new PrismaClient();
 
 export default {
-  async preOrder(
-    {
-      storeId,
-      menus,
-      totalPrice,
-      phone,
-      memo,
-      orderedFor,
-    }: PreOrder.newPreOrderInterface['Body']
-  ): Promise<PreOrder.newPreOrderInterface['Reply']['200']> {
+  async preOrder({
+    storeId,
+    menus,
+    totalPrice,
+    phone,
+    memo,
+    orderedFor,
+  }: PreOrder.newPreOrderInterface['Body']): Promise<
+    PreOrder.newPreOrderInterface['Reply']['200']
+  > {
     const preOrder = await prisma.preOrder.create({
       data: {
         storeId,
@@ -40,6 +40,30 @@ export default {
       },
     });
     return { preOrderId: preOrder.id };
+  },
+
+  async softDeletePreOrder(
+    { storeId }: PreOrder.softDeletePreOrderInterface['Body'],
+    { preOrderId }: PreOrder.softDeletePreOrderInterface['Params']
+  ): Promise<PreOrder.softDeletePreOrderInterface['Reply']['204']> {
+    const preOrder = await prisma.preOrder.findUnique({
+      where: {
+        id: preOrderId,
+        storeId,
+      },
+    });
+    if (preOrder === null) {
+      throw new NotFoundError('해당하는 예약 주문이 없습니다.', '예약 주문');
+    }
+    await prisma.preOrder.update({
+      where: {
+        id: preOrderId,
+      },
+      data: {
+        deletedAt: new Date(),
+      },
+    });
+    return { preOrderId };
   },
 
   async getPreOrder(
@@ -121,9 +145,9 @@ export default {
             gte: utcDateStr,
             lt: utcDateEnd,
           },
-          order:{
-            is: null
-          }
+          order: {
+            is: null,
+          },
         },
         orderBy: {
           orderedFor: 'desc',
@@ -142,7 +166,7 @@ export default {
             lt: utcDateEnd,
           },
         },
-      })
+      }),
     ]);
 
     const lastPage = Math.ceil(totalPreOrderCount / count);
@@ -163,7 +187,7 @@ export default {
     return {
       preOrders: list,
       lastPage,
-      totalPreOrderCount
+      totalPreOrderCount,
     };
   },
 };

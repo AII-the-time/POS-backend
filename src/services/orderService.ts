@@ -4,9 +4,14 @@ import { NotFoundError, NotCorrectTypeError, NotEnoughError } from '@errors';
 const prisma = new PrismaClient();
 
 export default {
-  async order(
-    { storeId, menus, totalPrice, preOrderId }: Order.newOrderInterface['Body']
-  ): Promise<Order.newOrderInterface['Reply']['200']> {
+  async order({
+    storeId,
+    menus,
+    totalPrice,
+    preOrderId,
+  }: Order.newOrderInterface['Body']): Promise<
+    Order.newOrderInterface['Reply']['200']
+  > {
     const order = await prisma.order.create({
       data: {
         storeId,
@@ -33,16 +38,14 @@ export default {
     });
     return { orderId: order.id };
   },
-  async pay(
-    {
-      storeId,
-      orderId,
-      paymentMethod,
-      useMileage,
-      saveMileage,
-      mileageId,
-    }: Order.payInterface['Body']
-  ): Promise<Order.payInterface['Reply']['200']> {
+  async pay({
+    storeId,
+    orderId,
+    paymentMethod,
+    useMileage,
+    saveMileage,
+    mileageId,
+  }: Order.payInterface['Body']): Promise<Order.payInterface['Reply']['200']> {
     const order = await prisma.order.findUnique({
       where: {
         id: orderId,
@@ -121,7 +124,7 @@ export default {
         useMileage: useMileage,
         saveMileage: saveMileage,
       },
-      include:{
+      include: {
         orderitems: {
           include: {
             menu: {
@@ -131,63 +134,76 @@ export default {
                     stock: true,
                     mixedStock: {
                       include: {
-                        mixings:{
+                        mixings: {
                           include: {
                             stock: true,
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
         },
-      }
+      },
     });
 
-    const materials = orders.orderitems.flatMap((orderitem) => orderitem.menu.recipes.map(recipe=>({...recipe, count: orderitem.count})));
+    const materials = orders.orderitems.flatMap((orderitem) =>
+      orderitem.menu.recipes.map((recipe) => ({
+        ...recipe,
+        count: orderitem.count,
+      }))
+    );
     const stocks = materials
-      .filter(({stock, coldRegularAmount}) => stock !== null&&coldRegularAmount!==null&&stock.currentAmount!==null)
-      .map(({stock, count, coldRegularAmount})=>{
+      .filter(
+        ({ stock, coldRegularAmount }) =>
+          stock !== null &&
+          coldRegularAmount !== null &&
+          stock.currentAmount !== null
+      )
+      .map(({ stock, count, coldRegularAmount }) => {
         return {
           id: stock!.id,
           amount: coldRegularAmount! * count,
           currentAmount: stock!.currentAmount!,
-        }
+        };
       });
     const mixedStocks = materials
-      .filter(({mixedStock, coldRegularAmount}) =>
-        mixedStock !== null
-        && coldRegularAmount!==null
-        && mixedStock.totalAmount!==null
-        && mixedStock.totalAmount!==0
+      .filter(
+        ({ mixedStock, coldRegularAmount }) =>
+          mixedStock !== null &&
+          coldRegularAmount !== null &&
+          mixedStock.totalAmount !== null &&
+          mixedStock.totalAmount !== 0
       )
-      .flatMap(({mixedStock, count, coldRegularAmount})=>{
-      
-      const totalAmount = mixedStock!.totalAmount!;
-      const useRate = coldRegularAmount! / totalAmount;
-      return mixedStock!.mixings
-        .filter(({stock:{currentAmount}})=>currentAmount!==null)
-        .map(({amount, stock:{id, currentAmount}})=>{
-        return {
-          id: id,
-          amount: amount * useRate * count,
-          currentAmount: currentAmount!,
-        }
-      })
-    });
-    await Promise.all(stocks.concat(mixedStocks).map(({id, amount, currentAmount}) =>{
+      .flatMap(({ mixedStock, count, coldRegularAmount }) => {
+        const totalAmount = mixedStock!.totalAmount!;
+        const useRate = coldRegularAmount! / totalAmount;
+        return mixedStock!.mixings
+          .filter(({ stock: { currentAmount } }) => currentAmount !== null)
+          .map(({ amount, stock: { id, currentAmount } }) => {
+            return {
+              id: id,
+              amount: amount * useRate * count,
+              currentAmount: currentAmount!,
+            };
+          });
+      });
+    await Promise.all(
+      stocks.concat(mixedStocks).map(({ id, amount, currentAmount }) => {
         return prisma.stock.update({
           where: {
-            id
+            id,
           },
           data: {
-            currentAmount: currentAmount - amount < 0 ? 0 : currentAmount - amount,
+            currentAmount:
+              currentAmount - amount < 0 ? 0 : currentAmount - amount,
           },
-        })
-      }));
+        });
+      })
+    );
     return null;
   },
 
@@ -251,8 +267,48 @@ export default {
             save: order.saveMileage!.toString(),
           };
     const isPreOrdered = order.preOrderId !== null;
-    return { paymentStatus, totalPrice, createdAt, orderitems, pay, mileage, isPreOrdered };
+    return {
+      paymentStatus,
+      totalPrice,
+      createdAt,
+      orderitems,
+      pay,
+      mileage,
+      isPreOrdered,
+    };
   },
+
+  async sotfDeletePay(
+    { storeId }: Order.softDeletePayInterface['Body'],
+    { orderId }: Order.softDeletePayInterface['Params']
+  ): Promise<Order.softDeletePayInterface['Reply']['204']> {
+    const order = await prisma.order.findUnique({
+      where: {
+        id: orderId,
+        storeId,
+      },
+      include: {
+        payment: true,
+      },
+    });
+    if (order === null) {
+      throw new NotFoundError('해당하는 주문이 없습니다.', '주문');
+    }
+    if (order.paymentStatus !== 'PAID') {
+      throw new NotFoundError('결제되지 않은 주문입니다.', '결제된 주문');
+    }
+    await prisma.order.update({
+      where: {
+        id: orderId,
+      },
+      data: {
+        paymentStatus: 'CANCELED',
+        deletedAt: new Date(),
+      },
+    });
+    return { orderId };
+  },
+
   async getOrderList(
     { storeId }: Order.getOrderListInterface['Body'],
     { page, count, date }: Order.getOrderListInterface['Querystring']

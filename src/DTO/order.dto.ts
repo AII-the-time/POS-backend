@@ -151,7 +151,7 @@ export const getOrderListSchema = {
       count: { type: 'number', default: 10 },
       date: {
         type: 'string',
-        format: 'date-time'
+        format: 'date-time',
       },
     },
   },
@@ -235,13 +235,51 @@ export const paySchema = {
   },
 } as const;
 
-export type newOrderInterface = SchemaToInterface<typeof newOrderSchema>&{Body: {storeId: number, userId: number}};
+export const softDeletePaySchema = {
+  tags: ['order'],
+  summary: '결제 취소하기',
+  headers: StoreAuthorizationHeader,
+  params: {
+    type: 'object',
+    required: ['orderId'],
+    properties: {
+      orderId: { type: 'number' },
+    },
+  },
+  response: {
+    204: {
+      type: 'object',
+      description: 'success response',
+      required: ['orderId'],
+      properties: {
+        orderId: { type: 'number' },
+      },
+    },
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError,
+      E.NotCorrectTypeError,
+      E.NotEnoughError
+    ),
+  },
+} as const;
+
+export type newOrderInterface = SchemaToInterface<typeof newOrderSchema> & {
+  Body: { storeId: number; userId: number };
+};
 export type getOrderInterface = SchemaToInterface<
   typeof getOrderSchema,
   [{ pattern: { type: 'string'; format: 'date-time' }; output: Date }]
->&{Body: {storeId: number, userId: number}};
+> & { Body: { storeId: number; userId: number } };
 export type getOrderListInterface = SchemaToInterface<
   typeof getOrderListSchema,
   [{ pattern: { type: 'string'; format: 'date-time' }; output: Date }]
->&{Body: {storeId: number, userId: number}};
-export type payInterface = SchemaToInterface<typeof paySchema>&{Body: {storeId: number, userId: number}};
+> & { Body: { storeId: number; userId: number } };
+export type payInterface = SchemaToInterface<typeof paySchema> & {
+  Body: { storeId: number; userId: number };
+};
+export type softDeletePayInterface = SchemaToInterface<
+  typeof softDeletePaySchema
+> & { Body: { storeId: number; userId: number } };

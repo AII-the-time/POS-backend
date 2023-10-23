@@ -1,4 +1,4 @@
-version: "3"
+version: '1'
 
 services:
   db:
@@ -25,6 +25,6 @@ services:
       - my-network
     links:
       - db
-  
+
 networks:
   my-network:
