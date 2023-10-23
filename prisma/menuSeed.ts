@@ -61,8 +61,6 @@ export default async (prisma: PrismaClient, storeId: number) => {
     data: materialData.map((material) => ({
       name: material.name,
       amount: isNaN(material.amount)?undefined:material.amount,
-      currentAmount: Math.floor(Math.random() * 2500+500),
-      noticeThreshold: Math.floor(Math.random() * 500+500),
       unit: material.unit===""?undefined:material.unit,
       price: material.price===""?undefined:material.price,
       storeId
@@ -91,18 +89,14 @@ export default async (prisma: PrismaClient, storeId: number) => {
   await prisma.mixedStock.createMany({
     data: mixedMaterialDataWithMaterials.map((material,index) => ({
       name: material.name,
-      storeId
+      storeId,
+      id: index+1
     }))
-  });
-  const mixedStocks = await prisma.mixedStock.findMany({
-    where: {
-      storeId
-    }
   });
   await prisma.mixing.createMany({
     data: mixedMaterialDataWithMaterials.flatMap((material,index) => material.materials.map((material) => ({
       amount: parseInt(material.amount),
-      mixedStockId: mixedStocks[index].id,
+      mixedStockId: index+1,
       stockId: material.stockId
     })))
   });
@@ -125,32 +119,25 @@ export default async (prisma: PrismaClient, storeId: number) => {
       name: menu.name,
       price: menu.price,
       materials: menu.materials.map((material) => {
-        const stock = materials.find((stock) => stock.name === material.name);
-        if(stock) {
-          return {
-            name: material.name,
-            coldRegularAmount: material.coldRegularAmount,
-            coldSizeUpAmount: material.coldSizeUpAmount,
-            hotRegularAmount: material.hotRegularAmount,
-            hotSizeUpAmount: material.hotSizeUpAmount,
-            stockId: stock.id
-          };
+        let stock:{id:number}|undefined= materials.find((stock) => stock.name === material.name);
+        if(!stock) {
+          stock = mixedMaterials.find((stock) => stock.name === material.name);
+          if(!stock) throw new Error(`Stock not found: ${material.name}`);
         }
-        const mixedStock = mixedMaterials.find((stock) => stock.name === material.name);
-        if(!mixedStock) throw new Error(`Stock not found: ${material.name}`);
         return {
           name: material.name,
           coldRegularAmount: material.coldRegularAmount,
           coldSizeUpAmount: material.coldSizeUpAmount,
           hotRegularAmount: material.hotRegularAmount,
           hotSizeUpAmount: material.hotSizeUpAmount,
-          mixedStockId: mixedStock.id
+          stockId: stock.id
         };
       })
     };
   });
-  const category = await prisma.category.create({
+  const category3 = await prisma.category.create({
     data: {
+      id: 3,
       storeId,
       name: '미분류',
       sort: 3,
@@ -162,7 +149,7 @@ export default async (prisma: PrismaClient, storeId: number) => {
     data: menuDataWithMaterials.map((menu,index) => ({
       name: menu.name,
       price: menu.price,
-      categoryId: category.id,
+      categoryId: 3,
       sort: index+1,
       storeId,
     }))
@@ -181,8 +168,7 @@ export default async (prisma: PrismaClient, storeId: number) => {
       hotRegularAmount: material.hotRegularAmount,
       hotSizeUpAmount: material.hotSizeUpAmount,
       menuId: menus.find((menu2) => menu2.name === menu.name)!.id,
-      stockId: material.stockId,
-      mixedStockId: material.mixedStockId
+      stockId: material.stockId
     })))
   });
 }

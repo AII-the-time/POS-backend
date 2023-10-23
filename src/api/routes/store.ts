@@ -18,20 +18,6 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     }
   );
 
-  server.post<Store.newStoreInterface>(
-    '/test',
-    {
-      schema: Store.newStoreSchema,onError,
-      preValidation: checkUser,
-    },
-    async (request, reply) => {
-      const result = await storeService.newStore(request.body);
-      await storeService.registDefaultOption(result);
-      await storeService.seeding(result);
-      reply.code(200).send(result);
-    }
-  );
-
   server.get<Store.storeListInterface>(
     '/',
     {

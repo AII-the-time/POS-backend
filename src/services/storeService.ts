@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client';
 import * as Store from '@DTO/store.dto';
-import menuSeed from '../../prisma/menuSeed';
 const prisma = new PrismaClient();
 
 export default {
@@ -63,10 +62,6 @@ export default {
         storeId,
       })),
     });
-  },
-
-  async seeding({ storeId }: { storeId: number }): Promise<void> {
-    await menuSeed(prisma, storeId);
   },
 
   async getStoreList({
