@@ -114,6 +114,18 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       reply.code(200).send(result);
     }
   );
+  server.put<Menu.updateOptionInterface>(
+    '/option',
+    {
+      schema: Menu.updateOptionSchema,
+      onError,
+      preValidation: checkStoreIdUser,
+    },
+    async (request, reply) => {
+      const result = await menuService.updateOption(request.body);
+      reply.code(201).send(result);
+    }
+  );
   server.put<Menu.softDeleteOptionInterface>(
     '/option/:optionId',
     {

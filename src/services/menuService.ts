@@ -176,6 +176,32 @@ export default {
     };
   },
 
+  async updateOption({
+    storeId,
+    optionName,
+    optionPrice,
+    optionCategory,
+    optionId,
+  }: Menu.updateOptionInterface['Body']): Promise<
+    Menu.updateOptionInterface['Reply']['201']
+  > {
+    const result = await prisma.option.update({
+      where: {
+        id: optionId,
+        storeId,
+      },
+      data: {
+        optionName,
+        optionPrice,
+        optionCategory,
+        id: optionId,
+      },
+    });
+    return {
+      optionId: result.id,
+    };
+  },
+
   async createCategory({
     name,
     storeId,
@@ -207,6 +233,7 @@ export default {
     await prisma.category.update({
       where: {
         id: categoryId,
+        storeId,
       },
       data: {
         deletedAt: new Date(),
