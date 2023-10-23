@@ -32,15 +32,20 @@ export const getMenuListSchema = {
                     id: { type: 'number' },
                     name: { type: 'string' },
                     price: { type: 'string' },
-                  }
-                }
-              }
-            }
-          }
-        }
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
   },
 } as const;
 
@@ -59,10 +64,10 @@ export const getMenuSchema = {
     200: {
       type: 'object',
       description: 'success response',
-      required: ['category', 'categoryId', 'name', 'price', 'option','recipe'],
+      required: ['category', 'categoryId', 'name', 'price', 'option', 'recipe'],
       properties: {
         category: { type: 'string' },
-        categoryId: { type: 'number'},
+        categoryId: { type: 'number' },
         name: { type: 'string' },
         price: { type: 'string' },
         option: {
@@ -92,7 +97,16 @@ export const getMenuSchema = {
           type: 'array',
           items: {
             type: 'object',
-            required: ['id', 'isMixed', 'name', 'unit', 'coldRegularAmount', 'coldSizeUpAmount', 'hotRegularAmount', 'hotSizeUpAmount'],
+            required: [
+              'id',
+              'isMixed',
+              'name',
+              'unit',
+              'coldRegularAmount',
+              'coldSizeUpAmount',
+              'hotRegularAmount',
+              'hotSizeUpAmount',
+            ],
             properties: {
               id: { type: 'number' },
               isMixed: { type: 'boolean' },
@@ -107,7 +121,12 @@ export const getMenuSchema = {
         },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
   },
 } as const;
 
@@ -142,10 +161,15 @@ export const getOptionListSchema = {
               },
             },
           },
-        }
+        },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
   },
 } as const;
 
@@ -169,7 +193,41 @@ export const createCategorySchema = {
         categoryId: { type: 'number' },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
+  },
+} as const;
+
+export const softDeleteCategorySchema = {
+  tags: ['menu'],
+  summary: '카테고리 삭제',
+  headers: StoreAuthorizationHeader,
+  params: {
+    type: 'object',
+    required: ['categoryId'],
+    properties: {
+      categoryId: { type: 'number' },
+    },
+  },
+  response: {
+    204: {
+      type: 'object',
+      description: 'success response',
+      required: ['categoryId'],
+      properties: {
+        categoryId: { type: 'number' },
+      },
+    },
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
   },
 } as const;
 
@@ -187,7 +245,7 @@ export const createMenuSchema = {
       option: {
         type: 'array',
         items: {
-          type: 'number'
+          type: 'number',
         },
         nullable: true,
       },
@@ -220,7 +278,12 @@ export const createMenuSchema = {
         menuId: { type: 'number' },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
   },
 } as const;
 
@@ -239,7 +302,7 @@ export const updateMenuSchema = {
       option: {
         type: 'array',
         items: {
-          type: 'number'
+          type: 'number',
         },
         nullable: true,
       },
@@ -271,13 +334,99 @@ export const updateMenuSchema = {
         menuId: { type: 'number' },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
   },
 } as const;
 
-export type getMenuListInterface = SchemaToInterface<typeof getMenuListSchema>&{Body: {storeId: number, userId: number}};
-export type getMenuInterface = SchemaToInterface<typeof getMenuSchema>&{Body: {storeId: number, userId: number}};
-export type getOptionListInterface = SchemaToInterface<typeof getOptionListSchema>&{Body: {storeId: number, userId: number}};
-export type createCategoryInterface = SchemaToInterface<typeof createCategorySchema>&{Body: {storeId: number, userId: number}};
-export type createMenuInterface = SchemaToInterface<typeof createMenuSchema>&{Body: {storeId: number, userId: number}};
-export type updateMenuInterface = SchemaToInterface<typeof updateMenuSchema>&{Body: {storeId: number, userId: number}};
+export const softDeleteMenuSchema = {
+  tags: ['menu'],
+  summary: '메뉴 삭제',
+  headers: StoreAuthorizationHeader,
+  params: {
+    type: 'object',
+    required: ['menuId'],
+    properties: {
+      menuId: { type: 'number' },
+    },
+  },
+  response: {
+    204: {
+      type: 'object',
+      description: 'success response',
+      required: ['menuId'],
+      properties: {
+        menuId: { type: 'number' },
+      },
+    },
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
+  },
+} as const;
+
+export const softDeletOptionSchema = {
+  tags: ['menu'],
+  summary: '옵션 삭제',
+  headers: StoreAuthorizationHeader,
+  params: {
+    type: 'object',
+    required: ['optionId'],
+    properties: {
+      optionId: { type: 'number' },
+    },
+  },
+  response: {
+    204: {
+      type: 'object',
+      description: 'success response',
+      required: ['optionId'],
+      properties: {
+        optionId: { type: 'number' },
+      },
+    },
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
+  },
+} as const;
+
+export type getMenuListInterface = SchemaToInterface<
+  typeof getMenuListSchema
+> & { Body: { storeId: number; userId: number } };
+export type getMenuInterface = SchemaToInterface<typeof getMenuSchema> & {
+  Body: { storeId: number; userId: number };
+};
+export type getOptionListInterface = SchemaToInterface<
+  typeof getOptionListSchema
+> & { Body: { storeId: number; userId: number } };
+export type createCategoryInterface = SchemaToInterface<
+  typeof createCategorySchema
+> & { Body: { storeId: number; userId: number } };
+export type softDeleteCategoryInterface = SchemaToInterface<
+  typeof softDeleteCategorySchema
+> & { Body: { storeId: number; userId: number; categoryId: number } };
+export type createMenuInterface = SchemaToInterface<typeof createMenuSchema> & {
+  Body: { storeId: number; userId: number };
+};
+export type updateMenuInterface = SchemaToInterface<typeof updateMenuSchema> & {
+  Body: { storeId: number; userId: number };
+};
+export type softDeleteMenuInterface = SchemaToInterface<
+  typeof softDeleteMenuSchema
+> & {
+  Body: { storeId: number; userId: number; menuId: number };
+};
+export type softDeleteOptionInterface = SchemaToInterface<
+  typeof softDeletOptionSchema
+> & { Body: { storeId: number; userId: number; optionId: number } };

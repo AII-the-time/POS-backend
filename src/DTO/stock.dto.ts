@@ -30,7 +30,12 @@ export const createStockSchema = {
         stockId: { type: 'number' },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
   },
 } as const;
 
@@ -60,7 +65,41 @@ export const updateStockSchema = {
         stockId: { type: 'number' },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
+  },
+} as const;
+
+export const softDeleteStockSchema = {
+  tags: ['stock'],
+  summary: '재료 삭제',
+  headers: StoreAuthorizationHeader,
+  params: {
+    type: 'object',
+    required: ['stockId'],
+    properties: {
+      stockId: { type: 'number' },
+    },
+  },
+  response: {
+    204: {
+      type: 'object',
+      description: 'success response',
+      required: ['stockId'],
+      properties: {
+        stockId: { type: 'number' },
+      },
+    },
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
   },
 } as const;
 
@@ -82,14 +121,22 @@ export const getStockListSchema = {
             properties: {
               id: { type: 'number' },
               name: { type: 'string' },
-              status: { type: 'string', enum: ["EMPTY", "OUT_OF_STOCK", "CAUTION", "ENOUGH", "UNKNOWN"] },
+              status: {
+                type: 'string',
+                enum: ['EMPTY', 'OUT_OF_STOCK', 'CAUTION', 'ENOUGH', 'UNKNOWN'],
+              },
               usingMenuCount: { type: 'number' },
             },
           },
         },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
   },
 } as const;
 
@@ -108,7 +155,15 @@ export const getStockSchema = {
     200: {
       type: 'object',
       description: 'success response',
-      required: ['name', 'amount', 'unit', 'price', 'currentAmount', 'noticeThreshold', 'updatedAt'],
+      required: [
+        'name',
+        'amount',
+        'unit',
+        'price',
+        'currentAmount',
+        'noticeThreshold',
+        'updatedAt',
+      ],
       properties: {
         name: { type: 'string' },
         amount: { type: 'number', nullable: true },
@@ -119,7 +174,12 @@ export const getStockSchema = {
         updatedAt: { type: 'string' },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
   },
 } as const;
 
@@ -142,8 +202,8 @@ export const createMixedStockSchema = {
           additionalProperties: false,
           properties: {
             id: { type: 'number' },
-            unit: { type: 'string', },
-            amount: { type: 'number', },
+            unit: { type: 'string' },
+            amount: { type: 'number' },
           },
         },
       },
@@ -158,7 +218,12 @@ export const createMixedStockSchema = {
         mixedStockId: { type: 'number' },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
   },
 } as const;
 
@@ -182,8 +247,8 @@ export const updateMixedStockSchema = {
           additionalProperties: false,
           properties: {
             id: { type: 'number' },
-            unit: { type: 'string', },
-            amount: { type: 'number', },
+            unit: { type: 'string' },
+            amount: { type: 'number' },
           },
         },
       },
@@ -198,7 +263,41 @@ export const updateMixedStockSchema = {
         mixedStockId: { type: 'number' },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
+  },
+} as const;
+
+export const softDeleteMixedStockSchema = {
+  tags: ['stock'],
+  summary: '혼합 재료 삭제',
+  headers: StoreAuthorizationHeader,
+  params: {
+    type: 'object',
+    required: ['mixedStockId'],
+    properties: {
+      mixedStockId: { type: 'number' },
+    },
+  },
+  response: {
+    204: {
+      type: 'object',
+      description: 'success response',
+      required: ['mixedStockId'],
+      properties: {
+        mixedStockId: { type: 'number' },
+      },
+    },
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
   },
 } as const;
 
@@ -216,16 +315,21 @@ export const getMixedStockListSchema = {
           type: 'array',
           items: {
             type: 'object',
-            required: ['id', 'name' ],
+            required: ['id', 'name'],
             properties: {
               id: { type: 'number' },
               name: { type: 'string' },
-            }
-          }
-        }
+            },
+          },
+        },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
   },
 } as const;
 
@@ -258,13 +362,18 @@ export const getMixedStockSchema = {
               id: { type: 'number' },
               name: { type: 'string' },
               unit: { type: 'string', nullable: true },
-              amount: { type: 'number'},
+              amount: { type: 'number' },
             },
           },
         },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
   },
 } as const;
 
@@ -292,13 +401,18 @@ export const searchStockSchema = {
             required: ['id', 'name'],
             properties: {
               id: { type: 'number' },
-              name: { type: 'string' }
+              name: { type: 'string' },
             },
           },
         },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
   },
 } as const;
 
@@ -327,23 +441,54 @@ export const searchStockAndMixedStockSchema = {
             properties: {
               id: { type: 'number' },
               name: { type: 'string' },
-              isMixed: { type: 'boolean' }
+              isMixed: { type: 'boolean' },
             },
           },
         },
       },
     },
-    ...errorSchema(E.NotFoundError, E.UserAuthorizationError, E.StoreAuthorizationError, E.NoAuthorizationInHeaderError)
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
   },
 } as const;
 
-export type createStockInterface = SchemaToInterface<typeof createStockSchema>&{Body: {storeId: number, userId: number}};
-export type updateStockInterface = SchemaToInterface<typeof updateStockSchema>&{Body: {storeId: number, userId: number}};
-export type getStockListInterface = SchemaToInterface<typeof getStockListSchema>&{Body: {storeId: number, userId: number}};
-export type getStockInterface = SchemaToInterface<typeof getStockSchema>&{Body: {storeId: number, userId: number}};
-export type createMixedStockInterface = SchemaToInterface<typeof createMixedStockSchema>&{Body: {storeId: number, userId: number}};
-export type updateMixedStockInterface = SchemaToInterface<typeof updateMixedStockSchema>&{Body: {storeId: number, userId: number}};
-export type getMixedStockListInterface = SchemaToInterface<typeof getMixedStockListSchema>&{Body: {storeId: number, userId: number}};
-export type getMixedStockInterface = SchemaToInterface<typeof getMixedStockSchema>&{Body: {storeId: number, userId: number}};
-export type searchStockInterface = SchemaToInterface<typeof searchStockSchema>&{Body: {storeId: number, userId: number}};
-export type searchStockAndMixedStockInterface = SchemaToInterface<typeof searchStockAndMixedStockSchema>&{Body: {storeId: number, userId: number}};
+export type createStockInterface = SchemaToInterface<
+  typeof createStockSchema
+> & { Body: { storeId: number; userId: number } };
+export type updateStockInterface = SchemaToInterface<
+  typeof updateStockSchema
+> & { Body: { storeId: number; userId: number } };
+export type softDeleteStockInterface = SchemaToInterface<
+  typeof softDeleteStockSchema
+> & { Body: { storeId: number; userId: number; stockId: number } };
+export type getStockListInterface = SchemaToInterface<
+  typeof getStockListSchema
+> & { Body: { storeId: number; userId: number } };
+export type getStockInterface = SchemaToInterface<typeof getStockSchema> & {
+  Body: { storeId: number; userId: number };
+};
+export type createMixedStockInterface = SchemaToInterface<
+  typeof createMixedStockSchema
+> & { Body: { storeId: number; userId: number } };
+export type updateMixedStockInterface = SchemaToInterface<
+  typeof updateMixedStockSchema
+> & { Body: { storeId: number; userId: number } };
+export type softDeleteMixedStockInterface = SchemaToInterface<
+  typeof softDeleteMixedStockSchema
+> & { Body: { storeId: number; userId: number; mixedStockId: number } };
+export type getMixedStockListInterface = SchemaToInterface<
+  typeof getMixedStockListSchema
+> & { Body: { storeId: number; userId: number } };
+export type getMixedStockInterface = SchemaToInterface<
+  typeof getMixedStockSchema
+> & { Body: { storeId: number; userId: number } };
+export type searchStockInterface = SchemaToInterface<
+  typeof searchStockSchema
+> & { Body: { storeId: number; userId: number } };
+export type searchStockAndMixedStockInterface = SchemaToInterface<
+  typeof searchStockAndMixedStockSchema
+> & { Body: { storeId: number; userId: number } };

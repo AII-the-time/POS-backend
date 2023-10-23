@@ -16,6 +16,7 @@ model Order{
     payment Payment[]
     preOrderId Int? @unique
     preOrder PreOrder? @relation(fields: [preOrderId], references: [id])
+    deletedAt DateTime?
 }
 
 model OrderItem{
