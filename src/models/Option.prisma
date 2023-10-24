@@ -9,6 +9,7 @@ model Option{
     store Store @relation(fields: [storeId], references: [id])
     optionMenu OptionMenu[]
     optionOrderItem OptionOrderItem[]
+    deletedAt DateTime?
 }
 
 model OptionMenu{

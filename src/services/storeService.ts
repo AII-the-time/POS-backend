@@ -4,9 +4,14 @@ import menuSeed from '../../prisma/menuSeed';
 const prisma = new PrismaClient();
 
 export default {
-  async newStore(
-    { userId, name, address, openingHours }: Store.newStoreInterface['Body']
-  ): Promise<Store.newStoreInterface['Reply']['200']> {
+  async newStore({
+    userId,
+    name,
+    address,
+    openingHours,
+  }: Store.newStoreInterface['Body']): Promise<
+    Store.newStoreInterface['Reply']['200']
+  > {
     const store = await prisma.store.create({
       data: {
         name: name,
@@ -22,10 +27,8 @@ export default {
 
     return { storeId: store.id };
   },
-  
-  async registDefaultOption(
-    { storeId }: { storeId: number }
-  ): Promise<void> {
+
+  async registDefaultOption({ storeId }: { storeId: number }): Promise<void> {
     await prisma.option.createMany({
       data: [
         {
@@ -71,8 +74,9 @@ export default {
 
   async getStoreList({
     userId,
-  }: Store.storeListInterface['Body']
-  ): Promise<Store.storeListInterface['Reply']['200']> {
+  }: Store.storeListInterface['Body']): Promise<
+    Store.storeListInterface['Reply']['200']
+  > {
     const stores = await prisma.store.findMany({
       where: {
         userId,
@@ -91,5 +95,27 @@ export default {
         address: store.address,
       })),
     };
+  },
+
+  async updateStore({
+    storeId,
+    name,
+    address,
+    openingHours,
+  }: Store.updateStoreInterface['Body']): Promise<
+    Store.updateStoreInterface['Reply']['201']
+  > {
+    await prisma.store.update({
+      where: {
+        id: storeId,
+      },
+      data: {
+        name,
+        address,
+        defaultOpeningHours: openingHours as any,
+      },
+    });
+
+    return { storeId };
   },
 };

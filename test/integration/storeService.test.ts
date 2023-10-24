@@ -6,6 +6,8 @@ import userService from '@services/userService';
 import * as Store from '@DTO/store.dto';
 import * as Menu from '@DTO/menu.dto';
 import test400 from './400test';
+import seedValues from './seedValues';
+import { LoginToken } from '@utils/jwt';
 
 let app: FastifyInstance;
 
@@ -82,7 +84,7 @@ test('new store', async () => {
   storeId = body.storeId;
 });
 
-test('default options',async () => {
+test('default options', async () => {
   const response = await app.inject({
     method: 'GET',
     url: '/api/menu/option',
@@ -144,7 +146,7 @@ test('default options',async () => {
       ],
     },
   ]);
-})
+});
 
 test('get store list', async () => {
   const response = await app.inject({
@@ -170,4 +172,28 @@ test('get store list', async () => {
     name: storeName,
     address: storeAddress,
   });
+});
+
+test('update store', async () => {
+  const response = await app.inject({
+    method: 'PUT',
+    url: '/api/store',
+    payload: {
+      storeId,
+      name: '테스트 변경',
+      address: '테스트 변경',
+      openingHours: defaultOpeningHours,
+    },
+    headers: {
+      authorization: accessToken,
+      storeid: storeId.toString(),
+    },
+  });
+  expect(response.statusCode).toBe(201);
+
+  const body = JSON.parse(
+    response.body
+  ) as Store.updateStoreInterface['Reply']['201'];
+  expect(body).toHaveProperty('storeId');
+  expect(body.storeId).toBe(storeId);
 });

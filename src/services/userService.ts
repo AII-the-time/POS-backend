@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import * as User from '@DTO/user.dto';
+import * as Store from '@DTO/store.dto';
 import {
   TokenForCertificatePhone,
   CertificatedPhoneToken,
@@ -90,13 +91,15 @@ export default {
   },
   async refresh({
     userId,
-  }: User.refreshInterface['Body']
-  ): Promise<User.refreshInterface['Reply']['200']> {
+  }: User.refreshInterface['Body']): Promise<
+    User.refreshInterface['Reply']['200']
+  > {
     const loginToken = new LoginToken(userId);
     const accessToken = loginToken.signAccessToken();
     const refreshToken = loginToken.signRefreshToken();
 
     return { accessToken, refreshToken };
   },
+
   humanError: new E.NotDefinedOnConfigError('humanError'),
 };
