@@ -69,7 +69,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
         request.body,
         request.params
       );
-      reply.code(204).send(result);
+      reply.code(200).send(result);
     }
   );
 
@@ -111,7 +111,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
         request.body,
         request.params
       );
-      reply.code(204).send(result);
+      reply.code(200).send(result);
     }
   );
 
@@ -151,7 +151,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
         request.body,
         request.params
       );
-      reply.code(204).send(result);
+      reply.code(200).send(result);
     }
   );
 };

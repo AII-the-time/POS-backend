@@ -86,7 +86,7 @@ export const softDeleteStockSchema = {
     },
   },
   response: {
-    204: {
+    200: {
       type: 'object',
       description: 'success response',
       required: ['stockId'],
@@ -284,7 +284,7 @@ export const softDeleteMixedStockSchema = {
     },
   },
   response: {
-    204: {
+    200: {
       type: 'object',
       description: 'success response',
       required: ['mixedStockId'],

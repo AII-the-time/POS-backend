@@ -24,13 +24,21 @@ export default {
           orderBy: {
             sort: 'asc',
           },
+          include: {
+            optionMenu: true,
+            recipes: {
+              include: {
+                stock: true,
+                mixedStock: true,
+              },
+            },
+          },
         },
       },
       orderBy: {
         sort: 'asc',
       },
     });
-
     const result = categories.map((category) => {
       const menus = category.menu.map((menu) => ({
         ...menu,
@@ -250,7 +258,7 @@ export default {
   async softDeleteCategory(
     { storeId }: Menu.softDeleteCategoryInterface['Body'],
     { categoryId }: Menu.softDeleteCategoryInterface['Params']
-  ): Promise<Menu.softDeleteCategoryInterface['Reply']['204']> {
+  ): Promise<Menu.softDeleteCategoryInterface['Reply']['200']> {
     await prisma.category.update({
       where: {
         id: categoryId,
@@ -496,7 +504,7 @@ export default {
   async softDeleteMenu(
     { storeId }: Menu.softDeleteMenuInterface['Body'],
     { menuId }: Menu.softDeleteMenuInterface['Params']
-  ): Promise<Menu.softDeleteMenuInterface['Reply']['204']> {
+  ): Promise<Menu.softDeleteMenuInterface['Reply']['200']> {
     await prisma.menu.update({
       where: {
         id: menuId,
@@ -512,7 +520,7 @@ export default {
   async softDeleteOption(
     { storeId }: Menu.softDeleteOptionInterface['Body'],
     { optionId }: Menu.softDeleteOptionInterface['Params']
-  ): Promise<Menu.softDeleteOptionInterface['Reply']['204']> {
+  ): Promise<Menu.softDeleteOptionInterface['Reply']['200']> {
     await prisma.option.update({
       where: {
         id: optionId,

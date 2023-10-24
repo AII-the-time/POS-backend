@@ -277,7 +277,7 @@ export const softDeleteCategorySchema = {
     },
   },
   response: {
-    204: {
+    200: {
       type: 'object',
       description: 'success response',
       required: ['categoryId'],
@@ -418,7 +418,7 @@ export const softDeleteMenuSchema = {
     },
   },
   response: {
-    204: {
+    200: {
       type: 'object',
       description: 'success response',
       required: ['menuId'],
@@ -447,7 +447,7 @@ export const softDeletOptionSchema = {
     },
   },
   response: {
-    204: {
+    200: {
       type: 'object',
       description: 'success response',
       required: ['optionId'],

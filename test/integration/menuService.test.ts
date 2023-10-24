@@ -73,10 +73,10 @@ test('soft delete category', async () => {
       storeid: seedValues.store.id.toString(),
     },
   });
-  expect(response.statusCode).toBe(204);
+  expect(response.statusCode).toBe(200);
   const body = JSON.parse(
     response.body
-  ) as Menu.softDeleteCategoryInterface['Reply']['204'];
+  ) as Menu.softDeleteCategoryInterface['Reply']['200'];
   expect(body).toEqual({
     categoryId: 4,
   });
@@ -157,10 +157,10 @@ test('create stock and soft delete', async () => {
     },
   });
 
-  expect(softDeleteResponse.statusCode).toBe(204);
+  expect(softDeleteResponse.statusCode).toBe(200);
   const body2 = JSON.parse(
     softDeleteResponse.body
-  ) as Stock.softDeleteStockInterface['Reply']['204'];
+  ) as Stock.softDeleteStockInterface['Reply']['200'];
   expect(body2).toEqual({
     stockId: body.stockId,
   });
@@ -245,10 +245,10 @@ test('new menu and soft delete', async () => {
       storeid: seedValues.store.id.toString(),
     },
   });
-  expect(softDeleteResponse.statusCode).toBe(204);
+  expect(softDeleteResponse.statusCode).toBe(200);
   const body2 = JSON.parse(
     createResponse.body
-  ) as Menu.softDeleteMenuInterface['Reply']['204'];
+  ) as Menu.softDeleteMenuInterface['Reply']['200'];
   expect(body2).toEqual({
     menuId: body.menuId,
   });
@@ -356,10 +356,10 @@ test('new mixedStock and delete', async () => {
       storeid: seedValues.store.id.toString(),
     },
   });
-  expect(softDeleteResponse.statusCode).toBe(204);
+  expect(softDeleteResponse.statusCode).toBe(200);
   const body2 = JSON.parse(
     softDeleteResponse.body
-  ) as Stock.softDeleteMixedStockInterface['Reply']['204'];
+  ) as Stock.softDeleteMixedStockInterface['Reply']['200'];
   expect(body2).toEqual({
     mixedStockId: body.mixedStockId,
   });

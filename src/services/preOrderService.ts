@@ -88,7 +88,7 @@ export default {
   async softDeletePreOrder(
     { storeId }: PreOrder.softDeletePreOrderInterface['Body'],
     { preOrderId }: PreOrder.softDeletePreOrderInterface['Params']
-  ): Promise<PreOrder.softDeletePreOrderInterface['Reply']['204']> {
+  ): Promise<PreOrder.softDeletePreOrderInterface['Reply']['200']> {
     const preOrder = await prisma.preOrder.findUnique({
       where: {
         id: preOrderId,
