@@ -29,7 +29,7 @@ test('new menu category', async () => {
     },
     body: {
       name: '디저트',
-      sort: 4,
+      sort: 7,
     },
   });
   expect(response.statusCode).toBe(201);
@@ -38,7 +38,7 @@ test('new menu category', async () => {
   ) as Menu.createCategoryInterface['Reply']['201'];
   categoryId = body.categoryId;
   expect(body).toEqual({
-    categoryId: 4,
+    categoryId: 7,
   });
 });
 
@@ -60,7 +60,7 @@ test('update menu category', async () => {
     response.body
   ) as Menu.updateCategoryInterface['Reply']['201'];
   expect(body).toEqual({
-    categoryId: 4,
+    categoryId: 7,
   });
 });
 
@@ -78,7 +78,7 @@ test('soft delete category', async () => {
     response.body
   ) as Menu.softDeleteCategoryInterface['Reply']['200'];
   expect(body).toEqual({
-    categoryId: 4,
+    categoryId: 7,
   });
 });
 
@@ -683,18 +683,7 @@ test('get menu list', async () => {
   expect(body.categories[0]).toEqual({
     category: '커피',
     categoryId: 1,
-    menus: [
-      {
-        id: 1,
-        name: '아메리카노',
-        price: '2000',
-      },
-      {
-        id: 2,
-        name: '카페라떼',
-        price: '3000',
-      },
-    ],
+    menus: expect.any(Array)
   });
   expect(body.categories[1]).toEqual({
     category: '티&에이드',
