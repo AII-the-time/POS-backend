@@ -53,7 +53,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     },
     async (request, reply) => {
       await orderService.softDeletePay(request.body, request.params);
-      reply.code(204).send();
+      reply.code(200).send();
     }
   );
 
