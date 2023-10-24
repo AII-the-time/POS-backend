@@ -189,7 +189,6 @@ test('update store', async () => {
       storeid: storeId.toString(),
     },
   });
-  console.log(response.body);
   expect(response.statusCode).toBe(201);
 
   const body = JSON.parse(

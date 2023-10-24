@@ -61,6 +61,61 @@ export const newPreOrderSchema = {
   },
 } as const;
 
+export const updatePreOrderSchema = {
+  tags: ['preorder'],
+  summary: '예약 주문 수정',
+  headers: StoreAuthorizationHeader,
+  body: {
+    type: 'object',
+    required: ['totalPrice', 'phone', 'menus', 'orderedFor', 'id', 'memo'],
+    properties: {
+      totalPrice: {
+        type: 'string',
+      },
+      menus: {
+        type: 'array',
+        items: {
+          type: 'object',
+          required: ['id', 'count', 'options'],
+          properties: {
+            id: { type: 'number' },
+            count: { type: 'number' },
+            detail: { type: 'string', nullable: true },
+            options: {
+              type: 'array',
+              items: { type: 'number' },
+            },
+          },
+        },
+      },
+      phone: { type: 'string' },
+      memo: { type: 'string', nullable: true },
+      orderedFor: {
+        type: 'string',
+        format: 'date-time',
+      },
+      id: { type: 'number' },
+    },
+  },
+  response: {
+    201: {
+      type: 'object',
+      description: 'success response',
+      required: ['preOrderId'],
+      properties: {
+        preOrderId: { type: 'number' },
+      },
+    },
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError,
+      E.NotCorrectTypeError
+    ),
+  },
+} as const;
+
 export const softDeletePreOrderSchema = {
   tags: ['preorder'],
   summary: '예약 주문 삭제',
@@ -221,6 +276,9 @@ export const getPreOrderListSchema = {
 export type newPreOrderInterface = SchemaToInterface<
   typeof newPreOrderSchema
 > & { Body: { storeId: number; userId: number } };
+export type updatePreOrderInterface = SchemaToInterface<
+  typeof updatePreOrderSchema
+> & { Body: { storeId: number; userId: number; preOrderId: number } };
 export type getPreOrderInterface = SchemaToInterface<
   typeof getPreOrderSchema,
   [

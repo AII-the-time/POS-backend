@@ -42,6 +42,49 @@ export default {
     return { preOrderId: preOrder.id };
   },
 
+  async updatePreOrder({
+    storeId,
+    totalPrice,
+    phone,
+    memo,
+    orderedFor,
+    menus,
+    id,
+  }: PreOrder.updatePreOrderInterface['Body']): Promise<
+    PreOrder.updatePreOrderInterface['Reply']['201']
+  > {
+    const result = await prisma.preOrder.update({
+      where: {
+        id,
+        storeId,
+      },
+      data: {
+        totalPrice,
+        phone,
+        memo,
+        orderedFor,
+        storeId,
+        preOrderitems: {
+          create: menus.map((menu) => {
+            return {
+              count: menu.count,
+              menuId: menu.id,
+              detail: menu.detail,
+              optionOrderItems: {
+                create: menu.options.map((option) => {
+                  return {
+                    optionId: option,
+                  };
+                }),
+              },
+            };
+          }),
+        },
+      },
+    });
+    return { preOrderId: result.id };
+  },
+
   async softDeletePreOrder(
     { storeId }: PreOrder.softDeletePreOrderInterface['Body'],
     { preOrderId }: PreOrder.softDeletePreOrderInterface['Params']
@@ -74,6 +117,7 @@ export default {
       where: {
         id: preOrderId,
         storeId,
+        deletedAt: null,
       },
       include: {
         preOrderitems: {
@@ -141,6 +185,7 @@ export default {
       prisma.preOrder.findMany({
         where: {
           storeId,
+          deletedAt: null,
           orderedFor: {
             gte: utcDateStr,
             lt: utcDateEnd,

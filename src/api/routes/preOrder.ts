@@ -18,6 +18,19 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     }
   );
 
+  server.put<PreOrder.updatePreOrderInterface>(
+    '/',
+    {
+      schema: PreOrder.updatePreOrderSchema,
+      onError,
+      preValidation: checkStoreIdUser,
+    },
+    async (request, reply) => {
+      const result = await preOrderService.updatePreOrder(request.body);
+      reply.code(201).send(result);
+    }
+  );
+
   server.get<PreOrder.getPreOrderInterface>(
     '/:preOrderId',
     {
