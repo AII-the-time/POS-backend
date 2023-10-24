@@ -276,10 +276,10 @@ test('soft delete preOrder2', async () => {
       storeid: seedValues.store2.id.toString(),
     },
   });
-  expect(response.statusCode).toBe(204);
+  expect(response.statusCode).toBe(200);
   const body = JSON.parse(
     response.body
-  ) as PreOrder.softDeletePreOrderInterface['Reply']['204'];
+  ) as PreOrder.softDeletePreOrderInterface['Reply']['200'];
   expect(body).toEqual({ preOrderId: preOrderId2 });
 });
 

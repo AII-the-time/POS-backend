@@ -281,7 +281,7 @@ export default {
   async softDeletePay(
     { storeId }: Order.softDeletePayInterface['Body'],
     { orderId }: Order.softDeletePayInterface['Params']
-  ): Promise<Order.softDeletePayInterface['Reply']['204']> {
+  ): Promise<Order.softDeletePayInterface['Reply']['200']> {
     const order = await prisma.order.findUnique({
       where: {
         id: orderId,

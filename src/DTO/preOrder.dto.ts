@@ -128,7 +128,7 @@ export const softDeletePreOrderSchema = {
     },
   },
   response: {
-    204: {
+    200: {
       type: 'object',
       description: 'success response',
       required: ['preOrderId'],
