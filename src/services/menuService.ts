@@ -226,6 +226,27 @@ export default {
     };
   },
 
+  async updateCategory({
+    name,
+    storeId,
+    id,
+  }: Menu.updateCategoryInterface['Body']): Promise<
+    Menu.updateCategoryInterface['Reply']['201']
+  > {
+    await prisma.category.update({
+      where: {
+        id,
+        storeId,
+      },
+      data: {
+        name: name,
+      },
+    });
+    return {
+      categoryId: id,
+    };
+  },
+
   async softDeleteCategory(
     { storeId }: Menu.softDeleteCategoryInterface['Body'],
     { categoryId }: Menu.softDeleteCategoryInterface['Params']

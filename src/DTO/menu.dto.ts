@@ -234,6 +234,37 @@ export const createCategorySchema = {
   },
 } as const;
 
+export const updateCategorySchema = {
+  tags: ['menu'],
+  summary: '카테고리 이름 수정',
+  headers: StoreAuthorizationHeader,
+  body: {
+    type: 'object',
+    required: ['id', 'name'],
+    properties: {
+      id: { type: 'number' },
+      name: { type: 'string' },
+    },
+  },
+  response: {
+    201: {
+      type: 'object',
+      description: 'success response',
+      required: ['categoryId'],
+      properties: {
+        categoryId: { type: 'number' },
+      },
+    },
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError,
+      E.NotCorrectTypeError
+    ),
+  },
+} as const;
+
 export const softDeleteCategorySchema = {
   tags: ['menu'],
   summary: '카테고리 삭제',
@@ -447,6 +478,9 @@ export type updateOptionInterface = SchemaToInterface<
 > & { Body: { storeId: number; userId: number } };
 export type createCategoryInterface = SchemaToInterface<
   typeof createCategorySchema
+> & { Body: { storeId: number; userId: number } };
+export type updateCategoryInterface = SchemaToInterface<
+  typeof updateCategorySchema
 > & { Body: { storeId: number; userId: number } };
 export type softDeleteCategoryInterface = SchemaToInterface<
   typeof softDeleteCategorySchema

@@ -278,7 +278,7 @@ export type newPreOrderInterface = SchemaToInterface<
 > & { Body: { storeId: number; userId: number } };
 export type updatePreOrderInterface = SchemaToInterface<
   typeof updatePreOrderSchema
-> & { Body: { storeId: number; userId: number; preOrderId: number } };
+> & { Body: { storeId: number; userId: number } };
 export type getPreOrderInterface = SchemaToInterface<
   typeof getPreOrderSchema,
   [
