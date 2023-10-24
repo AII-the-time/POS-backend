@@ -28,12 +28,13 @@ const mixedMaterialData = mixedMaterialRawData.split('\n').slice(2).join('\n').s
 });
 
 const menuRawData = fs.readFileSync(path.join(process.cwd(),'prisma', '소예다방-메뉴.csv'), 'utf8').toString().trim();
-const menuData = menuRawData.split('\n').slice(3).join('\n').split('\n,,,,,,\n').map((menu) => {
+const menuData = menuRawData.split('\n').slice(3).join('\n').split('\n,,,,,,,\n').map((menu) => {
   const rows = menu.split('\n');
   const name = rows[0].split(',')[0];
   const price = rows[0].split(',')[1];
+  const category = rows[0].split(',')[2];
   const materials = rows.map((row) => {
-    const [_,__,name, ...amounts] = row.split(',');
+    const [_,__,___,name, ...amounts] = row.split(',');
     const [coldRegularAmount, coldSizeUpAmount, hotRegularAmount, hotSizeUpAmount] = amounts.map(Number);
     return {
         name,
@@ -43,8 +44,10 @@ const menuData = menuRawData.split('\n').slice(3).join('\n').split('\n,,,,,,\n')
         hotSizeUpAmount
     };
   });
-  return { name, price, materials };
+  return { name, price, category, materials };
 });
+
+const categoryData = [...new Set(menuData.map((menu) => menu.category))];
 
 export const printAllStocks = () => {
   const stocks = [...new Set([...new Set(menuData.flatMap((menu) => menu.materials.map((material) => material.name)))].flatMap((name) => {
@@ -124,6 +127,7 @@ export default async (prisma: PrismaClient, storeId: number) => {
     return {
       name: menu.name,
       price: menu.price,
+      category: menu.category,
       materials: menu.materials.map((material) => {
         const stock = materials.find((stock) => stock.name === material.name);
         if(stock) {
@@ -149,20 +153,23 @@ export default async (prisma: PrismaClient, storeId: number) => {
       })
     };
   });
-  const category = await prisma.category.create({
-    data: {
-      storeId,
-      name: '미분류',
-      sort: 3,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
+  await prisma.category.createMany({
+    data: categoryData.map((category,index) => ({
+      name: category,
+      sort: index+3,
+      storeId
+    }))
+  });
+  const categoies = await prisma.category.findMany({
+    where: {
+      storeId
+    }
   });
   await prisma.menu.createMany({
     data: menuDataWithMaterials.map((menu,index) => ({
       name: menu.name,
       price: menu.price,
-      categoryId: category.id,
+      categoryId: categoies.find((category) => category.name === menu.category)!.id,
       sort: index+1,
       storeId,
     }))
