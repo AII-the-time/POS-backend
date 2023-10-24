@@ -29,7 +29,15 @@ export default {
             recipes: {
               include: {
                 stock: true,
-                mixedStock: true,
+                mixedStock: {
+                  select: {
+                    mixings: {
+                      select: {
+                        stock: true,
+                      },
+                    }
+                  },
+                }
               },
             },
           },
@@ -40,10 +48,24 @@ export default {
       },
     });
     const result = categories.map((category) => {
-      const menus = category.menu.map((menu) => ({
-        ...menu,
+      const menus = category.menu.map((menu) => {
+        const usingStocks = menu.recipes.filter(({ stock }) => stock!==null).map(({ stock }) => stock!);
+        const usingStocksInMixedStocks = menu.recipes.filter(({ mixedStock }) => mixedStock!==null).flatMap(({ mixedStock }) => mixedStock!.mixings.map(({ stock }) => stock));
+        const STATUS = ['UNKNOWN', 'EMPTY', 'OUT_OF_STOCK', 'CAUTION', 'ENOUGH'] as const;
+        const STATUS_ENUM = STATUS.reduce((acc, cur, idx) => ({ ...acc, [cur]: idx }), {} as Record<typeof STATUS[number], number>);
+        const stockStatuses = usingStocks.concat(usingStocksInMixedStocks).map(({ currentAmount, noticeThreshold }) => {
+          if (currentAmount === null) return STATUS_ENUM['UNKNOWN'];
+          if (currentAmount < noticeThreshold * 0.1) return STATUS_ENUM['EMPTY'];
+          if (currentAmount < noticeThreshold * 0.3) return STATUS_ENUM['OUT_OF_STOCK'];
+          if (currentAmount < noticeThreshold) return STATUS_ENUM['CAUTION'];
+          return STATUS_ENUM['ENOUGH'];
+        });
+        return ({
+        id: menu.id,
+        name: menu.name,
         price: menu.price.toString(),
-      }));
+        stockStatus: STATUS[Math.min(...stockStatuses)]
+      })});
 
       return {
         category: category.name,
