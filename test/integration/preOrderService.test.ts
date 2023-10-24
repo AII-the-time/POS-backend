@@ -224,6 +224,49 @@ test('get exist preOrder but wrong storeId', async () => {
   expect(body.message).toEqual('해당하는 예약 주문이 없습니다.');
 });
 
+test('update preOrder2', async () => {
+  const response = await app.inject({
+    method: 'PUT',
+    url: `/api/preorder`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store2.id.toString(),
+    },
+    payload: {
+      id: preOrderId2,
+      phone: preOrderCustomerPhone,
+      memo: '테스트 변경',
+      orderedFor: current(),
+      totalPrice: Prisma.Decimal.sum(
+        Prisma.Decimal.mul(seedValues.menu[0].price, 2),
+        seedValues.menu[1].price
+      ),
+      menus: [
+        {
+          id: seedValues.menu[0].id,
+          count: 2,
+          options: [
+            seedValues.option[0].id,
+            seedValues.option[2].id,
+            seedValues.option[4].id,
+          ],
+        },
+        {
+          id: seedValues.menu[1].id,
+          count: 1,
+          options: [seedValues.option[0].id],
+          detail: '테스트 변경',
+        },
+      ],
+    },
+  });
+  expect(response.statusCode).toBe(201);
+  const body = JSON.parse(
+    response.body
+  ) as PreOrder.updatePreOrderInterface['Reply']['201'];
+  expect(body).toEqual({ preOrderId: preOrderId2 });
+});
+
 test('soft delete preOrder2', async () => {
   const response = await app.inject({
     method: 'PUT',

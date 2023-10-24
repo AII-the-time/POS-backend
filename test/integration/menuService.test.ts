@@ -42,6 +42,28 @@ test('new menu category', async () => {
   });
 });
 
+test('update menu category', async () => {
+  const response = await app.inject({
+    method: 'PUT',
+    url: `/api/menu/category`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      storeid: seedValues.store.id.toString(),
+    },
+    body: {
+      id: categoryId,
+      name: '테스트 변경',
+    },
+  });
+  expect(response.statusCode).toBe(201);
+  const body = JSON.parse(
+    response.body
+  ) as Menu.updateCategoryInterface['Reply']['201'];
+  expect(body).toEqual({
+    categoryId: 4,
+  });
+});
+
 test('soft delete category', async () => {
   const response = await app.inject({
     method: 'PUT',

@@ -44,6 +44,19 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     }
   );
 
+  server.put<Menu.updateCategoryInterface>(
+    '/category',
+    {
+      schema: Menu.updateCategorySchema,
+      onError,
+      preValidation: checkStoreIdUser,
+    },
+    async (request, reply) => {
+      const result = await menuService.updateCategory(request.body);
+      reply.code(201).send(result);
+    }
+  );
+
   server.put<Menu.softDeleteCategoryInterface>(
     '/category/:categoryId',
     {
@@ -112,6 +125,18 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     async (request, reply) => {
       const result = await menuService.getOptionList(request.body);
       reply.code(200).send(result);
+    }
+  );
+  server.put<Menu.updateOptionInterface>(
+    '/option',
+    {
+      schema: Menu.updateOptionSchema,
+      onError,
+      preValidation: checkStoreIdUser,
+    },
+    async (request, reply) => {
+      const result = await menuService.updateOption(request.body);
+      reply.code(201).send(result);
     }
   );
   server.put<Menu.softDeleteOptionInterface>(

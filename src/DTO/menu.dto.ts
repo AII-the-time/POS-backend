@@ -173,6 +173,38 @@ export const getOptionListSchema = {
   },
 } as const;
 
+export const updateOptionSchema = {
+  tags: ['menu'],
+  summary: '옵션 수정',
+  headers: StoreAuthorizationHeader,
+  body: {
+    type: 'object',
+    required: ['optionName', 'optionPrice', 'optionCategory', 'optionId'],
+    properties: {
+      optionId: { type: 'number' },
+      optionName: { type: 'string' },
+      optionPrice: { type: 'number' },
+      optionCategory: { type: 'string' },
+    },
+  },
+  response: {
+    201: {
+      type: 'object',
+      description: 'success response',
+      required: ['optionId'],
+      properties: {
+        optionId: { type: 'number' },
+      },
+    },
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError
+    ),
+  },
+} as const;
+
 export const createCategorySchema = {
   tags: ['menu'],
   summary: '카테고리 생성',
@@ -198,6 +230,37 @@ export const createCategorySchema = {
       E.UserAuthorizationError,
       E.StoreAuthorizationError,
       E.NoAuthorizationInHeaderError
+    ),
+  },
+} as const;
+
+export const updateCategorySchema = {
+  tags: ['menu'],
+  summary: '카테고리 이름 수정',
+  headers: StoreAuthorizationHeader,
+  body: {
+    type: 'object',
+    required: ['id', 'name'],
+    properties: {
+      id: { type: 'number' },
+      name: { type: 'string' },
+    },
+  },
+  response: {
+    201: {
+      type: 'object',
+      description: 'success response',
+      required: ['categoryId'],
+      properties: {
+        categoryId: { type: 'number' },
+      },
+    },
+    ...errorSchema(
+      E.NotFoundError,
+      E.UserAuthorizationError,
+      E.StoreAuthorizationError,
+      E.NoAuthorizationInHeaderError,
+      E.NotCorrectTypeError
     ),
   },
 } as const;
@@ -410,8 +473,14 @@ export type getMenuInterface = SchemaToInterface<typeof getMenuSchema> & {
 export type getOptionListInterface = SchemaToInterface<
   typeof getOptionListSchema
 > & { Body: { storeId: number; userId: number } };
+export type updateOptionInterface = SchemaToInterface<
+  typeof updateOptionSchema
+> & { Body: { storeId: number; userId: number } };
 export type createCategoryInterface = SchemaToInterface<
   typeof createCategorySchema
+> & { Body: { storeId: number; userId: number } };
+export type updateCategoryInterface = SchemaToInterface<
+  typeof updateCategorySchema
 > & { Body: { storeId: number; userId: number } };
 export type softDeleteCategoryInterface = SchemaToInterface<
   typeof softDeleteCategorySchema
