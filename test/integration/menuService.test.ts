@@ -675,6 +675,7 @@ test('get menu list', async () => {
       storeid: seedValues.store.id.toString(),
     },
   });
+  console.log(response.body);
   expect(response.statusCode).toBe(200);
 
   const body = JSON.parse(
@@ -693,16 +694,19 @@ test('get menu list', async () => {
         id: 3,
         name: '아이스티',
         price: '2500',
+        stockStatus: expect.any(String)
       },
       {
         id: 45,
         name: '민초콕',
         price: '3000',
+        stockStatus: expect.any(String)
       },
       {
         id: 47,
         name: '민트초코 에이드',
         price: '3000',
+        stockStatus: expect.any(String)
       },
     ],
   });

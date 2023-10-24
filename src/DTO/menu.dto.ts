@@ -27,11 +27,16 @@ export const getMenuListSchema = {
                 type: 'array',
                 items: {
                   type: 'object',
-                  required: ['id', 'name', 'price'],
+                  required: ['id', 'name', 'price','stockStatus'],
                   properties: {
                     id: { type: 'number' },
                     name: { type: 'string' },
                     price: { type: 'string' },
+                    stockStatus: {
+                      type: 'string',
+                      enum: ['EMPTY', 'OUT_OF_STOCK', 'CAUTION', 'ENOUGH', 'UNKNOWN'],
+                      default: 'UNKNOWN',
+                    },
                   },
                 },
               },
