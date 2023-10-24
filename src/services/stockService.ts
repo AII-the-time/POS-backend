@@ -73,6 +73,7 @@ export default {
     const result = await prisma.stock.findMany({
       where: {
         storeId,
+        deletedAt: null,
       },
       include: {
         _count: {
@@ -148,7 +149,7 @@ export default {
   async softDeleteStock(
     { storeId }: Stock.softDeleteStockInterface['Body'],
     { stockId }: Stock.softDeleteStockInterface['Params']
-  ): Promise<Stock.softDeleteStockInterface['Reply']['204']> {
+  ): Promise<Stock.softDeleteStockInterface['Reply']['200']> {
     await prisma.stock.update({
       where: {
         id: stockId,
@@ -307,7 +308,7 @@ export default {
   async softDeleteMixedStock(
     { storeId }: Stock.softDeleteMixedStockInterface['Body'],
     { mixedStockId }: Stock.softDeleteMixedStockInterface['Params']
-  ): Promise<Stock.softDeleteMixedStockInterface['Reply']['204']> {
+  ): Promise<Stock.softDeleteMixedStockInterface['Reply']['200']> {
     await prisma.mixedStock.update({
       where: {
         id: mixedStockId,

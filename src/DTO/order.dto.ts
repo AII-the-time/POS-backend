@@ -247,7 +247,7 @@ export const softDeletePaySchema = {
     },
   },
   response: {
-    204: {
+    200: {
       type: 'object',
       description: 'success response',
       required: ['orderId'],
