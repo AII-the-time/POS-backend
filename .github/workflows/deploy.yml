@@ -40,6 +40,6 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             cd ~
-            docker-compose down
+            docker-compose down --rmi local
             docker-compose pull
             docker-compose up -d
