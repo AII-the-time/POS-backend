@@ -14,7 +14,6 @@ let app: FastifyInstance;
 const phone = '01011112222';
 const businessRegistrationNumber = '1122233444';
 let accessToken: string;
-const accessToken2 = new LoginToken(seedValues.user.id).signAccessToken();
 
 beforeAll(async () => {
   app = await server();
@@ -186,7 +185,8 @@ test('update store', async () => {
       openingHours: defaultOpeningHours,
     },
     headers: {
-      authorization: `Bearer ${accessToken2}`,
+      authorization: accessToken,
+      storeid: storeId.toString(),
     },
   });
   console.log(response.body);
