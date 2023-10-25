@@ -1,8 +1,8 @@
 import * as fs from 'fs';
-import * as path from 'path';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { PrismaClient } from '@prisma/client';
-
-const materialRawData = fs.readFileSync(path.join(process.cwd(),'prisma', '소예다방-재료.csv'), 'utf8').toString().trim();
+const materialRawData = fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), '소예다방-재료.csv'), 'utf8').toString().trim();
 const materialData = materialRawData.split('\n').slice(2).map((row) => {
   const [name, amount, unit, price] = row.split(',');
   return {
@@ -13,7 +13,7 @@ const materialData = materialRawData.split('\n').slice(2).map((row) => {
   };
 });
 
-const mixedMaterialRawData = fs.readFileSync(path.join(process.cwd(),'prisma', '소예다방-Mixed재료.csv'), 'utf8').toString().trim();
+const mixedMaterialRawData = fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), '소예다방-Mixed재료.csv'), 'utf8').toString().trim();
 const mixedMaterialData = mixedMaterialRawData.split('\n').slice(2).join('\n').split('\n,,\n').map((material) => {
   const rows = material.split('\n');
   const name = rows[0].split(',')[0];
@@ -27,7 +27,7 @@ const mixedMaterialData = mixedMaterialRawData.split('\n').slice(2).join('\n').s
   return { name, materials };
 });
 
-const menuRawData = fs.readFileSync(path.join(process.cwd(),'prisma', '소예다방-메뉴.csv'), 'utf8').toString().trim();
+const menuRawData = fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), '소예다방-메뉴.csv'), 'utf8').toString().trim();
 const menuData = menuRawData.split('\n').slice(3).join('\n').split('\n,,,,,,,\n').map((menu) => {
   const rows = menu.split('\n');
   const name = rows[0].split(',')[0];
