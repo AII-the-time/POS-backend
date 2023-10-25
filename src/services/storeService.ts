@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import * as Store from '@DTO/store.dto';
-import menuSeed from '../../prisma/menuSeed';
+import menuSeed from '@seeding/menuSeed';
 const prisma = new PrismaClient();
 
 export default {

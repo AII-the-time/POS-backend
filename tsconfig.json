@@ -19,6 +19,7 @@
             "@routes/*": ["src/api/routes/*"],
             "@hooks/*": ["src/api/hooks/*"],
             "@server": ["src/server"],
+            "@seeding/*": ["seeding/*"],
         }
     },
     "include": [
