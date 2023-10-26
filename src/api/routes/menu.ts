@@ -57,7 +57,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     }
   );
 
-  server.put<Menu.softDeleteCategoryInterface>(
+  server.delete<Menu.softDeleteCategoryInterface>(
     '/category/:categoryId',
     {
       schema: Menu.softDeleteCategorySchema,
@@ -99,7 +99,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     }
   );
 
-  server.put<Menu.softDeleteMenuInterface>(
+  server.delete<Menu.softDeleteMenuInterface>(
     '/:menuId',
     {
       schema: Menu.softDeleteMenuSchema,
@@ -139,7 +139,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       reply.code(201).send(result);
     }
   );
-  server.put<Menu.softDeleteOptionInterface>(
+  server.delete<Menu.softDeleteOptionInterface>(
     '/option/:optionId',
     {
       schema: Menu.softDeletOptionSchema,

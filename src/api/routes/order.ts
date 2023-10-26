@@ -44,7 +44,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     }
   );
 
-  server.put<Order.softDeletePayInterface>(
+  server.delete<Order.softDeletePayInterface>(
     '/:orderId',
     {
       schema: Order.softDeletePaySchema,
@@ -52,8 +52,8 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      await orderService.softDeletePay(request.body, request.params);
-      reply.code(200).send();
+      const result = await orderService.softDeletePay(request.body, request.params);
+      reply.code(200).send(result);
     }
   );
 

@@ -31,7 +31,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     }
   );
 
-  server.put<Stock.softDeleteStockInterface>(
+  server.delete<Stock.softDeleteStockInterface>(
     '/:stockId',
     {
       schema: Stock.softDeleteStockSchema,
@@ -99,7 +99,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     }
   );
 
-  server.put<Stock.softDeleteMixedStockInterface>(
+  server.delete<Stock.softDeleteMixedStockInterface>(
     '/mixed/:mixedStockId',
     {
       schema: Stock.softDeleteMixedStockSchema,
