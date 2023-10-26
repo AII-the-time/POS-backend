@@ -66,7 +66,7 @@ test('update menu category', async () => {
 
 test('soft delete category', async () => {
   const response = await app.inject({
-    method: 'PUT',
+    method: 'DELETE',
     url: `/api/menu/category/${categoryId}`,
     headers: {
       authorization: `Bearer ${accessToken}`,
@@ -149,7 +149,7 @@ test('create stock and soft delete', async () => {
   ) as Stock.createStockInterface['Reply']['201'];
 
   const softDeleteResponse = await app.inject({
-    method: 'PUT',
+    method: 'DELETE',
     url: `/api/stock/${body.stockId}`,
     headers: {
       authorization: `Bearer ${accessToken}`,
@@ -238,7 +238,7 @@ test('new menu and soft delete', async () => {
     createResponse.body
   ) as Menu.createMenuInterface['Reply']['201'];
   const softDeleteResponse = await app.inject({
-    method: 'PUT',
+    method: 'DELETE',
     url: `/api/menu/${body.menuId}`,
     headers: {
       authorization: `Bearer ${accessToken}`,
@@ -349,7 +349,7 @@ test('new mixedStock and delete', async () => {
     createResponse.body
   ) as Stock.createMixedStockInterface['Reply']['201'];
   const softDeleteResponse = await app.inject({
-    method: 'PUT',
+    method: 'DELETE',
     url: `/api/stock/mixed/${body.mixedStockId}`,
     headers: {
       authorization: `Bearer ${accessToken}`,
@@ -675,7 +675,6 @@ test('get menu list', async () => {
       storeid: seedValues.store.id.toString(),
     },
   });
-  console.log(response.body);
   expect(response.statusCode).toBe(200);
 
   const body = JSON.parse(

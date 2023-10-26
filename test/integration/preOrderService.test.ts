@@ -269,7 +269,7 @@ test('update preOrder2', async () => {
 
 test('soft delete preOrder2', async () => {
   const response = await app.inject({
-    method: 'PUT',
+    method: 'DELETE',
     url: `/api/preorder/${preOrderId2}`,
     headers: {
       authorization: `Bearer ${accessToken}`,
