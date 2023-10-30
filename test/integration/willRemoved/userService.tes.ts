@@ -1,7 +1,7 @@
-import server from '../../src/server';
+import server from '../../../src/server';
 import { FastifyInstance } from 'fastify';
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
-import * as User from '../../src/DTO/user.dto';
+import * as User from '../../../src/DTO/user.dto';
 import test400 from './400test';
 import { ErrorInterface } from '@DTO/index.dto';
 

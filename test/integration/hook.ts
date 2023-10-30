@@ -5,7 +5,6 @@ import { expect, test } from '@jest/globals';
 
 export default (app: FastifyInstance) => () => {
     const accessToken = new LoginToken(1).signAccessToken();
-    const customerPhone = '01043218765';
 
     test('checkUser: without authorization header', async () => {
         const response = await app.inject({
@@ -21,13 +20,10 @@ export default (app: FastifyInstance) => () => {
 
     test('checkStoreIdUser: without authorization header', async () => {
         const response = await app.inject({
-            method: 'POST',
-            url: `/api/mileage`,
+            method: 'GET',
+            url: `/api/menu`,
             headers: {
                 storeid: '1',
-            },
-            payload: {
-                phone: customerPhone,
             },
         });
         expect(response.statusCode).toBe(400);
@@ -37,13 +33,10 @@ export default (app: FastifyInstance) => () => {
 
     test('checkStoreIdUser: without storeid header', async () => {
         const response = await app.inject({
-            method: 'POST',
-            url: `/api/mileage`,
+            method: 'GET',
+            url: `/api/menu`,
             headers: {
                 authorization: `Bearer ${accessToken}`,
-            },
-            payload: {
-                phone: customerPhone,
             },
         });
         expect(response.statusCode).toBe(400);
@@ -53,14 +46,11 @@ export default (app: FastifyInstance) => () => {
 
     test('checkStoreIdUser: without storeid header', async () => {
         const response = await app.inject({
-            method: 'POST',
-            url: `/api/mileage`,
+            method: 'GET',
+            url: `/api/menu`,
             headers: {
                 authorization: `Bearer ${accessToken}1`,
                 storeid: '1',
-            },
-            payload: {
-                phone: customerPhone,
             },
         });
         expect(response.statusCode).toBe(401);
@@ -70,14 +60,11 @@ export default (app: FastifyInstance) => () => {
 
     test('checkStoreIdUser: without storeid header', async () => {
         const response = await app.inject({
-            method: 'POST',
-            url: `/api/mileage`,
+            method: 'GET',
+            url: `/api/menu`,
             headers: {
                 authorization: `Bearer ${accessToken}`,
                 storeid: '1',
-            },
-            payload: {
-                phone: customerPhone,
             },
         });
         expect(response.statusCode).toBe(401);
