@@ -3,6 +3,7 @@ import { FastifyInstance } from 'fastify';
 import { afterAll, describe, expect, test } from '@jest/globals';
 import basic from './basic';
 import hook from './hook';
+import login from './login';
 
 const app: FastifyInstance = await server();
 
@@ -13,7 +14,7 @@ afterAll(async () => {
 const tests:[string, (app: FastifyInstance) => () => void][] = [
     ['basic', basic],
     ['hook', hook],
-    ['login', (app: FastifyInstance) => () => {} ],
+    ['login', login],
     ['store CRU', (app: FastifyInstance) => () => {}],
     ['get stock, mixed stock, menu, mileage before register', (app: FastifyInstance) => () => {}],
     ['register stock, mixed stock, menu', (app: FastifyInstance) => () => {}],
