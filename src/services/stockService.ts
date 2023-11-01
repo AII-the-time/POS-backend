@@ -180,7 +180,7 @@ export default {
 
     return {
       name: result.name,
-      price: result.price === null ? '0' : result.price.toString(),
+      price: result.price === null ? null : result.price.toString(),
       amount: result.amount,
       currentAmount: result.currentAmount,
       noticeThreshold: result.noticeThreshold,

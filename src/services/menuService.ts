@@ -53,13 +53,16 @@ export default {
         const usingStocksInMixedStocks = menu.recipes.filter(({ mixedStock }) => mixedStock!==null).flatMap(({ mixedStock }) => mixedStock!.mixings.map(({ stock }) => stock));
         const STATUS = ['UNKNOWN', 'EMPTY', 'OUT_OF_STOCK', 'CAUTION', 'ENOUGH'] as const;
         const STATUS_ENUM = STATUS.reduce((acc, cur, idx) => ({ ...acc, [cur]: idx }), {} as Record<typeof STATUS[number], number>);
-        const stockStatuses = usingStocks.concat(usingStocksInMixedStocks).map(({ currentAmount, noticeThreshold }) => {
-          if (currentAmount === null) return STATUS_ENUM['UNKNOWN'];
-          if (currentAmount < noticeThreshold * 0.1) return STATUS_ENUM['EMPTY'];
-          if (currentAmount < noticeThreshold * 0.3) return STATUS_ENUM['OUT_OF_STOCK'];
-          if (currentAmount < noticeThreshold) return STATUS_ENUM['CAUTION'];
-          return STATUS_ENUM['ENOUGH'];
-        });
+        const stockStatuses = usingStocks
+          .concat(usingStocksInMixedStocks)
+          .filter(({noticeThreshold})=>noticeThreshold>=0)
+          .map(({ currentAmount, noticeThreshold }) => {
+            if (currentAmount === null) return STATUS_ENUM['UNKNOWN'];
+            if (currentAmount < noticeThreshold * 0.1) return STATUS_ENUM['EMPTY'];
+            if (currentAmount < noticeThreshold * 0.3) return STATUS_ENUM['OUT_OF_STOCK'];
+            if (currentAmount < noticeThreshold) return STATUS_ENUM['CAUTION'];
+            return STATUS_ENUM['ENOUGH'];
+          });
         return ({
         id: menu.id,
         name: menu.name,
