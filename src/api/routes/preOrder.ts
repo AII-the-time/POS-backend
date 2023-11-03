@@ -47,7 +47,7 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
     }
   );
 
-  server.put<PreOrder.softDeletePreOrderInterface>(
+  server.delete<PreOrder.softDeletePreOrderInterface>(
     '/:preOrderId',
     {
       schema: PreOrder.softDeletePreOrderSchema,
