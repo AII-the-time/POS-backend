@@ -6,8 +6,8 @@ class Config{
 
     static of(): Config {
         if (!Config.instance) {
-            process.env.NODE_ENV = process.env.NODE_ENV || 'development';
             config();
+            process.env.NODE_ENV = process.env.NODE_ENV || 'development';
             Config.instance = new Config();
         }
         return Config.instance;
@@ -20,6 +20,10 @@ class Config{
             salt: process.env.SALT || 'salt',
             sentryDSN: process.env.SENTRY_DSN || '',
             nodeEnv: process.env.NODE_ENV,
+            NCP_SENS_SECRET: process.env.NCP_SENS_SECRET || '',
+            NCP_SENS_ACCESS: process.env.NCP_SENS_ACCESS || '',
+            NCP_SENS_MY_NUMBER: process.env.NCP_SENS_MY_NUMBER || '',
+            NCP_SENS_ID: process.env.NCP_SENS_ID || '',
         } as const;
     }
 
