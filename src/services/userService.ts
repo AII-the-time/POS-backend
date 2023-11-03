@@ -1,6 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 import * as User from '@DTO/user.dto';
-import * as Store from '@DTO/store.dto';
+import sendSMS from '@utils/sendSMS';
+import checkPhoneNumber from '@utils/checkPhoneNumber';
+import * as crypto from 'crypto';
 import {
   TokenForCertificatePhone,
   CertificatedPhoneToken,
@@ -16,8 +18,14 @@ export default {
   }: User.phoneInterface['Body']): Promise<
     User.phoneInterface['Reply']['200']
   > {
-    //TODO: 인증번호 생성
-    const certificationCode = '123456';
+    if (!checkPhoneNumber(phone)) {
+      throw new E.UserAuthorizationError('휴대폰 번호가 유효하지 않습니다.');
+    }
+    let certificationCode = '123456';
+    if(process.env.NODE_ENV === 'production'){
+      certificationCode = crypto.randomInt(100000, 999999).toString();
+      sendSMS(phone, 'SMS', `[카페포스] 인증번호는 ${certificationCode}입니다.`);
+    }
     const token = new TokenForCertificatePhone(phone, certificationCode).sign();
     return { tokenForCertificatePhone: token };
   },
