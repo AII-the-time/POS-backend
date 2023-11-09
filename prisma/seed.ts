@@ -5,7 +5,7 @@ async function main() {
   const user = await prisma.user.create({
     data: {
       id: 1,
-      businessRegistrationNumber: '0123456789',
+      businessRegistrationNumber: '5133001104',
       phoneNumber: '01012345678',
     },
   }); //user id 1
