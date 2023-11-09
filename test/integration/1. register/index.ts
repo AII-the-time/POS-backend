@@ -9,7 +9,7 @@ const tests:[string, (app: FastifyInstance) => () => void][] = [
     ['register stock', stock],
     ['register mixed stock', mixedStock],
     ['register menu', menu],
-    ['mileage', mileage],
+    ['register mileage', mileage],
 ];
 
 export default (app: FastifyInstance) => () => {

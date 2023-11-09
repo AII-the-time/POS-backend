@@ -42,12 +42,12 @@ export default {
           optionCategory: '온도',
         },
         {
-          optionName: '케냐',
+          optionName: '원두1',
           optionPrice: 0,
           optionCategory: '원두',
         },
         {
-          optionName: '콜롬비아',
+          optionName: '원두2',
           optionPrice: 300,
           optionCategory: '원두',
         },
@@ -57,7 +57,7 @@ export default {
           optionCategory: '샷',
         },
         {
-          optionName: '연하게',
+          optionName: '샷 빼기',
           optionPrice: 0,
           optionCategory: '샷',
         },

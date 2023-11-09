@@ -1,11 +1,9 @@
 import { FastifyInstance } from 'fastify';
-import { ErrorInterface } from '@DTO/index.dto';
-import { LoginToken } from '@utils/jwt';
+import testValues from '../testValues';
 import * as Store from '@DTO/store.dto';
 import { expect, test } from '@jest/globals';
 
 export default (app: FastifyInstance) => () => {
-    const accessToken = new LoginToken(1).signAccessToken();
     const storeName = '소예다방';
     const storeAddress = '서울시 강남구';
     const defaultOpeningHours: Array<{
@@ -39,9 +37,7 @@ export default (app: FastifyInstance) => () => {
                 address: "테스트 주소",
                 openingHours: defaultOpeningHours,
             },
-            headers: {
-                authorization: accessToken,
-            },
+            headers: testValues.userHeader,
         });
         expect(response.statusCode).toBe(200);
 
@@ -55,9 +51,7 @@ export default (app: FastifyInstance) => () => {
         const response = await app.inject({
             method: 'GET',
             url: '/api/store',
-            headers: {
-                authorization: accessToken,
-            },
+            headers: testValues.userHeader,
         });
         expect(response.statusCode).toBe(200);
 
@@ -83,10 +77,7 @@ export default (app: FastifyInstance) => () => {
                 address: storeAddress,
                 openingHours: defaultOpeningHours,
             },
-            headers: {
-                authorization: accessToken,
-                storeid: '1'
-            },
+            headers: testValues.storeHeader,
         });
         expect(response.statusCode).toBe(201);
 
@@ -106,9 +97,7 @@ export default (app: FastifyInstance) => () => {
                 address: '테스트 주소',
                 openingHours: defaultOpeningHours,
             },
-            headers: {
-                authorization: accessToken,
-            },
+            headers: testValues.userHeader,
         });
         expect(response.statusCode).toBe(200);
 
@@ -122,9 +111,7 @@ export default (app: FastifyInstance) => () => {
         const response = await app.inject({
             method: 'GET',
             url: '/api/store',
-            headers: {
-                authorization: accessToken,
-            },
+            headers: testValues.userHeader,
         });
         expect(response.statusCode).toBe(200);
 

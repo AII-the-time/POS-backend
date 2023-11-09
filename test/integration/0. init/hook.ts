@@ -10,8 +10,6 @@ export default (app: FastifyInstance) => () => {
         const response = await app.inject({
             method: 'POST',
             url: `/api/store`,
-            headers: {
-            },
         });
         expect(response.statusCode).toBe(400);
         const body = JSON.parse(response.body) as ErrorInterface;

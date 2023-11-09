@@ -1,40 +1,35 @@
 import { FastifyInstance } from 'fastify';
-import { ErrorInterface } from '@DTO/index.dto';
+import testValues from '../testValues';
 import * as Menu from '@DTO/menu.dto';
 import * as Stock from '@DTO/stock.dto';
 import * as Order from '@DTO/order.dto';
-import { LoginToken } from '@utils/jwt';
 import { expect, test } from '@jest/globals';
 
 export default (app: FastifyInstance) => () => {
-    const accessToken = new LoginToken(1).signAccessToken();
     test('get stock list', async () => {
         const response = await app.inject({
-          method: 'GET',
-          url: `/api/stock`,
-          headers: {
-            authorization: `Bearer ${accessToken}`,
-            storeid: '1',
-          },
+            method: 'GET',
+            url: `/api/stock`,
+            headers: testValues.storeHeader,
         });
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body) as Stock.getStockListInterface['Reply']['200'];
         expect(body.stocks).toEqual(
             [
                 {
-                    id: 1,
+                    id: testValues.waterId,
                     name: '물',
                     status: 'UNKNOWN',
                     usingMenuCount: 1,
                 },
                 {
-                    id: 2,
+                    id: testValues.coffeeBeanId,
                     name: '원두(예시)',
                     status: 'ENOUGH',
                     usingMenuCount: 2,
                 },
                 {
-                    id: 3,
+                    id: testValues.milkId,
                     name: '우유(예시)',
                     status: 'CAUTION',
                     usingMenuCount: 1,
@@ -46,11 +41,8 @@ export default (app: FastifyInstance) => () => {
     test('get stock detail', async () => {
         const response = await app.inject({
             method: 'GET',
-            url: `/api/stock/1`,
-            headers: {
-                authorization: `Bearer ${accessToken}`,
-                storeid: '1',
-            },
+            url: `/api/stock/${testValues.waterId}`,
+            headers: testValues.storeHeader,
         });
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body) as Stock.getStockInterface['Reply']['200'];
@@ -69,12 +61,9 @@ export default (app: FastifyInstance) => () => {
 
     test('get mixed stock list', async () => {
         const response = await app.inject({
-          method: 'GET',
-          url: `/api/stock/mixed`,
-          headers: {
-            authorization: `Bearer ${accessToken}`,
-            storeid: '1',
-          },
+            method: 'GET',
+            url: `/api/stock/mixed`,
+            headers: testValues.storeHeader,
         });
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body) as Stock.getMixedStockListInterface['Reply']['200'];
@@ -83,12 +72,9 @@ export default (app: FastifyInstance) => () => {
 
     test('get menu list', async () => {
         const response = await app.inject({
-          method: 'GET',
-          url: `/api/menu`,
-          headers: {
-            authorization: `Bearer ${accessToken}`,
-            storeid: '1',
-          },
+            method: 'GET',
+            url: `/api/menu`,
+            headers: testValues.storeHeader,
         });
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body) as Menu.getMenuListInterface['Reply']['200'];
@@ -97,13 +83,13 @@ export default (app: FastifyInstance) => () => {
             category: '커피',
             menus: [
                 {
-                    id: 1,
+                    id: testValues.americanoId,
                     name: '아메리카노(예시)',
                     price: "2500",
                     stockStatus: 'ENOUGH',
                 },
                 {
-                    id: 2,
+                    id: testValues.latteId,
                     name: '카페라떼(예시)',
                     price: "3000",
                     stockStatus: 'CAUTION',
@@ -115,11 +101,8 @@ export default (app: FastifyInstance) => () => {
     test('get menu detail', async () => {
         const response = await app.inject({
             method: 'GET',
-            url: `/api/menu/1`,
-            headers: {
-                authorization: `Bearer ${accessToken}`,
-                storeid: '1',
-            },
+            url: `/api/menu/${testValues.americanoId}`,
+            headers: testValues.storeHeader,
         });
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body) as Menu.getMenuInterface['Reply']['200'];
@@ -128,19 +111,19 @@ export default (app: FastifyInstance) => () => {
                 name: '아메리카노(예시)',
                 price: "2500",
                 category: '커피',
-                categoryId: 1,
-                option:[
+                categoryId: testValues.coffeeCategoryId,
+                option: [
                     {
                         optionType: "온도",
                         options: [
                             {
-                                id: 1,
+                                id: testValues.iceOptionId,
                                 name: 'ice',
                                 price: "0",
                                 isSelectable: true,
                             },
                             {
-                                id: 2,
+                                id: testValues.hotOptionId,
                                 name: 'hot',
                                 price: "0",
                                 isSelectable: true,
@@ -151,14 +134,14 @@ export default (app: FastifyInstance) => () => {
                         optionType: "원두",
                         options: [
                             {
-                                id: 3,
-                                name: '케냐',
+                                id: testValues.bean1OptionId,
+                                name: '원두1',
                                 price: "0",
                                 isSelectable: true,
                             },
                             {
-                                id: 4,
-                                name: '콜롬비아',
+                                id: testValues.bean2OptionId,
+                                name: '원두2',
                                 price: "300",
                                 isSelectable: true,
                             }
@@ -168,14 +151,14 @@ export default (app: FastifyInstance) => () => {
                         optionType: "샷",
                         options: [
                             {
-                                id: 5,
+                                id: testValues.shotPlusOptionId,
                                 name: '1샷 추가',
                                 price: "500",
                                 isSelectable: true,
                             },
                             {
-                                id: 6,
-                                name: '연하게',
+                                id: testValues.shotMinusOptionId,
+                                name: '샷 빼기',
                                 price: "0",
                                 isSelectable: true,
                             }
@@ -184,24 +167,24 @@ export default (app: FastifyInstance) => () => {
                 ],
                 recipe: [
                     {
-                      id: 1,
-                      name: '물',
-                      coldRegularAmount: 150,
-                      coldSizeUpAmount: null,
-                      hotRegularAmount: null,
-                      hotSizeUpAmount: null,
-                      isMixed: false,
-                      unit: 'ml',
+                        id: testValues.waterId,
+                        name: '물',
+                        coldRegularAmount: 150,
+                        coldSizeUpAmount: null,
+                        hotRegularAmount: null,
+                        hotSizeUpAmount: null,
+                        isMixed: false,
+                        unit: 'ml',
                     },
                     {
-                      id: 2,
-                      name: '원두(예시)',
-                      coldRegularAmount: 25,
-                      coldSizeUpAmount: null,
-                      hotRegularAmount: null,
-                      hotSizeUpAmount: null,
-                      isMixed: false,
-                      unit: 'g',
+                        id: testValues.coffeeBeanId,
+                        name: '원두(예시)',
+                        coldRegularAmount: 25,
+                        coldSizeUpAmount: null,
+                        hotRegularAmount: null,
+                        hotSizeUpAmount: null,
+                        isMixed: false,
+                        unit: 'g',
                     },
                 ],
             }
