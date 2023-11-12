@@ -35,7 +35,8 @@ jobs:
       - name: start db & set .env
         run: |
           sudo service mysql start
-          echo DATABASE_URL=mysql://root:root@localhost:3306/db > .env
+          echo "DATABASE_URL=mysql://root:root@localhost:3306/db
+          ODCLOUD_API_KEY=${{ secrets.ODCLOUD_API_KEY }}" > .env
       - name: Install Dependencies & db setup
         run: |
           npm install
