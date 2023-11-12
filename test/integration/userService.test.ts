@@ -16,7 +16,7 @@ afterAll(async () => {
 });
 
 const phone = '01012345678';
-const businessRegistrationNumber = '1234567890';
+const businessRegistrationNumber = '5133001104';
 let tokenForCertificatePhone: string;
 let certificatedPhoneToken: string;
 let accessToken: string;

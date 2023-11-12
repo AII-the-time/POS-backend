@@ -12,7 +12,7 @@ import { LoginToken } from '@utils/jwt';
 let app: FastifyInstance;
 
 const phone = '01011112222';
-const businessRegistrationNumber = '1122233444';
+const businessRegistrationNumber = '5133001104';
 let accessToken: string;
 
 beforeAll(async () => {
