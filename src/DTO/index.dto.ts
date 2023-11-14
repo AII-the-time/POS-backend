@@ -63,29 +63,3 @@ export type ErrorInterface = FromSchema<{
     toast: { type: 'string', enum: string[] }
   }
 }>;
-
-export type SchemaToInterface<
-  T extends {
-    body?: JSONSchema;
-    querystring?: JSONSchema;
-    params?: JSONSchema;
-    headers?: JSONSchema;
-    response: { [key: string]: JSONSchema };
-  },
-  Option extends [{ pattern: unknown; output: unknown }] | false = false
-> = {
-  Body: T['body'] extends JSONSchema ? FromSchema<T['body']> : unknown;
-  Querystring: T['querystring'] extends JSONSchema
-    ? FromSchema<T['querystring']>
-    : unknown;
-  Params: T['params'] extends JSONSchema ? FromSchema<T['params']> : unknown;
-  Headers: T['headers'] extends JSONSchema
-    ? FromSchema<T['headers']>
-    : unknown;
-  Reply: {
-    [key in keyof T['response']]: FromSchema<
-      T['response'][key],
-      { deserialize: Option }
-    >;
-  };
-};

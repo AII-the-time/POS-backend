@@ -2,10 +2,10 @@ import { Store as prismaStore } from '@prisma/client';
 import {
   AuthorizationHeader,
   errorSchema,
-  SchemaToInterface,
   StoreAuthorizationHeader,
 } from '@DTO/index.dto';
 import * as E from '@errors';
+import { SchemaToInterface } from 'fastify-schema-to-ts';
 export type Store = prismaStore;
 
 export const newStoreSchema = {
