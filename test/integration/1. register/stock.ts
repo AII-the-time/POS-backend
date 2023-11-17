@@ -69,4 +69,39 @@ export default (app: FastifyInstance) => () => {
         expect(data).toHaveProperty('stocks');
         expect(data.stocks).toHaveLength(6);
     });
+
+    test('search stock', async () => {
+        const res = await app.inject({
+            method: 'GET',
+            url: '/api/stock/search?name=자몽',
+            headers: testValues.storeHeader,
+        });
+        const data = JSON.parse(res.body) as Stock.getStockListInterface['Reply']['200'];
+        expect(res.statusCode).toEqual(200);
+        expect(data).toHaveProperty('stocks');
+        expect(data.stocks).toHaveLength(1);
+    })
+
+    test('get stock detail:grapefruit', async () => {
+        const res = await app.inject({
+            method: 'GET',
+            url: `/api/stock/${testValues.grapefruitId}`,
+            headers: testValues.storeHeader,
+        });
+        const data = JSON.parse(res.body) as Stock.getStockInterface['Reply']['200'];
+        expect(res.statusCode).toEqual(200);
+        expect(data).toHaveProperty('name', '자몽');
+    });
+
+    test('get stock detail:lemon', async () => {
+        const res = await app.inject({
+            method: 'GET',
+            url: `/api/stock/${testValues.lemonId}`,
+            headers: testValues.storeHeader,
+        });
+        const data = JSON.parse(res.body) as Stock.getStockInterface['Reply']['200'];
+        expect(res.statusCode).toEqual(200);
+        expect(data).toHaveProperty('name', '레몬');
+        expect(data).toHaveProperty('unit', null);
+    });
 }

@@ -79,6 +79,15 @@ export default (app: FastifyInstance) => () => {
         expect(body.mixedStocks).toEqual([]);
     });
 
+    test('get mixed stock detail: fail', async () => {
+        const response = await app.inject({
+            method: 'GET',
+            url: `/api/stock/mixed/9999999999`,
+            headers: testValues.storeHeader,
+        });
+        expect(response.statusCode).toBe(404);
+    });
+
     test('get menu list', async () => {
         const response = await app.inject({
             method: 'GET',
