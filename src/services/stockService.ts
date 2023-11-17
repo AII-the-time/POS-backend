@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { NotFoundError } from '@errors';
 import * as Stock from '@DTO/stock.dto';
+import { STATUS, getStockStatus } from '@utils/stockStatus';
 
 const prisma = new PrismaClient();
 
@@ -112,16 +113,7 @@ export default {
     return {
       stocks: result.map(
         ({ id, name, currentAmount, noticeThreshold, _count, mixings }) => {
-          const status = ((
-            currentAmount: number | null,
-            noticeThreshold: number
-          ) => {
-            if (currentAmount === null) return 'UNKNOWN';
-            if (currentAmount < noticeThreshold * 0.1) return 'EMPTY';
-            if (currentAmount < noticeThreshold * 0.3) return 'OUT_OF_STOCK';
-            if (currentAmount < noticeThreshold) return 'CAUTION';
-            return 'ENOUGH';
-          })(currentAmount, noticeThreshold);
+          const status = STATUS[getStockStatus(currentAmount, noticeThreshold)];
 
           return {
             id,

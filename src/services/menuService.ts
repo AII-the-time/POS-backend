@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { NotFoundError } from '@errors';
 import * as Menu from '@DTO/menu.dto';
-
+import { STATUS, getStockStatus } from '@utils/stockStatus';
 const prisma = new PrismaClient();
 
 export default {
@@ -51,18 +51,10 @@ export default {
       const menus = category.menu.map((menu) => {
         const usingStocks = menu.recipes.filter(({ stock }) => stock!==null).map(({ stock }) => stock!);
         const usingStocksInMixedStocks = menu.recipes.filter(({ mixedStock }) => mixedStock!==null).flatMap(({ mixedStock }) => mixedStock!.mixings.map(({ stock }) => stock));
-        const STATUS = ['UNKNOWN', 'EMPTY', 'OUT_OF_STOCK', 'CAUTION', 'ENOUGH'] as const;
-        const STATUS_ENUM = STATUS.reduce((acc, cur, idx) => ({ ...acc, [cur]: idx }), {} as Record<typeof STATUS[number], number>);
         const stockStatuses = usingStocks
           .concat(usingStocksInMixedStocks)
           .filter(({noticeThreshold})=>noticeThreshold>=0)
-          .map(({ currentAmount, noticeThreshold }) => {
-            if (currentAmount === null) return STATUS_ENUM['UNKNOWN'];
-            if (currentAmount < noticeThreshold * 0.1) return STATUS_ENUM['EMPTY'];
-            if (currentAmount < noticeThreshold * 0.3) return STATUS_ENUM['OUT_OF_STOCK'];
-            if (currentAmount < noticeThreshold) return STATUS_ENUM['CAUTION'];
-            return STATUS_ENUM['ENOUGH'];
-          });
+          .map(({ currentAmount, noticeThreshold }) => getStockStatus(currentAmount, noticeThreshold));
         return ({
         id: menu.id,
         name: menu.name,
