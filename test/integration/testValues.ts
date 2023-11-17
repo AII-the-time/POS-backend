@@ -27,7 +27,9 @@ class Values {
     public milkId: number = 3;
     public grapefruitId: number = 0;
     public sugarId: number = 0;
-    public grapefruitJuiceId: number = 0;
+    public lemonId: number = 0;
+    public preservedGrapefruitId: number = 0;
+    public preservedLemonId: number = 0;
 
     //categories
     public coffeeCategoryId: number = 1;

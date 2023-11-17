@@ -9,6 +9,7 @@ export default (app: FastifyInstance) => () => {
     let tokenForCertificatePhone: string;
     let certificatedPhoneToken: string;
     let refreshToken: string;
+
     test('send CertificationCode', async () => {
         const response = await app.inject({
             method: 'POST',
@@ -24,6 +25,17 @@ export default (app: FastifyInstance) => () => {
         ) as User.phoneInterface['Reply']['200'];
         expect(body).toHaveProperty('tokenForCertificatePhone');
         tokenForCertificatePhone = body.tokenForCertificatePhone as string;
+    });
+
+    test('send CertificationCode: fail', async () => {
+        const response = await app.inject({
+            method: 'POST',
+            url: '/api/user/phone',
+            payload: {
+                phone: '010esrdfsd',
+            },
+        });
+        expect(response.statusCode).toBe(401);
     });
 
     test('certificate phone:success', async () => {

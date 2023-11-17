@@ -59,6 +59,15 @@ export default (app: FastifyInstance) => () => {
         );
     });
 
+    test('get stock detail: fail', async () => {
+        const response = await app.inject({
+            method: 'GET',
+            url: `/api/stock/9999999999`,
+            headers: testValues.storeHeader,
+        });
+        expect(response.statusCode).toBe(404);
+    });
+
     test('get mixed stock list', async () => {
         const response = await app.inject({
             method: 'GET',
