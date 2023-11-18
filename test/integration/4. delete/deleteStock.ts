@@ -4,8 +4,6 @@ import testValues from '../testValues';
 import * as Stock from '@DTO/stock.dto';
 import * as Menu from '@DTO/menu.dto';
 import { expect, test } from '@jest/globals';
-import exp from 'constants';
-import mixedStock from '../1. register/mixedStock';
 
 export default (app: FastifyInstance) => () => {
     test('delete stock:fail', async () => {
