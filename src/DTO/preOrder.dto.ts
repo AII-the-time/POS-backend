@@ -2,9 +2,9 @@ import { PreOrder as prismaPreOrder } from '@prisma/client';
 import {
   StoreAuthorizationHeader,
   errorSchema,
-  SchemaToInterface,
 } from '@DTO/index.dto';
 import * as E from '@errors';
+import { SchemaToInterface } from 'fastify-schema-to-ts';
 export type PreOrder = prismaPreOrder;
 
 export const newPreOrderSchema = {

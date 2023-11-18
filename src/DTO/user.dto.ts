@@ -2,9 +2,9 @@ import { User as prismaUser } from '@prisma/client';
 import {
   AuthorizationHeader,
   errorSchema,
-  SchemaToInterface,
 } from '@DTO/index.dto';
 import * as E from '@errors';
+import { SchemaToInterface } from 'fastify-schema-to-ts';
 export type User = prismaUser;
 
 export const phoneSchema = {

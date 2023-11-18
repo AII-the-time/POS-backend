@@ -9,6 +9,7 @@ import {
   LoginToken,
 } from '@utils/jwt';
 import * as E from '@errors';
+import checkBusinessRegistrationNumber from '@utils/checkBusinessRegistrationNumber';
 
 const prisma = new PrismaClient();
 
@@ -77,6 +78,10 @@ export default {
       certificatedPhone = CertificatedPhoneToken.decode(certificatedPhoneToken);
     } catch (e) {
       throw new E.UserAuthorizationError('토큰이 유효하지 않습니다.');
+    }
+
+    if(!await checkBusinessRegistrationNumber(businessRegistrationNumber)){
+      throw new E.UserAuthorizationError('사업자 등록번호가 유효하지 않습니다.');
     }
 
     let user = await prisma.user.findFirst({
