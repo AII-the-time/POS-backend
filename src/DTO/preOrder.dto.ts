@@ -52,11 +52,10 @@ export const newPreOrderSchema = {
       },
     },
     ...errorSchema(
-      E.NotFoundError,
       E.UserAuthorizationError,
       E.StoreAuthorizationError,
       E.NoAuthorizationInHeaderError,
-      E.NotCorrectTypeError
+      E.ValidationError
     ),
   },
 } as const;

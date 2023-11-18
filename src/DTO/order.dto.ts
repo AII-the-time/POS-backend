@@ -76,7 +76,6 @@ export const getOrderSchema = {
         'totalPrice',
         'createdAt',
         'orderitems',
-        'pay',
         'isPreOrdered',
       ],
       properties: {
@@ -127,6 +126,7 @@ export const getOrderSchema = {
             price: { type: 'string' },
           },
         },
+        isPreOrdered: { type: 'boolean' },
       },
     },
     ...errorSchema(

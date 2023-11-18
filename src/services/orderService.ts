@@ -223,8 +223,6 @@ export default {
       },
     });
     if (order === null) {
-      // orderService.test 에서 test
-      // test 이름은 get not exist order
       throw new NotFoundError('해당하는 주문이 없습니다.', '주문');
     }
 
@@ -246,7 +244,7 @@ export default {
         })),
       };
     });
-    const pay = {
+    const pay = paymentStatus === 'WAITING' ? undefined :{
       paymentMethod: order.payment[0].paymentMethod as 'CARD' | 'CASH' | 'BANK',
       price: order.payment[0].price.toString(),
     };
