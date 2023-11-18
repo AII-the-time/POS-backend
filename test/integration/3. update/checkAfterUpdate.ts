@@ -26,10 +26,13 @@ export default (app: FastifyInstance) => () => {
         expect(sugar.id).toBe(testValues.sugarId);
 
         expect(water.status).toBe('UNKNOWN');
-        expect(water.usingMenuCount).toBe(2);
+        expect(water.usingMenuCount).toBe(1);
 
         expect(coffeeBean.status).toBe('ENOUGH');
         expect(coffeeBean.usingMenuCount).toBe(2);
+
+        expect(milk.status).toBe('EMPTY');
+        expect(milk.usingMenuCount).toBe(2);
 
         expect(lemon.status).toBe('ENOUGH');
         expect(lemon.name).toBe('레몬즙');
@@ -68,7 +71,7 @@ export default (app: FastifyInstance) => () => {
 
         expect(americano.stockStatus).toBe('ENOUGH');
         expect(latte.stockStatus).toBe('EMPTY');
-        expect(lemonAde.stockStatus).toBe('ENOUGH');
+        expect(lemonAde.stockStatus).toBe('EMPTY');
         expect(grapefruitAde.stockStatus).toBe('ENOUGH');
     });
 

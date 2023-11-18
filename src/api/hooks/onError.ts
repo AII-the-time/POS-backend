@@ -18,6 +18,10 @@ export default (
       return reply.code(400).send(error);
     }
     if(error as FastifyError & { toast?: string } instanceof PrismaClientKnownRequestError) {
+      if(error.code === 'P2025') {
+        error.toast = '찾을 수 없는 데이터가 포함되어 있습니다.';
+        return reply.code(404).send(error);
+      }
       error.toast = '잘못된 데이터가 입력되었습니다.';
       return reply.code(400).send(error);
     }

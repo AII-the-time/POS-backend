@@ -86,13 +86,8 @@ export const softDeleteStockSchema = {
     },
   },
   response: {
-    200: {
-      type: 'object',
-      description: 'success response',
-      required: ['stockId'],
-      properties: {
-        stockId: { type: 'number' },
-      },
+    204: {
+      type: 'null'
     },
     ...errorSchema(
       E.NotFoundError,
@@ -284,13 +279,8 @@ export const softDeleteMixedStockSchema = {
     },
   },
   response: {
-    200: {
-      type: 'object',
-      description: 'success response',
-      required: ['mixedStockId'],
-      properties: {
-        mixedStockId: { type: 'number' },
-      },
+    204: {
+      type: 'null'
     },
     ...errorSchema(
       E.NotFoundError,

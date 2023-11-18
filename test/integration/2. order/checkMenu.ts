@@ -26,4 +26,20 @@ export default (app: FastifyInstance) => () => {
         expect(lemonAde.id).toBe(testValues.lemonAdeId);
         expect(lemonAde.stockStatus).toBe('UNKNOWN');
     });
+
+    test('menu detail', async () => {
+        const response = await app.inject({
+            method: 'GET',
+            url: `/api/menu/${testValues.lemonAdeId}`,
+            headers: testValues.storeHeader,
+        });
+        expect(response.statusCode).toBe(200);
+        const body = JSON.parse(response.body) as Menu.getMenuInterface['Reply']['200'];
+        expect(body.name).toBe('레몬에이드');
+        expect(body.price).toBe("6000");
+        expect(body.categoryId).toBe(testValues.adeCategoryId);
+        expect(body.recipe).toHaveLength(2);
+        expect(body.recipe[0].id).toBe(testValues.preservedLemonId);
+        expect(body.recipe[1].id).toBe(testValues.sparklingWaterId);
+    });
 }

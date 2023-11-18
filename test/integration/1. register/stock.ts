@@ -61,7 +61,7 @@ export default (app: FastifyInstance) => () => {
             url: '/api/stock',
             headers: testValues.storeHeader,
             payload: {
-                name: 'sugar',
+                name: '설탕',
                 unit: 'g',
                 currentAmount: 3000,
                 noticeThreshold: 500,

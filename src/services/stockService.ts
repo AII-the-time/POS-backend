@@ -141,7 +141,7 @@ export default {
   async softDeleteStock(
     { storeId }: Stock.softDeleteStockInterface['Body'],
     { stockId }: Stock.softDeleteStockInterface['Params']
-  ): Promise<Stock.softDeleteStockInterface['Reply']['200']> {
+  ): Promise<void> {
     await prisma.stock.update({
       where: {
         id: stockId,
@@ -151,8 +151,6 @@ export default {
         deletedAt: new Date(),
       },
     });
-
-    return { stockId };
   },
 
   async getStock(
@@ -300,7 +298,7 @@ export default {
   async softDeleteMixedStock(
     { storeId }: Stock.softDeleteMixedStockInterface['Body'],
     { mixedStockId }: Stock.softDeleteMixedStockInterface['Params']
-  ): Promise<Stock.softDeleteMixedStockInterface['Reply']['200']> {
+  ): Promise<void> {
     await prisma.mixedStock.update({
       where: {
         id: mixedStockId,
@@ -310,8 +308,6 @@ export default {
         deletedAt: new Date(),
       },
     });
-
-    return { mixedStockId };
   },
 
   async getMixedStockList({
@@ -349,6 +345,11 @@ export default {
           include: {
             stock: true,
           },
+          where: {
+            stock: {
+              deletedAt: null,
+            },
+          }
         },
       },
     });

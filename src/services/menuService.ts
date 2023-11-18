@@ -27,6 +27,20 @@ export default {
           include: {
             optionMenu: true,
             recipes: {
+              where: {
+                OR: [
+                  { 
+                    stock: {
+                      deletedAt: null,
+                    },
+                  },
+                  {
+                    mixedStock: {
+                      deletedAt: null,
+                    },
+                  },
+                ],
+              },
               include: {
                 stock: true,
                 mixedStock: {
@@ -34,6 +48,11 @@ export default {
                     mixings: {
                       select: {
                         stock: true,
+                      },
+                      where: {
+                        stock: {
+                          deletedAt: null,
+                        },
                       },
                     }
                   },
@@ -93,6 +112,20 @@ export default {
           include: {
             stock: true,
             mixedStock: true,
+          },
+          where: {
+            OR: [
+              { 
+                stock: {
+                  deletedAt: null,
+                },
+              },
+              {
+                mixedStock: {
+                  deletedAt: null,
+                },
+              },
+            ],
           },
         },
       },

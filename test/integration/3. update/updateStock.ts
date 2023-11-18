@@ -73,13 +73,13 @@ export default (app: FastifyInstance) => () => {
             payload: {
                 id: testValues.preservedLemonId,
                 name: '레몬시럽',
-                totalAmount: 2000,
+                totalAmount: 1500,
                 unit: null,
                 mixing: [
                     {
                         id: testValues.lemonId,
                         unit: 'ml',
-                        amount: 500,
+                        amount: 400,
                     },
                     {
                         id: testValues.sugarId,
@@ -87,9 +87,9 @@ export default (app: FastifyInstance) => () => {
                         amount: 1000,
                     },
                     {
-                        id: testValues.waterId,
+                        id: testValues.milkId,
                         unit: 'ml',
-                        amount: 500,
+                        amount: 100,
                     }
                 ]
             } as Stock.updateMixedStockInterface['Body']
