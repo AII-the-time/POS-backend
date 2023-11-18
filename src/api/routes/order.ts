@@ -52,8 +52,8 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      const result = await orderService.softDeletePay(request.body, request.params);
-      reply.code(200).send(result);
+      await orderService.softDeletePay(request.body, request.params);
+      reply.code(204).send();
     }
   );
 

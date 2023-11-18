@@ -13,7 +13,7 @@ export default (app: FastifyInstance) => () => {
         });
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body) as Mileage.getMileageInterface['Reply']['200'];
-        expect(body.mileage).toBe(Math.floor(2500*68*0.05).toString());
+        expect(body.mileage).toBe(Math.floor((2500 * 68 + 6000)*0.05).toString());
     });
 
     test('check mileage2 after order', async () => {
@@ -24,6 +24,6 @@ export default (app: FastifyInstance) => () => {
         });
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body) as Mileage.getMileageInterface['Reply']['200'];
-        expect(body.mileage).toBe(Math.floor(2500*3*0.05 + 6000*4*0.05).toString());
+        expect(body.mileage).toBe(Math.floor(2500*4*0.05 + 6000*4*0.05).toString());
     });
 }

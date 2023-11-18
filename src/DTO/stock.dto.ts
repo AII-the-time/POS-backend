@@ -87,7 +87,8 @@ export const softDeleteStockSchema = {
   },
   response: {
     204: {
-      type: 'null'
+      type: 'null',
+      description: 'success response',
     },
     ...errorSchema(
       E.NotFoundError,
@@ -280,7 +281,8 @@ export const softDeleteMixedStockSchema = {
   },
   response: {
     204: {
-      type: 'null'
+      type: 'null',
+      description: 'success response',
     },
     ...errorSchema(
       E.NotFoundError,

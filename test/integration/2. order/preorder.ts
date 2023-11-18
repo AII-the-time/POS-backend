@@ -14,7 +14,7 @@ export default (app: FastifyInstance) => () => {
                 menus: [
                     {
                         id: testValues.latteId,
-                        count: 3,
+                        count: 4,
                         options: [1],
                     },
                     {
@@ -23,7 +23,7 @@ export default (app: FastifyInstance) => () => {
                         options: [1],
                     },
                 ],
-                totalPrice: (2500 * 3 + 6000 * 4).toString(),
+                totalPrice: (2500 * 4 + 6000 * 4).toString(),
                 phone: '01011112222',
                 memo: '매장에서 먹을게요',
                 orderedFor: new Date().toISOString(),
@@ -50,7 +50,6 @@ export default (app: FastifyInstance) => () => {
                 ],
                 totalPrice: (6000 * 10).toString(),
                 phone: '01011112223',
-                memo: '매장에서 먹을게요',
                 orderedFor: new Date(new Date().getTime() + 24 * 60 * 60 * 1000).toISOString(),
             },
         });
@@ -101,7 +100,7 @@ export default (app: FastifyInstance) => () => {
         });
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body) as Preorder.getPreOrderInterface['Reply']['200'];
-        expect(body.totalCount).toBe(7);
+        expect(body.totalCount).toBe(8);
     });
 
 }

@@ -248,13 +248,9 @@ export const softDeletePaySchema = {
     },
   },
   response: {
-    200: {
-      type: 'object',
+    204: {
+      type: 'null',
       description: 'success response',
-      required: ['orderId'],
-      properties: {
-        orderId: { type: 'number' },
-      },
     },
     ...errorSchema(
       E.NotFoundError,

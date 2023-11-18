@@ -112,11 +112,27 @@ export default (app: FastifyInstance) => () => {
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body) as Order.getOrderInterface['Reply']['200'];
         const [latte, lemonAde] = body.orderitems;
-        expect(body.totalPrice).toBe((2500 * 3 + 6000 * 4).toString());
+        expect(body.totalPrice).toBe((2500 * 4 + 6000 * 4).toString());
         expect(lemonAde.options).toEqual([{name: 'ice', price: '0'}]);
         expect(lemonAde.count).toBe(4);
         expect(lemonAde.menuName).toBe('레몬에이드');
         expect(lemonAde.price).toBe('6000');
+    });
+
+    test('check preorder list after update', async () => {
+        const response = await app.inject({
+            method: 'GET',
+            url: `/api/preorder?date=${new Date(new Date().getTime() + 24 * 60 * 60 * 1000).toISOString()}`,
+            headers: testValues.storeHeader,
+        });
+        expect(response.statusCode).toBe(200);
+        const body = JSON.parse(response.body) as Preorder.getPreOrderListInterface['Reply']['200'];
+        expect(body.preOrders).toHaveLength(1);
+        const [preorder] = body.preOrders;
+        expect(preorder.preOrderId).toBe(testValues.secondPreorderId);
+        expect(preorder.totalPrice).toBe((6000 * 5 + 4500 * 5).toString());
+        expect(preorder.phone).toBe('01011112223');
+        expect(preorder.totalCount).toBe(10);
     });
 
     test('check preorder2 after update', async () => {

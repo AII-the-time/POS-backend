@@ -271,7 +271,7 @@ export default {
   async softDeletePay(
     { storeId }: Order.softDeletePayInterface['Body'],
     { orderId }: Order.softDeletePayInterface['Params']
-  ): Promise<Order.softDeletePayInterface['Reply']['200']> {
+  ): Promise<void> {
     const order = await prisma.order.findUnique({
       where: {
         id: orderId,
@@ -284,19 +284,17 @@ export default {
     if (order === null) {
       throw new NotFoundError('해당하는 주문이 없습니다.', '주문');
     }
-    if (order.paymentStatus !== 'PAID') {
-      throw new NotFoundError('결제되지 않은 주문입니다.', '결제된 주문');
+    if (order.paymentStatus == 'PAID'){
+      await prisma.order.update({
+        where: {
+          id: orderId,
+        },
+        data: {
+          paymentStatus: 'CANCELED',
+          deletedAt: new Date(),
+        },
+      });
     }
-    await prisma.order.update({
-      where: {
-        id: orderId,
-      },
-      data: {
-        paymentStatus: 'CANCELED',
-        deletedAt: new Date(),
-      },
-    });
-    return { orderId };
   },
 
   async getOrderList(

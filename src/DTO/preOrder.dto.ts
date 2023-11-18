@@ -127,13 +127,9 @@ export const softDeletePreOrderSchema = {
     },
   },
   response: {
-    200: {
-      type: 'object',
+    204: {
+      type: 'null',
       description: 'success response',
-      required: ['preOrderId'],
-      properties: {
-        preOrderId: { type: 'number' },
-      },
     },
     ...errorSchema(
       E.NotFoundError,
