@@ -14,11 +14,11 @@ export default (app: FastifyInstance) => () => {
                 menus: [
                     {
                         id: testValues.americanoId,
-                        count: 70,
+                        count: 68,
                         options: [1],
                     },
                 ],
-                totalPrice: (2500 * 70).toString(),
+                totalPrice: (2500 * 68).toString(),
             },
         });
         expect(response.statusCode).toBe(200);
@@ -51,7 +51,7 @@ export default (app: FastifyInstance) => () => {
                 paymentMethod: 'CARD',
                 mileageId: testValues.mileageId1,
                 useMileage: (2000).toString(),
-                saveMileage: Math.floor(2500*70*0.05).toString(),
+                saveMileage: Math.floor(2500*68*0.05).toString(),
             },
         });
         expect(response.statusCode).toBe(403);
@@ -67,7 +67,7 @@ export default (app: FastifyInstance) => () => {
                 paymentMethod: 'CARD',
                 mileageId: 999999,
                 useMileage: (1000).toString(),
-                saveMileage: Math.floor(2500*70*0.05).toString(),
+                saveMileage: Math.floor(2500*68*0.05).toString(),
             },
         });
         expect(response.statusCode).toBe(404);
@@ -83,7 +83,7 @@ export default (app: FastifyInstance) => () => {
                 paymentMethod: 'CARD',
                 mileageId: testValues.mileageId1,
                 useMileage: (1000).toString(),
-                saveMileage: Math.floor(2500*70*0.05).toString(),
+                saveMileage: Math.floor(2500*68*0.05).toString(),
             },
         });
         expect(response.statusCode).toBe(404);
@@ -98,7 +98,7 @@ export default (app: FastifyInstance) => () => {
                 orderId: testValues.firstOrderId,
                 paymentMethod: 'CARD',
                 mileageId: testValues.mileageId1,
-                saveMileage: Math.floor(2500*70*0.05).toString(),
+                saveMileage: Math.floor(2500*68*0.05).toString(),
             },
         });
         expect(response.statusCode).toBe(400);
@@ -114,7 +114,7 @@ export default (app: FastifyInstance) => () => {
                 paymentMethod: 'CARD',
                 mileageId: testValues.mileageId1,
                 useMileage: (1000).toString(),
-                saveMileage: Math.floor(2500*70*0.05).toString(),
+                saveMileage: Math.floor(2500*68*0.05).toString(),
             },
         });
         expect(response.statusCode).toBe(200);
@@ -130,7 +130,7 @@ export default (app: FastifyInstance) => () => {
                 paymentMethod: 'CARD',
                 mileageId: testValues.mileageId1,
                 useMileage: (1000).toString(),
-                saveMileage: Math.floor(2500*70*0.05).toString(),
+                saveMileage: Math.floor(2500*68*0.05).toString(),
             },
         });
         expect(response.statusCode).toBe(403);
