@@ -52,11 +52,10 @@ export const newPreOrderSchema = {
       },
     },
     ...errorSchema(
-      E.NotFoundError,
       E.UserAuthorizationError,
       E.StoreAuthorizationError,
       E.NoAuthorizationInHeaderError,
-      E.NotCorrectTypeError
+      E.ValidationError
     ),
   },
 } as const;
@@ -128,13 +127,9 @@ export const softDeletePreOrderSchema = {
     },
   },
   response: {
-    200: {
-      type: 'object',
+    204: {
+      type: 'null',
       description: 'success response',
-      required: ['preOrderId'],
-      properties: {
-        preOrderId: { type: 'number' },
-      },
     },
     ...errorSchema(
       E.NotFoundError,

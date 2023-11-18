@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { NotFoundError } from '@errors';
 import * as Menu from '@DTO/menu.dto';
-
+import { STATUS, getStockStatus } from '@utils/stockStatus';
 const prisma = new PrismaClient();
 
 export default {
@@ -27,6 +27,20 @@ export default {
           include: {
             optionMenu: true,
             recipes: {
+              where: {
+                OR: [
+                  { 
+                    stock: {
+                      deletedAt: null,
+                    },
+                  },
+                  {
+                    mixedStock: {
+                      deletedAt: null,
+                    },
+                  },
+                ],
+              },
               include: {
                 stock: true,
                 mixedStock: {
@@ -34,6 +48,11 @@ export default {
                     mixings: {
                       select: {
                         stock: true,
+                      },
+                      where: {
+                        stock: {
+                          deletedAt: null,
+                        },
                       },
                     }
                   },
@@ -51,15 +70,10 @@ export default {
       const menus = category.menu.map((menu) => {
         const usingStocks = menu.recipes.filter(({ stock }) => stock!==null).map(({ stock }) => stock!);
         const usingStocksInMixedStocks = menu.recipes.filter(({ mixedStock }) => mixedStock!==null).flatMap(({ mixedStock }) => mixedStock!.mixings.map(({ stock }) => stock));
-        const STATUS = ['UNKNOWN', 'EMPTY', 'OUT_OF_STOCK', 'CAUTION', 'ENOUGH'] as const;
-        const STATUS_ENUM = STATUS.reduce((acc, cur, idx) => ({ ...acc, [cur]: idx }), {} as Record<typeof STATUS[number], number>);
-        const stockStatuses = usingStocks.concat(usingStocksInMixedStocks).map(({ currentAmount, noticeThreshold }) => {
-          if (currentAmount === null) return STATUS_ENUM['UNKNOWN'];
-          if (currentAmount < noticeThreshold * 0.1) return STATUS_ENUM['EMPTY'];
-          if (currentAmount < noticeThreshold * 0.3) return STATUS_ENUM['OUT_OF_STOCK'];
-          if (currentAmount < noticeThreshold) return STATUS_ENUM['CAUTION'];
-          return STATUS_ENUM['ENOUGH'];
-        });
+        const stockStatuses = usingStocks
+          .concat(usingStocksInMixedStocks)
+          .filter(({noticeThreshold})=>noticeThreshold>=0)
+          .map(({ currentAmount, noticeThreshold }) => getStockStatus(currentAmount, noticeThreshold));
         return ({
         id: menu.id,
         name: menu.name,
@@ -86,25 +100,44 @@ export default {
         deletedAt: null,
       },
       include: {
-        optionMenu: true,
+        optionMenu: {
+          where: {
+            option:{
+              deletedAt: null,
+            }
+          }
+        },
         category: true,
         recipes: {
           include: {
             stock: true,
             mixedStock: true,
           },
+          where: {
+            OR: [
+              { 
+                stock: {
+                  deletedAt: null,
+                },
+              },
+              {
+                mixedStock: {
+                  deletedAt: null,
+                },
+              },
+            ],
+          },
         },
       },
     });
     if (!menu) {
-      // 해당 에러는 test 중 menuService.test.ts 에서 테스트 함.
-      // test 이름은 get not exist menu detail
       throw new NotFoundError('메뉴가 존재하지 않습니다.', '메뉴');
     }
 
     const allOption = await prisma.option.findMany({
       where: {
         storeId,
+        deletedAt: null,
       },
     });
 
@@ -215,16 +248,31 @@ export default {
   }: Menu.updateOptionInterface['Body']): Promise<
     Menu.updateOptionInterface['Reply']['201']
   > {
-    const result = await prisma.option.update({
+    const { optionMenu: preOptionMenu } = await prisma.option.update({
       where: {
         id: optionId,
         storeId,
       },
       data: {
+        deletedAt: new Date(),
+      },
+      include: {
+        optionMenu: true,
+      },
+    });
+    const result = await prisma.option.create({
+      data: {
+        storeId,
         optionName,
         optionPrice,
         optionCategory,
-        id: optionId,
+        optionMenu: {
+          createMany: {
+            data: preOptionMenu.map(({ menuId }) => ({
+              menuId,
+            })),
+          }
+        }
       },
     });
     return {
@@ -280,7 +328,7 @@ export default {
   async softDeleteCategory(
     { storeId }: Menu.softDeleteCategoryInterface['Body'],
     { categoryId }: Menu.softDeleteCategoryInterface['Params']
-  ): Promise<Menu.softDeleteCategoryInterface['Reply']['200']> {
+  ): Promise<void> {
     await prisma.category.update({
       where: {
         id: categoryId,
@@ -290,7 +338,15 @@ export default {
         deletedAt: new Date(),
       },
     });
-    return { categoryId };
+    await prisma.menu.updateMany({
+      where: {
+        categoryId,
+        storeId,
+      },
+      data: {
+        deletedAt: new Date(),
+      },
+    });
   },
 
   async createMenu({
@@ -465,8 +521,6 @@ export default {
       },
     });
 
-    if (!option) option = [];
-
     const optionMenuIds = softDeleteMenu.optionMenu
       .map(({ optionId }) => optionId)
       .sort();
@@ -526,7 +580,7 @@ export default {
   async softDeleteMenu(
     { storeId }: Menu.softDeleteMenuInterface['Body'],
     { menuId }: Menu.softDeleteMenuInterface['Params']
-  ): Promise<Menu.softDeleteMenuInterface['Reply']['200']> {
+  ): Promise<void> {
     await prisma.menu.update({
       where: {
         id: menuId,
@@ -536,13 +590,12 @@ export default {
         deletedAt: new Date(),
       },
     });
-    return { menuId };
   },
 
   async softDeleteOption(
     { storeId }: Menu.softDeleteOptionInterface['Body'],
     { optionId }: Menu.softDeleteOptionInterface['Params']
-  ): Promise<Menu.softDeleteOptionInterface['Reply']['200']> {
+  ): Promise<void> {
     await prisma.option.update({
       where: {
         id: optionId,
@@ -552,6 +605,5 @@ export default {
         deletedAt: new Date(),
       },
     });
-    return { optionId };
   },
 };

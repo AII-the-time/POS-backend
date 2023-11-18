@@ -23,6 +23,7 @@ export default {
       throw new E.UserAuthorizationError('휴대폰 번호가 유효하지 않습니다.');
     }
     let certificationCode = '123456';
+    /* istanbul ignore next */
     if(process.env.NODE_ENV === 'production'){
       certificationCode = crypto.randomInt(100000, 999999).toString();
       sendSMS(phone, 'SMS', `[카페포스] 인증번호는 ${certificationCode}입니다.`);

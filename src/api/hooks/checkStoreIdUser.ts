@@ -19,7 +19,6 @@ export default async (
   }
   if (!storeid) {
     throw new NoAuthorizationInHeaderError('헤더에 storeid가 없습니다');
-    // 해당 에러는 test 중 orderService.test.ts 에서 테스트 함.
   }
   const replace_authorization = authorization.replace('Bearer ', '');
   const userId = LoginToken.getUserId(replace_authorization);

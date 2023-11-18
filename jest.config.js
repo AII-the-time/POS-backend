@@ -1,6 +1,6 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 export default {
-  preset: 'ts-jest',
+  preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
   collectCoverageFrom: [
     'src/**/*.[jt]s?(x)',
@@ -8,6 +8,7 @@ export default {
     '!src/index.ts',
     '!src/loaders/index.ts',
     '!src/config/index.ts',
+    '!src/utils/sendSMS.ts',
   ],
   moduleNameMapper: {
     '^@api$': '<rootDir>/src/api',
@@ -22,5 +23,6 @@ export default {
     '^@routes/(.*)$': '<rootDir>/src/api/routes/$1',
     '^@hooks/(.*)$': '<rootDir>/src/api/hooks/$1',
     '^@server$': '<rootDir>/src/server.ts',
+    '^@seeding/(.*)$': '<rootDir>/seeding/$1',
   },
 };

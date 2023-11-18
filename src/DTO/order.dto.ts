@@ -76,7 +76,6 @@ export const getOrderSchema = {
         'totalPrice',
         'createdAt',
         'orderitems',
-        'pay',
         'isPreOrdered',
       ],
       properties: {
@@ -127,6 +126,7 @@ export const getOrderSchema = {
             price: { type: 'string' },
           },
         },
+        isPreOrdered: { type: 'boolean' },
       },
     },
     ...errorSchema(
@@ -189,6 +189,7 @@ export const getOrderListSchema = {
               totalCount: { type: 'number' },
               totalPrice: { type: 'string' },
               createdAt: { type: 'string', format: 'date-time' },
+              isPreOrdered: { type: 'boolean' },
             },
           },
         },
@@ -230,7 +231,8 @@ export const paySchema = {
       E.StoreAuthorizationError,
       E.NoAuthorizationInHeaderError,
       E.NotCorrectTypeError,
-      E.NotEnoughError
+      E.NotEnoughError,
+      E.AlreadyPaidError
     ),
   },
 } as const;
@@ -247,13 +249,9 @@ export const softDeletePaySchema = {
     },
   },
   response: {
-    200: {
-      type: 'object',
+    204: {
+      type: 'null',
       description: 'success response',
-      required: ['orderId'],
-      properties: {
-        orderId: { type: 'number' },
-      },
     },
     ...errorSchema(
       E.NotFoundError,

@@ -8,6 +8,6 @@ if [ "$NODE_ENV" = "production" ]; then
     npm run prisma:deploy
 else
     npm run prisma
-    npm run seed
+    
 fi
 npm run dev

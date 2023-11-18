@@ -41,7 +41,6 @@ jobs:
         run: |
           npm install
           npm run prisma
-          npm run seed
       - name: Run Tests
         uses: ArtiomTr/jest-coverage-report-action@v2
         id: coverage
