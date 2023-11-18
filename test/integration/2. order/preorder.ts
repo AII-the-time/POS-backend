@@ -103,4 +103,15 @@ export default (app: FastifyInstance) => () => {
         expect(body.totalCount).toBe(8);
     });
 
+    test('get preorder detail', async () => {
+        const response = await app.inject({
+            method: 'GET',
+            url: `/api/preorder/${testValues.secondPreorderId}`,
+            headers: testValues.storeHeader,
+        });
+        expect(response.statusCode).toBe(200);
+        const body = JSON.parse(response.body) as Preorder.getPreOrderInterface['Reply']['200'];
+        expect(body.totalCount).toBe(10);
+    });
+
 }

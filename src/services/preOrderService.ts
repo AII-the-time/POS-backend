@@ -95,18 +95,10 @@ export default {
     { storeId }: PreOrder.softDeletePreOrderInterface['Body'],
     { preOrderId }: PreOrder.softDeletePreOrderInterface['Params']
   ): Promise<void> {
-    const preOrder = await prisma.preOrder.findUnique({
-      where: {
-        id: preOrderId,
-        storeId,
-      },
-    });
-    if (preOrder === null) {
-      throw new NotFoundError('해당하는 예약 주문이 없습니다.', '예약 주문');
-    }
     await prisma.preOrder.update({
       where: {
         id: preOrderId,
+        storeId,
       },
       data: {
         deletedAt: new Date(),

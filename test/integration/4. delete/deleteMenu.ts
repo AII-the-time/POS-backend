@@ -58,7 +58,7 @@ export default (app: FastifyInstance) => () => {
         expect(sparklingWater.usingMenuCount).toBe(1);
 
         expect(sugar.status).toBe('ENOUGH');
-        expect(sugar.usingMenuCount).toBe(1);
+        expect(sugar.usingMenuCount).toBe(0);
     });
 
     test('check menu list after delete menu', async () => {

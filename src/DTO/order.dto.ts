@@ -189,6 +189,7 @@ export const getOrderListSchema = {
               totalCount: { type: 'number' },
               totalPrice: { type: 'string' },
               createdAt: { type: 'string', format: 'date-time' },
+              isPreOrdered: { type: 'boolean' },
             },
           },
         },
