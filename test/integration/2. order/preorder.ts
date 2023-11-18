@@ -5,7 +5,7 @@ import * as Preorder from '@DTO/preOrder.dto';
 import { expect, test } from '@jest/globals';
 
 export default (app: FastifyInstance) => () => {
-    test('preorder cafe latte and grapefruit ade', async () => {
+    test('preorder cafe latte and lemon ade', async () => {
         const response = await app.inject({
             method: 'POST',
             url: `/api/preorder`,
@@ -18,7 +18,7 @@ export default (app: FastifyInstance) => () => {
                         options: [1],
                     },
                     {
-                        id: testValues.grapefruitAdeId,
+                        id: testValues.lemonAdeId,
                         count: 4,
                         options: [1],
                     },
@@ -35,7 +35,7 @@ export default (app: FastifyInstance) => () => {
         testValues.setValues('firstPreorderId', body.preOrderId);
     });
 
-    test('preorder lemon ade', async () => {
+    test('preorder grapefurit ade', async () => {
         const response = await app.inject({
             method: 'POST',
             url: `/api/preorder`,
@@ -43,12 +43,12 @@ export default (app: FastifyInstance) => () => {
             payload: {
                 menus: [
                     {
-                        id: testValues.lemonAdeId,
+                        id: testValues.grapefruitAdeId,
                         count: 10,
                         options: [1],
                     },
                 ],
-                totalPrice: (2500 * 3 + 3000 * 4).toString(),
+                totalPrice: (6000 * 10).toString(),
                 phone: '01011112223',
                 memo: '매장에서 먹을게요',
                 orderedFor: new Date(new Date().getTime() + 24 * 60 * 60 * 1000).toISOString(),

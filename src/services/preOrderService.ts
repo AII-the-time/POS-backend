@@ -53,11 +53,17 @@ export default {
   }: PreOrder.updatePreOrderInterface['Body']): Promise<
     PreOrder.updatePreOrderInterface['Reply']['201']
   > {
-    const result = await prisma.preOrder.update({
+    await prisma.preOrder.update({
       where: {
         id,
         storeId,
       },
+      data: {
+        deletedAt: new Date(),
+      }
+    });
+
+    const result = await prisma.preOrder.create({
       data: {
         totalPrice,
         phone,

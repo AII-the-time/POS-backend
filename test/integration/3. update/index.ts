@@ -1,16 +1,16 @@
 import { FastifyInstance } from 'fastify';
 import { afterAll, describe} from '@jest/globals';
-import updateExceptStock from './updateExceptStock';
-import checkAboutMenu from './checkAboutMenu';
+import updateStock from './updateStock';
+import updateMenu from './updateMenu';
+import updatePreOrder from './updatePreOrder';
+import checkAfterUpdate from './checkAfterUpdate';
 
 
 const tests:[string, (app: FastifyInstance) => () => void][] = [
-    ['update except order, preorder', updateExceptStock],
-    ['check after update about menu', checkAboutMenu],
-    ['check stock, mixed stock, menu, category, order, preorder, option', ()=>()=>{}],
-    ['update preorder + check', ()=>()=>{}],
-    ['update order', ()=>()=>{}],
-    ['check stock, menu, order, option', ()=>()=>{}],
+    ['update about stock', updateStock],
+    ['update about menu', updateMenu],
+    ['update preorder', updatePreOrder],
+    ['check after update about menu', checkAfterUpdate],
 ];
 
 export default (app: FastifyInstance) => () => {

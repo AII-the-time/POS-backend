@@ -151,7 +151,7 @@ export default (app: FastifyInstance) => () => {
                         options: [1],
                     },
                     {
-                        id: testValues.grapefruitAdeId,
+                        id: testValues.lemonAdeId,
                         count: 4,
                         options: [1],
                     },

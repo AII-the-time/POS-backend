@@ -3,6 +3,8 @@ import { ErrorInterface } from '@DTO/index.dto';
 import testValues from '../testValues';
 import * as Stock from '@DTO/stock.dto';
 import * as Menu from '@DTO/menu.dto';
+import * as Order from '@DTO/order.dto';
+import * as Preorder from '@DTO/preOrder.dto';
 import { expect, test } from '@jest/globals';
 
 export default (app: FastifyInstance) => () => {
@@ -94,8 +96,39 @@ export default (app: FastifyInstance) => () => {
         expect(body.name).toBe('아메리카노(예시)');
         expect(body.price).toBe("2500");
         expect(body.categoryId).toBe(testValues.coffeeCategoryId);
-        console.log(body.option[2].options);
         expect(body.option[2].options[1].id).not.toBe(testValues.shotMinusOptionId);
         expect(body.option[2].options[1].name).toBe('샷 제외');
+    });
+
+    test('check order2 after update', async () => {
+        const response = await app.inject({
+            method: 'GET',
+            url: `/api/order/${testValues.secondOrderId}`,
+            headers: testValues.storeHeader,
+        });
+        expect(response.statusCode).toBe(200);
+        const body = JSON.parse(response.body) as Order.getOrderInterface['Reply']['200'];
+        const [latte, lemonAde] = body.orderitems;
+        expect(body.totalPrice).toBe((2500 * 3 + 6000 * 4).toString());
+        expect(lemonAde.options).toEqual([{name: 'ice', price: '0'}]);
+        expect(lemonAde.count).toBe(4);
+        expect(lemonAde.menuName).toBe('레몬에이드');
+        expect(lemonAde.price).toBe('6000');
+    });
+
+    test('check preorder2 after update', async () => {
+        const response = await app.inject({
+            method: 'GET',
+            url: `/api/preorder/${testValues.secondPreorderId}`,
+            headers: testValues.storeHeader,
+        });
+        expect(response.statusCode).toBe(200);
+        const body = JSON.parse(response.body) as Preorder.getPreOrderInterface['Reply']['200'];
+        expect(body.totalPrice).toBe((6000 * 5 + 4500 * 5).toString());
+        const [grapefruitAde, lemonAde] = body.orderitems;
+        expect(grapefruitAde.count).toBe(5);
+        expect(lemonAde.count).toBe(5);
+        expect(lemonAde.menuName).toBe('레몬에이드');
+        expect(lemonAde.price).toBe('4500');
     });
 };
