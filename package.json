@@ -5,15 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src src/index.ts",
-    "test": "prisma migrate reset -f && jest --detectOpenHandles --forceExit",
-    "test-coverage": "prisma migrate reset -f && jest --coverage --detectOpenHandles --forceExit",
+    "test": "prisma migrate reset -f && node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test-coverage": "prisma migrate reset -f && node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
     "prisma": "./prisma/concat_schema.sh && prisma migrate dev --name init --preview-feature",
     "prisma:deploy": "./prisma/concat_schema.sh && prisma migrate deploy --preview-feature",
-    "prisma:generate": "./prisma/concat_schema.sh && prisma generate",
-    "seed": "prisma db seed"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "prisma:generate": "./prisma/concat_schema.sh && prisma generate"
   },
   "keywords": [],
   "author": "",
@@ -25,12 +21,13 @@
     "@sentry/node": "^7.73.0",
     "@sentry/profiling-node": "^1.2.1",
     "@types/jsonwebtoken": "^9.0.2",
-    "axios": "^1.6.0",
+    "axios": "^1.6.1",
     "crypto": "^1.0.1",
     "crypto-js": "^4.2.0",
     "dotenv": "^16.3.1",
     "fastify": "^4.19.1",
     "fastify-plugin": "^4.5.0",
+    "fastify-schema-to-ts": "^1.0.1",
     "json-schema-to-ts": "^2.9.2",
     "jsonwebtoken": "^9.0.1"
   },

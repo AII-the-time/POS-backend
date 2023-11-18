@@ -45,26 +45,13 @@ export class ExistError extends ErrorWithToast {
   }
 }
 
-export class NotEnoughError extends ErrorWithToast {
-  constructor(message: string) {
-    super(message);
-    this.name = 'NotEnoughError';
-  }
-}
+export const AlreadyPaidError = generateGenericError('alreadyPaidError');
 
-export class UncorrectTokenError extends ErrorWithToast {
-  constructor(message: string) {
-    super(message);
-    this.name = 'UncorrectTokenError';
-  }
-}
+export const NotEnoughError = generateGenericError('NotEnoughError');
 
-export class NotDefinedOnConfigError extends ErrorWithToast {
-  constructor(message: string) {
-    super(message);
-    this.name = 'NotDefinedOnConfigError';
-  }
-}
+export const UncorrectTokenError = generateGenericError('UncorrectTokenError');
+
+export const  NotDefinedOnConfigError = generateGenericError("NotDefinedOnConfigError");
 
 export const ValidationError = generateGenericError('ValidationError');
 

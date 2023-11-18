@@ -65,11 +65,11 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      const result = await menuService.softDeleteCategory(
+      await menuService.softDeleteCategory(
         request.body,
         request.params
       );
-      reply.code(200).send(result);
+      reply.code(204).send();
     }
   );
 
@@ -107,11 +107,11 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      const result = await menuService.softDeleteMenu(
+      await menuService.softDeleteMenu(
         request.body,
         request.params
       );
-      reply.code(200).send(result);
+      reply.code(204).send();
     }
   );
 
@@ -147,11 +147,11 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      const result = await menuService.softDeleteOption(
+      await menuService.softDeleteOption(
         request.body,
         request.params
       );
-      reply.code(200).send(result);
+      reply.code(204).send();
     }
   );
 };

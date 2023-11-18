@@ -1,9 +1,9 @@
 import {
   StoreAuthorizationHeader,
   errorSchema,
-  SchemaToInterface,
 } from '@DTO/index.dto';
 import * as E from '@errors';
+import { SchemaToInterface } from 'fastify-schema-to-ts';
 
 export const getMenuListSchema = {
   tags: ['menu'],
@@ -282,13 +282,9 @@ export const softDeleteCategorySchema = {
     },
   },
   response: {
-    200: {
-      type: 'object',
+    204: {
+      type: 'null',
       description: 'success response',
-      required: ['categoryId'],
-      properties: {
-        categoryId: { type: 'number' },
-      },
     },
     ...errorSchema(
       E.NotFoundError,
@@ -308,7 +304,7 @@ export const createMenuSchema = {
     required: ['name', 'price', 'categoryId'],
     properties: {
       name: { type: 'string' },
-      price: { type: 'number' },
+      price: { type: 'string' },
       categoryId: { type: 'number' },
       option: {
         type: 'array',
@@ -357,7 +353,7 @@ export const createMenuSchema = {
 
 export const updateMenuSchema = {
   tags: ['menu'],
-  summary: '메뉴 생성',
+  summary: '메뉴 수정',
   headers: StoreAuthorizationHeader,
   body: {
     type: 'object',
@@ -365,7 +361,7 @@ export const updateMenuSchema = {
     properties: {
       id: { type: 'number' },
       name: { type: 'string' },
-      price: { type: 'number' },
+      price: { type: 'string' },
       categoryId: { type: 'number' },
       option: {
         type: 'array',
@@ -423,13 +419,9 @@ export const softDeleteMenuSchema = {
     },
   },
   response: {
-    200: {
-      type: 'object',
+    204: {
+      type: 'null',
       description: 'success response',
-      required: ['menuId'],
-      properties: {
-        menuId: { type: 'number' },
-      },
     },
     ...errorSchema(
       E.NotFoundError,
@@ -452,13 +444,9 @@ export const softDeletOptionSchema = {
     },
   },
   response: {
-    200: {
-      type: 'object',
+    204: {
+      type: 'null',
       description: 'success response',
-      required: ['optionId'],
-      properties: {
-        optionId: { type: 'number' },
-      },
     },
     ...errorSchema(
       E.NotFoundError,

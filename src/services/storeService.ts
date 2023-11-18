@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import * as Store from '@DTO/store.dto';
-import menuSeed from '../../prisma/menuSeed';
+import testSeed from '@seeding/testSeed';
+import defaultSeed from '@seeding/defaultSeed';
 const prisma = new PrismaClient();
 
 export default {
@@ -42,12 +43,12 @@ export default {
           optionCategory: '온도',
         },
         {
-          optionName: '케냐',
+          optionName: '원두1',
           optionPrice: 0,
           optionCategory: '원두',
         },
         {
-          optionName: '콜롬비아',
+          optionName: '원두2',
           optionPrice: 300,
           optionCategory: '원두',
         },
@@ -57,7 +58,7 @@ export default {
           optionCategory: '샷',
         },
         {
-          optionName: '연하게',
+          optionName: '샷 빼기',
           optionPrice: 0,
           optionCategory: '샷',
         },
@@ -68,8 +69,12 @@ export default {
     });
   },
 
+  async exampleSeeding({ storeId }: { storeId: number }): Promise<void> {
+    await defaultSeed(prisma, storeId);
+  },
+
   async seeding({ storeId }: { storeId: number }): Promise<void> {
-    await menuSeed(prisma, storeId);
+    await testSeed(prisma, storeId);
   },
 
   async getStoreList({

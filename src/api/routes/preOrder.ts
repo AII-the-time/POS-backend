@@ -55,11 +55,11 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      const result = await preOrderService.softDeletePreOrder(
+      await preOrderService.softDeletePreOrder(
         request.body,
         request.params
       );
-      reply.code(200).send(result);
+      reply.code(204).send();
     }
   );
 

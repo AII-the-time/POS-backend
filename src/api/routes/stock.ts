@@ -39,11 +39,11 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      const result = await stockService.softDeleteStock(
+      await stockService.softDeleteStock(
         request.body,
         request.params
       );
-      reply.code(200).send(result);
+      reply.code(204).send();
     }
   );
 
@@ -107,11 +107,11 @@ const api: FastifyPluginAsync = async (server: FastifyInstance) => {
       preValidation: checkStoreIdUser,
     },
     async (request, reply) => {
-      const result = await stockService.softDeleteMixedStock(
+      await stockService.softDeleteMixedStock(
         request.body,
         request.params
       );
-      reply.code(200).send(result);
+      reply.code(204).send();
     }
   );
 

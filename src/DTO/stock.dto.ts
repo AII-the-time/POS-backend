@@ -1,9 +1,9 @@
 import {
   StoreAuthorizationHeader,
   errorSchema,
-  SchemaToInterface,
 } from '@DTO/index.dto';
 import * as E from '@errors';
+import { SchemaToInterface } from 'fastify-schema-to-ts';
 
 export const createStockSchema = {
   tags: ['stock'],
@@ -86,13 +86,9 @@ export const softDeleteStockSchema = {
     },
   },
   response: {
-    200: {
-      type: 'object',
+    204: {
+      type: 'null',
       description: 'success response',
-      required: ['stockId'],
-      properties: {
-        stockId: { type: 'number' },
-      },
     },
     ...errorSchema(
       E.NotFoundError,
@@ -284,13 +280,9 @@ export const softDeleteMixedStockSchema = {
     },
   },
   response: {
-    200: {
-      type: 'object',
+    204: {
+      type: 'null',
       description: 'success response',
-      required: ['mixedStockId'],
-      properties: {
-        mixedStockId: { type: 'number' },
-      },
     },
     ...errorSchema(
       E.NotFoundError,

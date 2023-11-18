@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import * as Order from '@DTO/order.dto';
-import { NotFoundError, NotCorrectTypeError, NotEnoughError } from '@errors';
+import { NotFoundError, NotCorrectTypeError, NotEnoughError, AlreadyPaidError } from '@errors';
 const prisma = new PrismaClient();
 
 export default {
@@ -56,14 +56,10 @@ export default {
       },
     });
     if (order === null) {
-      // orderService.test 에서 test
-      // test 이름은 pay not exist order
       throw new NotFoundError('해당하는 주문이 없습니다.', '주문');
     }
     if (order.paymentStatus !== 'WAITING') {
-      // orderService.test 에서 test
-      // test 이름은 pay again
-      throw new NotFoundError('이미 결제된 주문입니다.', '결제 예정 주문');
+      throw new AlreadyPaidError('이미 결제된 주문입니다.');
     }
 
     if (mileageId !== undefined && mileageId !== null) {
@@ -73,8 +69,6 @@ export default {
         },
       });
       if (mileage === null) {
-        // orderService.test 에서 test
-        // test 이름은 pay with not exist mileage
         throw new NotFoundError('해당하는 마일리지가 없습니다.', '마일리지');
       }
       if (
@@ -83,8 +77,6 @@ export default {
         useMileage === null ||
         saveMileage === null
       ) {
-        // orderService.test 에서 test
-        // test 이름은 pay without useMileage and saveMileage
         throw new NotCorrectTypeError(
           '사용할 마일리지와 적립할 마일리지를 입력해주세요.',
           '사용할 마일리지와 적립할 마일리지'
@@ -231,8 +223,6 @@ export default {
       },
     });
     if (order === null) {
-      // orderService.test 에서 test
-      // test 이름은 get not exist order
       throw new NotFoundError('해당하는 주문이 없습니다.', '주문');
     }
 
@@ -254,7 +244,7 @@ export default {
         })),
       };
     });
-    const pay = {
+    const pay = paymentStatus === 'WAITING' ? undefined :{
       paymentMethod: order.payment[0].paymentMethod as 'CARD' | 'CASH' | 'BANK',
       price: order.payment[0].price.toString(),
     };
@@ -281,7 +271,7 @@ export default {
   async softDeletePay(
     { storeId }: Order.softDeletePayInterface['Body'],
     { orderId }: Order.softDeletePayInterface['Params']
-  ): Promise<Order.softDeletePayInterface['Reply']['200']> {
+  ): Promise<void> {
     const order = await prisma.order.findUnique({
       where: {
         id: orderId,
@@ -294,26 +284,24 @@ export default {
     if (order === null) {
       throw new NotFoundError('해당하는 주문이 없습니다.', '주문');
     }
-    if (order.paymentStatus !== 'PAID') {
-      throw new NotFoundError('결제되지 않은 주문입니다.', '결제된 주문');
+    if (order.paymentStatus == 'PAID'){
+      await prisma.order.update({
+        where: {
+          id: orderId,
+        },
+        data: {
+          paymentStatus: 'CANCELED',
+          deletedAt: new Date(),
+        },
+      });
     }
-    await prisma.order.update({
-      where: {
-        id: orderId,
-      },
-      data: {
-        paymentStatus: 'CANCELED',
-        deletedAt: new Date(),
-      },
-    });
-    return { orderId };
   },
 
   async getOrderList(
     { storeId }: Order.getOrderListInterface['Body'],
     { page, count, date }: Order.getOrderListInterface['Querystring']
   ): Promise<Order.getOrderListInterface['Reply']['200']> {
-    date = date ?? new Date().toISOString().split('T')[0];
+    date = date ?? new Date().toISOString();
     const reservationDate = new Date(date);
     const krDate = new Date(reservationDate.getTime() + 9 * 60 * 60 * 1000);
     const krDateStr = new Date(krDate.toISOString().split('T')[0]);

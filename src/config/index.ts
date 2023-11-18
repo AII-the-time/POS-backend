@@ -24,6 +24,7 @@ class Config{
             NCP_SENS_ACCESS: process.env.NCP_SENS_ACCESS || '',
             NCP_SENS_MY_NUMBER: process.env.NCP_SENS_MY_NUMBER || '',
             NCP_SENS_ID: process.env.NCP_SENS_ID || '',
+            ODCLOUD_API_KEY: process.env.ODCLOUD_API_KEY || '',
         } as const;
     }
 

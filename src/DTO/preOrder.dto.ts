@@ -2,9 +2,9 @@ import { PreOrder as prismaPreOrder } from '@prisma/client';
 import {
   StoreAuthorizationHeader,
   errorSchema,
-  SchemaToInterface,
 } from '@DTO/index.dto';
 import * as E from '@errors';
+import { SchemaToInterface } from 'fastify-schema-to-ts';
 export type PreOrder = prismaPreOrder;
 
 export const newPreOrderSchema = {
@@ -52,11 +52,10 @@ export const newPreOrderSchema = {
       },
     },
     ...errorSchema(
-      E.NotFoundError,
       E.UserAuthorizationError,
       E.StoreAuthorizationError,
       E.NoAuthorizationInHeaderError,
-      E.NotCorrectTypeError
+      E.ValidationError
     ),
   },
 } as const;
@@ -128,13 +127,9 @@ export const softDeletePreOrderSchema = {
     },
   },
   response: {
-    200: {
-      type: 'object',
+    204: {
+      type: 'null',
       description: 'success response',
-      required: ['preOrderId'],
-      properties: {
-        preOrderId: { type: 'number' },
-      },
     },
     ...errorSchema(
       E.NotFoundError,

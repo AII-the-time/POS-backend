@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { NotFoundError } from '@errors';
 import * as Stock from '@DTO/stock.dto';
+import { STATUS, getStockStatus } from '@utils/stockStatus';
 
 const prisma = new PrismaClient();
 
@@ -88,6 +89,11 @@ export default {
           },
         },
         mixings: {
+          where:{
+            mixedStock: {
+              deletedAt: null,
+            }
+          },
           select: {
             mixedStock: {
               select: {
@@ -112,16 +118,7 @@ export default {
     return {
       stocks: result.map(
         ({ id, name, currentAmount, noticeThreshold, _count, mixings }) => {
-          const status = ((
-            currentAmount: number | null,
-            noticeThreshold: number
-          ) => {
-            if (currentAmount === null) return 'UNKNOWN';
-            if (currentAmount < noticeThreshold * 0.1) return 'EMPTY';
-            if (currentAmount < noticeThreshold * 0.3) return 'OUT_OF_STOCK';
-            if (currentAmount < noticeThreshold) return 'CAUTION';
-            return 'ENOUGH';
-          })(currentAmount, noticeThreshold);
+          const status = STATUS[getStockStatus(currentAmount, noticeThreshold)];
 
           return {
             id,
@@ -149,7 +146,7 @@ export default {
   async softDeleteStock(
     { storeId }: Stock.softDeleteStockInterface['Body'],
     { stockId }: Stock.softDeleteStockInterface['Params']
-  ): Promise<Stock.softDeleteStockInterface['Reply']['200']> {
+  ): Promise<void> {
     await prisma.stock.update({
       where: {
         id: stockId,
@@ -159,8 +156,6 @@ export default {
         deletedAt: new Date(),
       },
     });
-
-    return { stockId };
   },
 
   async getStock(
@@ -180,7 +175,7 @@ export default {
 
     return {
       name: result.name,
-      price: result.price === null ? '0' : result.price.toString(),
+      price: result.price === null ? null : result.price.toString(),
       amount: result.amount,
       currentAmount: result.currentAmount,
       noticeThreshold: result.noticeThreshold,
@@ -308,7 +303,7 @@ export default {
   async softDeleteMixedStock(
     { storeId }: Stock.softDeleteMixedStockInterface['Body'],
     { mixedStockId }: Stock.softDeleteMixedStockInterface['Params']
-  ): Promise<Stock.softDeleteMixedStockInterface['Reply']['200']> {
+  ): Promise<void> {
     await prisma.mixedStock.update({
       where: {
         id: mixedStockId,
@@ -318,8 +313,6 @@ export default {
         deletedAt: new Date(),
       },
     });
-
-    return { mixedStockId };
   },
 
   async getMixedStockList({
@@ -357,6 +350,11 @@ export default {
           include: {
             stock: true,
           },
+          where: {
+            stock: {
+              deletedAt: null,
+            },
+          }
         },
       },
     });
