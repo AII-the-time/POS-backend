@@ -521,8 +521,6 @@ export default {
       },
     });
 
-    if (!option) option = [];
-
     const optionMenuIds = softDeleteMenu.optionMenu
       .map(({ optionId }) => optionId)
       .sort();

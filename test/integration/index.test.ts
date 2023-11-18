@@ -6,6 +6,7 @@ import register from './1. register';
 import order from './2. order';
 import update from './3. update';
 import del from './4. delete';
+import etc from './5. etc.';
 
 const app: FastifyInstance = await server();
 
@@ -18,3 +19,4 @@ describe('register',register(app));
 describe('order',order(app));
 describe('update',update(app));
 describe('delete',del(app));
+describe('etc',etc(app));
