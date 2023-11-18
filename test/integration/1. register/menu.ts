@@ -142,4 +142,20 @@ export default (app: FastifyInstance) => () => {
         expect(data).toHaveProperty('menuId');
         testValues.setValues('lemonAdeId', data.menuId);
     });
+
+    test('stock list after register', async () => {
+        const res = await app.inject({
+            method: 'GET',
+            url: '/api/stock',
+            headers: testValues.storeHeader,
+        });
+        const data = JSON.parse(res.body) as Stock.getStockListInterface['Reply']['200'];
+        expect(res.statusCode).toEqual(200);
+        expect(data).toHaveProperty('stocks');
+        expect(data.stocks).toHaveLength(7);
+
+        const grapefruitStock = data.stocks.find((stock) => stock.name === '자몽');
+        expect(grapefruitStock).toBeDefined();
+        expect(grapefruitStock!.usingMenuCount).toEqual(1);
+    });
 }
