@@ -5,7 +5,7 @@ import * as User from '@DTO/user.dto';
 
 export default (app: FastifyInstance) => () => {
     const phone = '01012345678';
-    const businessRegistrationNumber = '1234567890';
+    const businessRegistrationNumber = '5133001104';
     let tokenForCertificatePhone: string;
     let certificatedPhoneToken: string;
     let refreshToken: string;
@@ -70,7 +70,19 @@ export default (app: FastifyInstance) => () => {
         expect(response.statusCode).toBe(401);
     });
 
-    test('new user: fail', async () => {
+    test('new user: fail because of invalid businessRegistrationNumber', async () => {
+        const response = await app.inject({
+            method: 'POST',
+            url: '/api/user/login',
+            payload: {
+                businessRegistrationNumber: 'asdf',
+                certificatedPhoneToken: certificatedPhoneToken,
+            },
+        });
+        expect(response.statusCode).toBe(401);
+    });
+
+    test('new user: fail because of invalid certificatedPhoneToken', async () => {
         const response = await app.inject({
             method: 'POST',
             url: '/api/user/login',

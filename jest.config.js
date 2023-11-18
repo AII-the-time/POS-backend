@@ -8,6 +8,7 @@ export default {
     '!src/index.ts',
     '!src/loaders/index.ts',
     '!src/config/index.ts',
+    '!src/utils/sendSMS.ts',
   ],
   moduleNameMapper: {
     '^@api$': '<rootDir>/src/api',
