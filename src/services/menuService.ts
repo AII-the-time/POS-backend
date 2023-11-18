@@ -81,7 +81,13 @@ export default {
         deletedAt: null,
       },
       include: {
-        optionMenu: true,
+        optionMenu: {
+          where: {
+            option:{
+              deletedAt: null,
+            }
+          }
+        },
         category: true,
         recipes: {
           include: {
@@ -98,6 +104,7 @@ export default {
     const allOption = await prisma.option.findMany({
       where: {
         storeId,
+        deletedAt: null,
       },
     });
 
@@ -208,16 +215,31 @@ export default {
   }: Menu.updateOptionInterface['Body']): Promise<
     Menu.updateOptionInterface['Reply']['201']
   > {
-    const result = await prisma.option.update({
+    const { optionMenu: preOptionMenu } = await prisma.option.update({
       where: {
         id: optionId,
         storeId,
       },
       data: {
+        deletedAt: new Date(),
+      },
+      include: {
+        optionMenu: true,
+      },
+    });
+    const result = await prisma.option.create({
+      data: {
+        storeId,
         optionName,
         optionPrice,
         optionCategory,
-        id: optionId,
+        optionMenu: {
+          createMany: {
+            data: preOptionMenu.map(({ menuId }) => ({
+              menuId,
+            })),
+          }
+        }
       },
     });
     return {
