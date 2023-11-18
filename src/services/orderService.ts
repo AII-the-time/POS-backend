@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import * as Order from '@DTO/order.dto';
-import { NotFoundError, NotCorrectTypeError, NotEnoughError } from '@errors';
+import { NotFoundError, NotCorrectTypeError, NotEnoughError, AlreadyPaidError } from '@errors';
 const prisma = new PrismaClient();
 
 export default {
@@ -59,7 +59,7 @@ export default {
       throw new NotFoundError('해당하는 주문이 없습니다.', '주문');
     }
     if (order.paymentStatus !== 'WAITING') {
-      throw new NotFoundError('이미 결제된 주문입니다.', '결제 예정 주문');
+      throw new AlreadyPaidError('이미 결제된 주문입니다.');
     }
 
     if (mileageId !== undefined && mileageId !== null) {

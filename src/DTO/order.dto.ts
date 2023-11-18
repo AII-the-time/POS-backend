@@ -230,7 +230,8 @@ export const paySchema = {
       E.StoreAuthorizationError,
       E.NoAuthorizationInHeaderError,
       E.NotCorrectTypeError,
-      E.NotEnoughError
+      E.NotEnoughError,
+      E.AlreadyPaidError
     ),
   },
 } as const;

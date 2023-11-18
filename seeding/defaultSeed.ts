@@ -20,7 +20,7 @@ export default async (prisma: PrismaClient, storeId: number) => {
                 name: '원두(예시)',
                 unit: 'g',
                 noticeThreshold: 1000,
-                currentAmount: 10000,
+                currentAmount: 2000,
                 storeId,
             },
             {

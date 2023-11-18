@@ -54,13 +54,19 @@ const ErrorConfig: ErrorConfigType = [
     describtion: '잔액이 부족합니다.',
     error: E.NotEnoughError,
     code: 403,
-    toast: (error: E.NotEnoughError) => `잔액이 부족합니다.`,
+    toast: (error: E.ErrorWithToast) => `잔액이 부족합니다.`,
   },
   {
     describtion: '토큰이 유효하지 않습니다.',
     error: E.UncorrectTokenError,
     code: 403,
-    toast: (error: E.UncorrectTokenError) => '토큰이 유효하지 않습니다.',
+    toast: (error: E.ErrorWithToast) => '토큰이 유효하지 않습니다.',
   },
+  {
+    describtion: '이미 결제된 주문입니다.',
+    error: E.AlreadyPaidError,
+    code: 403,
+    toast: (error: E.ErrorWithToast) => '이미 결제된 주문입니다.',
+  }
 ];
 export default ErrorConfig;
