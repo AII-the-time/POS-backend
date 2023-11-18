@@ -50,6 +50,13 @@ class Values {
     public grapefruitAdeId: number = 0;
     public lemonAdeId: number = 0;
 
+    //mileage
+    public customerPhone1: string = '01012345678';
+    public customerPhone2: string = '01087654321';
+    public wrongPhone: string = '010123';
+    public mileageId1: number = 0;
+    public mileageId2: number = 0;
+
     //orders
     public firstPreorderId: number = 0;
     public secondPreorderId: number = 0;
