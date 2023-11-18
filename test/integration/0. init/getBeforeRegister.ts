@@ -116,6 +116,15 @@ export default (app: FastifyInstance) => () => {
         }]);
     });
 
+    test('get menu detail: fail', async () => {
+        const response = await app.inject({
+            method: 'GET',
+            url: `/api/menu/9999999999`,
+            headers: testValues.storeHeader,
+        });
+        expect(response.statusCode).toBe(404);
+    });
+
     test('get menu detail', async () => {
         const response = await app.inject({
             method: 'GET',
@@ -209,6 +218,62 @@ export default (app: FastifyInstance) => () => {
         );
     });
 
+    test('default options', async () => {
+        const response = await app.inject({
+            method: 'GET',
+            url: `/api/menu/option`,
+            headers: testValues.storeHeader,
+        });
+        expect(response.statusCode).toBe(200);
+        const body = JSON.parse(response.body) as Menu.getOptionListInterface['Reply']['200'];
+        expect(body.option).toEqual([
+            {
+                optionType: '온도',
+                options: [
+                    {
+                        id: expect.any(Number),
+                        name: 'ice',
+                        price: '0',
+                    },
+                    {
+                        id: expect.any(Number),
+                        name: 'hot',
+                        price: '0',
+                    },
+                ],
+            },
+            {
+                optionType: '원두',
+                options: [
+                    {
+                        id: expect.any(Number),
+                        name: '원두1',
+                        price: '0',
+                    },
+                    {
+                        id: expect.any(Number),
+                        name: '원두2',
+                        price: '300',
+                    },
+                ],
+            },
+            {
+                optionType: '샷',
+                options: [
+                    {
+                        id: expect.any(Number),
+                        name: '1샷 추가',
+                        price: '500',
+                    },
+                    {
+                        id: expect.any(Number),
+                        name: '샷 빼기',
+                        price: '0',
+                    },
+                ],
+            },
+        ]);
+    });
 
 
 }

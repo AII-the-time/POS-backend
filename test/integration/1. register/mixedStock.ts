@@ -41,8 +41,6 @@ export default (app: FastifyInstance) => () => {
             headers: testValues.storeHeader,
             payload: {
                 name: '레몬청',
-                totalAmount: 2000,
-                unit: 'g',
                 mixing: [
                     {
                         id: testValues.lemonId,

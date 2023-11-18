@@ -92,8 +92,6 @@ export default {
       },
     });
     if (!menu) {
-      // 해당 에러는 test 중 menuService.test.ts 에서 테스트 함.
-      // test 이름은 get not exist menu detail
       throw new NotFoundError('메뉴가 존재하지 않습니다.', '메뉴');
     }
 

@@ -40,6 +40,21 @@ export default (app: FastifyInstance) => () => {
         testValues.setValues('lemonId', data.stockId);
     });
 
+    test('register sparkling water', async () => {
+        const res = await app.inject({
+            method: 'POST',
+            url: '/api/stock',
+            headers: testValues.storeHeader,
+            payload: {
+                name: '탄산수',
+            },
+        });
+        const data = JSON.parse(res.body) as Stock.createStockInterface['Reply']['201'];
+        expect(res.statusCode).toEqual(201);
+        expect(data).toHaveProperty('stockId');
+        testValues.setValues('sparklingWaterId', data.stockId);
+    });
+
     test('register sugar', async () => {
         const res = await app.inject({
             method: 'POST',
@@ -67,7 +82,7 @@ export default (app: FastifyInstance) => () => {
         const data = JSON.parse(res.body) as Stock.getStockListInterface['Reply']['200'];
         expect(res.statusCode).toEqual(200);
         expect(data).toHaveProperty('stocks');
-        expect(data.stocks).toHaveLength(6);
+        expect(data.stocks).toHaveLength(7);
     });
 
     test('search stock', async () => {

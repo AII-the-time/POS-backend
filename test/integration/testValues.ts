@@ -27,6 +27,7 @@ class Values {
     public milkId: number = 3;
     public grapefruitId: number = 0;
     public sugarId: number = 0;
+    public sparklingWaterId: number = 0;
     public lemonId: number = 0;
     public preservedGrapefruitId: number = 0;
     public preservedLemonId: number = 0;
@@ -47,6 +48,7 @@ class Values {
     public americanoId: number = 1;
     public latteId: number = 2;
     public grapefruitAdeId: number = 0;
+    public lemonAdeId: number = 0;
 
     //orders
     public firstPreorderId: number = 0;
