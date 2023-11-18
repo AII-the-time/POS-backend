@@ -89,6 +89,11 @@ export default {
           },
         },
         mixings: {
+          where:{
+            mixedStock: {
+              deletedAt: null,
+            }
+          },
           select: {
             mixedStock: {
               select: {
