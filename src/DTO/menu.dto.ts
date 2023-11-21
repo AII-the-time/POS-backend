@@ -69,7 +69,7 @@ export const getMenuSchema = {
     200: {
       type: 'object',
       description: 'success response',
-      required: ['category', 'categoryId', 'name', 'price', 'option', 'recipe','log'],
+      required: ['category', 'categoryId', 'name', 'price', 'option', 'recipe','history'],
       properties: {
         category: { type: 'string' },
         categoryId: { type: 'number' },
@@ -124,13 +124,12 @@ export const getMenuSchema = {
             },
           },
         },
-        log: {
+        history: {
           type: 'array',
           items: {
             type: 'object',
-            required: ['amount', 'date', 'price'],
+            required: ['date', 'price'],
             properties: {
-              amount: { type: 'number' },
               date: { type: 'string', format: 'date-time' },
               price: { type: 'string' },
             },

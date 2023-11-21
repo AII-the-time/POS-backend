@@ -65,6 +65,8 @@ export default (app: FastifyInstance) => () => {
                 unit: 'g',
                 currentAmount: 3000,
                 noticeThreshold: 500,
+                amount: 1000,
+                price: "2400",
             },
         });
         const data = JSON.parse(res.body) as Stock.createStockInterface['Reply']['201'];
