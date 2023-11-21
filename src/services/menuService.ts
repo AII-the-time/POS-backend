@@ -197,6 +197,7 @@ export default {
         })
       ),
       recipe,
+      log: [],
     };
   },
   async getOptionList({

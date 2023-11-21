@@ -181,6 +181,7 @@ export default {
       noticeThreshold: result.noticeThreshold,
       unit: result.unit,
       updatedAt: result.updatedAt.toISOString(),
+      log: [],
     };
   },
 
