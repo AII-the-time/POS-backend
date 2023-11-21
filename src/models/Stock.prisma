@@ -5,6 +5,7 @@ model Stock {
     storeId Int
     recipes Recipe[]
     mixings Mixing[]
+    history StockHistory[]
     name String
     amount Int?
     unit String?
@@ -12,6 +13,15 @@ model Stock {
     currentAmount Int?
     noticeThreshold Int @default(0)
     deletedAt DateTime?
+}
+
+model StockHistory {
+    id Int @id @default(autoincrement())
+    stockId Int
+    stock Stock @relation(fields: [stockId], references: [id])
+    amount Int
+    price Decimal
+    createdAt DateTime @default(now())
 }
 
 model MixedStock {
