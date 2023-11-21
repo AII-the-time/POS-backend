@@ -159,7 +159,7 @@ export const getStockSchema = {
         'currentAmount',
         'noticeThreshold',
         'updatedAt',
-        'log'
+        'history'
       ],
       properties: {
         name: { type: 'string' },
@@ -169,7 +169,7 @@ export const getStockSchema = {
         currentAmount: { type: 'number', nullable: true },
         noticeThreshold: { type: 'number' },
         updatedAt: { type: 'string' },
-        log: {
+        history: {
           type: 'array',
           items: {
             type: 'object',

@@ -29,6 +29,16 @@ export default {
       },
     });
 
+    if(price !== null&& price !== undefined&& amount !== null&& amount !== undefined){
+      await prisma.stockHistory.create({
+        data: {
+          stockId: result.id,
+          amount,
+          price,
+        },
+      });
+    }
+
     return {
       stockId: result.id,
     };
@@ -60,6 +70,16 @@ export default {
         noticeThreshold,
       },
     });
+
+    if(price !== null&& price !== undefined&& amount !== null&& amount !== undefined){
+      await prisma.stockHistory.create({
+        data: {
+          stockId: result.id,
+          amount,
+          price,
+        },
+      });
+    }
 
     return {
       stockId: result.id,
@@ -168,6 +188,9 @@ export default {
         storeId,
         deletedAt: null,
       },
+      include: {
+        history: true,
+      },
     });
     if (!result) {
       throw new NotFoundError('재고가 존재하지 않습니다.', '재고');
@@ -181,7 +204,11 @@ export default {
       noticeThreshold: result.noticeThreshold,
       unit: result.unit,
       updatedAt: result.updatedAt.toISOString(),
-      log: [],
+      history: result.history.map(({ createdAt, amount, price }) => ({
+        date: createdAt,
+        amount,
+        price: price.toString(),
+      })),
     };
   },
 

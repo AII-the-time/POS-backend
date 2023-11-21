@@ -55,7 +55,7 @@ export default (app: FastifyInstance) => () => {
                 currentAmount: null,
                 noticeThreshold: -1,
                 updatedAt: expect.any(String),
-                log: []
+                history: []
             }
         );
     });

@@ -47,14 +47,13 @@ export default (app: FastifyInstance) => () => {
         });
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body) as Stock.getStockInterface['Reply']['200'];
-        console.log(body);
         expect(body.name).toBe('레몬즙');
         expect(body.price).toBe('5000');
         expect(body.amount).toBe(1000);
         expect(body.unit).toBe('ml');
         expect(body.noticeThreshold).toBe(500);
         expect(body.currentAmount).toBe(1000);
-        expect(body.log).toEqual([
+        expect(body.history).toEqual([
             {
                 date: expect.any(String),
                 amount: 1000,
@@ -71,14 +70,13 @@ export default (app: FastifyInstance) => () => {
         });
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body) as Stock.getStockInterface['Reply']['200'];
-        console.log(body);
         expect(body.name).toBe('자몽');
         expect(body.price).toBe('30000');
         expect(body.amount).toBe(2800);
         expect(body.unit).toBe('g');
         expect(body.noticeThreshold).toBe(500);
         expect(body.currentAmount).toBe(1000);
-        expect(body.log).toEqual([
+        expect(body.history).toEqual([
             {
                 date: expect.any(String),
                 amount: 2800,
