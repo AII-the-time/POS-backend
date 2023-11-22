@@ -69,7 +69,7 @@ export const getMenuSchema = {
     200: {
       type: 'object',
       description: 'success response',
-      required: ['category', 'categoryId', 'name', 'price', 'option', 'recipe'],
+      required: ['category', 'categoryId', 'name', 'price', 'option', 'recipe','history'],
       properties: {
         category: { type: 'string' },
         categoryId: { type: 'number' },
@@ -121,6 +121,17 @@ export const getMenuSchema = {
               coldSizeUpAmount: { type: 'number', nullable: true },
               hotRegularAmount: { type: 'number', nullable: true },
               hotSizeUpAmount: { type: 'number', nullable: true },
+            },
+          },
+        },
+        history: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['date', 'price'],
+            properties: {
+              date: { type: 'string', format: 'date-time' },
+              price: { type: 'string' },
             },
           },
         },

@@ -159,6 +159,7 @@ export const getStockSchema = {
         'currentAmount',
         'noticeThreshold',
         'updatedAt',
+        'history'
       ],
       properties: {
         name: { type: 'string' },
@@ -168,6 +169,18 @@ export const getStockSchema = {
         currentAmount: { type: 'number', nullable: true },
         noticeThreshold: { type: 'number' },
         updatedAt: { type: 'string' },
+        history: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['amount', 'date', 'price'],
+            properties: {
+              amount: { type: 'number' },
+              date: { type: 'string', format: 'date-time' },
+              price: { type: 'string' },
+            },
+          },
+        }
       },
     },
     ...errorSchema(
@@ -460,7 +473,10 @@ export type softDeleteStockInterface = SchemaToInterface<
 export type getStockListInterface = SchemaToInterface<
   typeof getStockListSchema
 > & { Body: { storeId: number; userId: number } };
-export type getStockInterface = SchemaToInterface<typeof getStockSchema> & {
+export type getStockInterface = SchemaToInterface<
+  typeof getStockSchema,
+  [{ pattern: { type: 'string'; format: 'date-time' }; output: Date }]
+> & {
   Body: { storeId: number; userId: number };
 };
 export type createMixedStockInterface = SchemaToInterface<
