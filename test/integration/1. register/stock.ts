@@ -16,7 +16,7 @@ export default (app: FastifyInstance) => () => {
                 currentAmount: 3000,
                 noticeThreshold: 500,
                 amount: 2800,
-                price: 26900,
+                price: "26900",
             },
         });
         const data = JSON.parse(res.body) as Stock.createStockInterface['Reply']['201'];
@@ -65,6 +65,8 @@ export default (app: FastifyInstance) => () => {
                 unit: 'g',
                 currentAmount: 3000,
                 noticeThreshold: 500,
+                amount: 1000,
+                price: "2400",
             },
         });
         const data = JSON.parse(res.body) as Stock.createStockInterface['Reply']['201'];
@@ -106,6 +108,13 @@ export default (app: FastifyInstance) => () => {
         const data = JSON.parse(res.body) as Stock.getStockInterface['Reply']['200'];
         expect(res.statusCode).toEqual(200);
         expect(data).toHaveProperty('name', '자몽');
+        expect(data.history).toEqual([
+            {
+                date: expect.any(String),
+                amount: 2800,
+                price: "26900",
+            }
+        ]);
     });
 
     test('get stock detail:lemon', async () => {

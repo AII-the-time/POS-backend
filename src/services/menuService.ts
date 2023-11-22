@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma,PrismaClient } from '@prisma/client';
 import { NotFoundError } from '@errors';
 import * as Menu from '@DTO/menu.dto';
 import { STATUS, getStockStatus } from '@utils/stockStatus';
@@ -90,6 +90,113 @@ export default {
     return { categories: result };
   },
 
+  async getCostHistory(recipes: Prisma.RecipeGetPayload<{
+    include: {
+      stock: {
+        include: {
+          history: true,
+        },
+      },
+      mixedStock: {
+        include: {
+          mixings: {
+            include: {
+              stock: {
+                include: {
+                  history: true,
+                }
+              }
+            }
+          }
+        },
+      }
+    }
+  }>[])
+  :Promise<Menu.getMenuInterface['Reply']['200']['history']> {
+    const usingStocks = recipes.filter(({ stock }) => stock!==null&&stock!.noticeThreshold>=0);
+    if(usingStocks.some(({ stock }) => stock!.currentAmount===null || stock!.amount===null || stock!.price===null))
+      return [];
+
+    const usingMixedStocks = recipes.filter(({ mixedStock }) => mixedStock!==null);
+    if(usingMixedStocks.some(({ mixedStock }) => mixedStock!.totalAmount===null))
+      return [];
+
+    if(usingMixedStocks.some(({ mixedStock }) => mixedStock!.mixings.some(({ stock }) => stock.currentAmount===null || stock.amount===null || stock.price===null)))
+      return [];
+
+    const stockHistory = usingStocks
+      .map(({ stock,coldRegularAmount }) => ({
+        id: stock!.id,
+        history: stock!.history
+          .map(({ createdAt,amount,price }) => ({
+            date: createdAt.toISOString().split('T')[0],
+            price: coldRegularAmount!*price.toNumber()/amount,
+          })),
+      }));
+      
+    const stockInMixedStocksHistory = usingMixedStocks
+      .flatMap(({ mixedStock,coldRegularAmount }) =>{
+        const totalAmount = mixedStock!.totalAmount!;
+        return mixedStock!.mixings.map(({ stock,amount }) => (
+          {
+            id: stock.id,
+            history: stock.history.map(({ createdAt,amount: historyAmount,price }) => ({
+              date: createdAt.toISOString().split('T')[0],
+              price: coldRegularAmount!*amount*price.toNumber()/historyAmount/totalAmount,
+            })),
+          }
+        ));
+      });
+
+    const allHistory = stockHistory.concat(stockInMixedStocksHistory).map(({history})=>history)
+      .map((history) => history.reduce((acc, {date,price})=>{
+          const sameDateIndex = acc.findIndex((history)=>history.date===date);
+          if(sameDateIndex!==-1){
+            acc[sameDateIndex].price=price;
+            return acc;
+          }
+          acc.push({date,price});
+          return acc;
+        },[] as {date:string,price:number}[])
+      );
+
+    const [initPrice,initDate] = allHistory.reduce((acc, history) => {
+      const initPrice = history[0].price;
+      const initDate = history[0].date;
+      return [acc[0]+initPrice,acc[1].localeCompare(initDate)<0?initDate:acc[1]];
+    }, [0,'1900-01-01'] as [number,string]);
+
+    const updateHistory = allHistory.reduce((acc, history) => {
+      for (let i = 1; i < history.length; i++) {
+        const currentDate = history[i].date;
+        const currentPrice = history[i].price;
+        const previousPrice = history[i-1].price;
+        const priceDifference = currentPrice - previousPrice;
+        if (acc[currentDate] !== undefined) {
+          acc[currentDate] += priceDifference;
+        } else {
+          acc[currentDate] = priceDifference;
+        }
+      }
+      return acc;
+    }, {} as Record<string, number>);
+
+    const sortedHistory = Object.entries(updateHistory).sort(([date1], [date2]) => {
+      return date1.localeCompare(date2);
+    })
+
+    const accumulatedHistory = sortedHistory.reduce((acc, [date, price]) => {
+      const curPrice = acc[acc.length - 1].price;
+      acc.push({
+        date,
+        price: curPrice + price,
+      });
+      return acc;
+    }, [{ date: initDate, price: initPrice }]);
+    
+    return accumulatedHistory.filter(({date}) => date.localeCompare(initDate)>=0).map(({date,price})=>({date,price:price.toFixed(2)}));
+  },
+
   async getMenu(
     { storeId }: Menu.getMenuInterface['Body'],
     { menuId }: Menu.getMenuInterface['Params']
@@ -97,7 +204,6 @@ export default {
     const menu = await prisma.menu.findUnique({
       where: {
         id: menuId,
-        deletedAt: null,
       },
       include: {
         optionMenu: {
@@ -110,8 +216,29 @@ export default {
         category: true,
         recipes: {
           include: {
-            stock: true,
-            mixedStock: true,
+            stock: {
+              include: {
+                history: true,
+              },
+            },
+            mixedStock: {
+              include: {
+                mixings: {
+                  include: {
+                    stock: {
+                      include: {
+                        history: true,
+                      }
+                    }
+                  },
+                  where: {
+                    stock: {
+                      deletedAt: null,
+                    },
+                  },
+                }
+              },
+            }
           },
           where: {
             OR: [
@@ -197,6 +324,7 @@ export default {
         })
       ),
       recipe,
+      history: await this.getCostHistory(menu.recipes),
     };
   },
   async getOptionList({

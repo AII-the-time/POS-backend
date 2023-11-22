@@ -38,6 +38,4 @@ export default (
   }
   
   reply.code(500).send();
-  // test 폴더에 있는 hookTest.test.ts 파일에서 test
-  // test 이름은 human error
 };
