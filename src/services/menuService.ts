@@ -136,7 +136,6 @@ export default {
       
     const stockInMixedStocksHistory = usingMixedStocks
       .flatMap(({ mixedStock,coldRegularAmount }) =>{
-        if(mixedStock===null) return [];
         const totalAmount = mixedStock!.totalAmount!;
         return mixedStock!.mixings.map(({ stock,amount }) => (
           {
@@ -160,18 +159,20 @@ export default {
           return acc;
         },[] as {date:string,price:number}[])
       );
+
     const [initPrice,initDate] = allHistory.reduce((acc, history) => {
       const initPrice = history[0].price;
       const initDate = history[0].date;
       return [acc[0]+initPrice,acc[1].localeCompare(initDate)<0?initDate:acc[1]];
     }, [0,'1900-01-01'] as [number,string]);
+
     const updateHistory = allHistory.reduce((acc, history) => {
       for (let i = 1; i < history.length; i++) {
         const currentDate = history[i].date;
         const currentPrice = history[i].price;
         const previousPrice = history[i-1].price;
         const priceDifference = currentPrice - previousPrice;
-        if (acc[currentDate]) {
+        if (acc[currentDate] !== undefined) {
           acc[currentDate] += priceDifference;
         } else {
           acc[currentDate] = priceDifference;
@@ -179,9 +180,11 @@ export default {
       }
       return acc;
     }, {} as Record<string, number>);
+
     const sortedHistory = Object.entries(updateHistory).sort(([date1], [date2]) => {
       return date1.localeCompare(date2);
     })
+
     const accumulatedHistory = sortedHistory.reduce((acc, [date, price]) => {
       const curPrice = acc[acc.length - 1].price;
       acc.push({
@@ -190,6 +193,7 @@ export default {
       });
       return acc;
     }, [{ date: initDate, price: initPrice }]);
+    
     return accumulatedHistory.filter(({date}) => date.localeCompare(initDate)>=0).map(({date,price})=>({date,price:price.toFixed(2)}));
   },
 
