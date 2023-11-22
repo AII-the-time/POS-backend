@@ -39,6 +39,57 @@ export default (app: FastifyInstance) => () => {
         expect(lemon.usingMenuCount).toBe(1);
     });
 
+    test('check stock detail after update', async () => {
+        const response = await app.inject({
+            method: 'GET',
+            url: `/api/stock/${testValues.lemonId}`,
+            headers: testValues.storeHeader,
+        });
+        expect(response.statusCode).toBe(200);
+        const body = JSON.parse(response.body) as Stock.getStockInterface['Reply']['200'];
+        expect(body.name).toBe('레몬즙');
+        expect(body.price).toBe('5000');
+        expect(body.amount).toBe(1000);
+        expect(body.unit).toBe('ml');
+        expect(body.noticeThreshold).toBe(500);
+        expect(body.currentAmount).toBe(1000);
+        expect(body.history).toEqual([
+            {
+                date: expect.any(String),
+                amount: 1000,
+                price: "5000",
+            }
+        ]);
+    });
+
+    test('check stock detail after update', async () => {
+        const response = await app.inject({
+            method: 'GET',
+            url: `/api/stock/${testValues.grapefruitId}`,
+            headers: testValues.storeHeader,
+        });
+        expect(response.statusCode).toBe(200);
+        const body = JSON.parse(response.body) as Stock.getStockInterface['Reply']['200'];
+        expect(body.name).toBe('자몽');
+        expect(body.price).toBe('30000');
+        expect(body.amount).toBe(2800);
+        expect(body.unit).toBe('g');
+        expect(body.noticeThreshold).toBe(500);
+        expect(body.currentAmount).toBe(1000);
+        expect(body.history).toEqual([
+            {
+                date: expect.any(String),
+                amount: 2800,
+                price: "26900",
+            },
+            {
+                date: expect.any(String),
+                amount: 2800,
+                price: "30000",
+            }
+        ]);
+    });
+
     test('check mixed stock after update', async () => {
         const response = await app.inject({
             method: 'GET',

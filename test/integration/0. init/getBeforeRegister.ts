@@ -55,6 +55,7 @@ export default (app: FastifyInstance) => () => {
                 currentAmount: null,
                 noticeThreshold: -1,
                 updatedAt: expect.any(String),
+                history: []
             }
         );
     });
@@ -139,6 +140,7 @@ export default (app: FastifyInstance) => () => {
                 price: "2500",
                 category: '커피',
                 categoryId: testValues.coffeeCategoryId,
+                history: [],
                 option: [
                     {
                         optionType: "온도",

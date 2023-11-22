@@ -146,6 +146,7 @@ export default (app: FastifyInstance) => () => {
         expect(body2.recipe).toHaveLength(2);
         expect(body2.recipe[0].id).toBe(testValues.preservedLemonId);
         expect(body2.recipe[1].id).toBe(testValues.sparklingWaterId);
+        expect(body2.history).toHaveLength(1);
 
         const response3 = await app.inject({
             method: 'GET',

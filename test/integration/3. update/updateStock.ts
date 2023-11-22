@@ -45,6 +45,26 @@ export default (app: FastifyInstance) => () => {
         expect(body.stockId).toBe(testValues.lemonId);
     });
 
+    test('update grapefruit stock', async () => {
+        const response = await app.inject({
+            method: 'PUT',
+            url: `/api/stock`,
+            headers: testValues.storeHeader,
+            payload: {
+                id: testValues.grapefruitId,
+                name: '자몽',
+                amount: 2800,
+                price: "30000",
+                noticeThreshold: 500,
+                unit: 'g',
+                currentAmount: 1000,
+            } as Stock.updateStockInterface['Body']
+        });
+        expect(response.statusCode).toBe(201);
+        const body = JSON.parse(response.body) as Stock.updateStockInterface['Reply']['201'];
+        expect(body.stockId).toBe(testValues.grapefruitId);
+    });
+
     test('update sparkling water stock', async () => {
         const response = await app.inject({
             method: 'PUT',
