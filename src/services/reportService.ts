@@ -152,7 +152,6 @@ export default {
             }
             return acc;
         }, {'null':0} as {[key:number|string]:number});
-        console.log(returnUserList);
 
 
         const nullCount = returnUserList['null'];

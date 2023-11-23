@@ -16,7 +16,6 @@ export default (app: FastifyInstance) => () => {
         });
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body) as Report.reportInterface['Reply']['200'];
-        console.log(JSON.stringify(body.responseData.viewContents, null, 2));
         const recentSalesReport = body.responseData.viewContents[0].content as unknown as Report.graphInterface;
         expect(recentSalesReport.graphTitle).toBe('최근 30일 매출');
         expect(recentSalesReport.graphColor).toBe('#2B1E12');
@@ -31,6 +30,10 @@ export default (app: FastifyInstance) => () => {
         expect(returnRateReport.pieChartTitle).toBe('재방문율');
         expect(returnRateReport.totalCount).toBe(250);
         expect(returnRateReport.pieChartItems.length).toBe(6);
+
+        const reservedSalesReport = body.responseData.viewContents[3].content as unknown as Report.pieChartInterface;
+        expect(reservedSalesReport.pieChartTitle).toBe('예약 매출');
+        expect(reservedSalesReport.pieChartItems.length).toBe(2);
     });
 
     test('get report', async () => {
