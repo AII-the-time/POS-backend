@@ -234,7 +234,6 @@ export default (app: FastifyInstance) => () => {
         });
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body) as Menu.getMenuInterface['Reply']['200'];
-        console.log(body.history);
         expect(body.history).toEqual([
             {
                 date: expect.any(String),

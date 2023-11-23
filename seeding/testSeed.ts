@@ -221,7 +221,7 @@ export default async (prisma: PrismaClient, storeId: number) => {
   });
 
   await prisma.mileage.createMany({
-    data: new Array(20).fill(0).map((_, index) => ({
+    data: new Array(80).fill(0).map((_, index) => ({
       storeId,
       mileage: 0,
       phone: `010100000${10+index}`,
@@ -234,9 +234,9 @@ export default async (prisma: PrismaClient, storeId: number) => {
     }
   });
 
-  const preOrderItems = new Array(20).fill(0).map((_, index) => new Array(Math.floor(Math.random() * 5)+1).fill(0).map((_, index) => ({
+  const preOrderItems = new Array(50).fill(0).map((_, index) => new Array(Math.floor(Math.random() * 5)+1).fill(0).map((_, index) => ({
     menu: menus[Math.floor(Math.random() * menus.length)],
-    count: Math.floor(Math.random() * 3)+1,
+    count: Math.floor(Math.random() * 20)+5,
   })));
 
   await prisma.preOrder.createMany({
@@ -264,7 +264,7 @@ export default async (prisma: PrismaClient, storeId: number) => {
     }
   });
 
-  const orderItems = new Array(80).fill(0).map((_, index) => new Array(Math.floor(Math.random() * 5)+1).fill(0).map((_, index) => ({
+  const orderItems = new Array(200).fill(0).map((_, index) => new Array(Math.floor(Math.random() * 5)+1).fill(0).map((_, index) => ({
     menu: menus[Math.floor(Math.random() * menus.length)],
     count: Math.floor(Math.random() * 3)+1,
   })));
@@ -274,7 +274,7 @@ export default async (prisma: PrismaClient, storeId: number) => {
       storeId,
       paymentStatus: 'PAID',
       totalPrice: orderItem.reduce((acc, cur) => acc + cur.menu.price.toNumber() * cur.count, 0).toString(),
-      mileageId: Math.floor(Math.random() * 5)>2?mileages[Math.floor(Math.random() * 20)].id:undefined,
+      mileageId: Math.floor(Math.random() * 5)>0?mileages[Math.floor(Math.random() * mileages.length)].id:undefined,
       useMileage: 0,
       saveMileage: 0,
       createdAt: getDateBeforeToday(Math.floor(Math.random() * 30),Math.floor(Math.random() * 9),Math.floor(Math.random() * 49)),
@@ -284,7 +284,7 @@ export default async (prisma: PrismaClient, storeId: number) => {
         storeId,
         paymentStatus: 'PAID',
         totalPrice: order.totalPrice.toString(),
-        mileageId: Math.floor(Math.random() * 5)>2?mileages[Math.floor(Math.random() * 20)].id:undefined,
+        mileageId: Math.floor(Math.random() * 5)>0?mileages[Math.floor(Math.random() * mileages.length)].id:undefined,
         useMileage: 0,
         saveMileage: 0,
         createdAt: order.orderedFor,
