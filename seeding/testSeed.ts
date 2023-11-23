@@ -49,9 +49,9 @@ const menuData = menuRawData.split('\n').slice(3).join('\n').split('\n,,,,,,,\n'
 
 const categoryData = [...new Set(menuData.map((menu) => menu.category))];
 
-const getDateAfterToday = (days: number, time: number,minites: number) => {
-  const date = new Date(new Date().getTime() + days * 24 * 60 * 60 * 1000);
-  return new Date(`${date.toISOString().split('T')[0]}T${time}:${minites}:00.000Z`);
+const getDateBeforeToday = (days: number, time: number,minites: number):Date => {
+  const date = new Date(new Date().getTime() - days * 24 * 60 * 60 * 1000);
+  return new Date(`${date.toISOString().split('T')[0]}T0${time}:${minites+10}:00.000Z`);
 }
 
 export const printAllStocks = () => {
@@ -220,5 +220,101 @@ export default async (prisma: PrismaClient, storeId: number) => {
     })))
   });
 
-  
+  await prisma.mileage.createMany({
+    data: new Array(20).fill(0).map((_, index) => ({
+      storeId,
+      mileage: 0,
+      phone: `010100000${10+index}`,
+    }))
+  });
+
+  const mileages = await prisma.mileage.findMany({
+    where: {
+      storeId
+    }
+  });
+
+  const preOrderItems = new Array(20).fill(0).map((_, index) => new Array(Math.floor(Math.random() * 5)+1).fill(0).map((_, index) => ({
+    menu: menus[Math.floor(Math.random() * menus.length)],
+    count: Math.floor(Math.random() * 3)+1,
+  })));
+
+  await prisma.preOrder.createMany({
+    data: preOrderItems.map((orderItem, index) => ({
+      storeId,
+      totalPrice: orderItem.reduce((acc, cur) => acc + cur.menu.price.toNumber() * cur.count, 0).toString(),
+      createdAt: getDateBeforeToday(30,0,0),
+      phone: `010${Math.floor(Math.random() * 100000000).toString().padStart(10, '0')}`,
+      orderedFor: getDateBeforeToday(Math.floor(Math.random() * 30),Math.floor(Math.random() * 9),Math.floor(Math.random() * 49)),
+      deletedAt: new Date()
+    }))
+  });
+
+  await prisma.preOrderItem.createMany({
+    data: preOrderItems.flatMap((orderItem, index) => orderItem.map((orderItem) => ({
+      preOrderId: index+1,
+      menuId: orderItem.menu.id,
+      count: orderItem.count
+    })))
+  });
+
+  const preOrders = await prisma.preOrder.findMany({
+    where: {
+      storeId
+    }
+  });
+
+  const orderItems = new Array(80).fill(0).map((_, index) => new Array(Math.floor(Math.random() * 5)+1).fill(0).map((_, index) => ({
+    menu: menus[Math.floor(Math.random() * menus.length)],
+    count: Math.floor(Math.random() * 3)+1,
+  })));
+
+  await prisma.order.createMany({
+    data: orderItems.map((orderItem, index) => ({
+      storeId,
+      paymentStatus: 'PAID',
+      totalPrice: orderItem.reduce((acc, cur) => acc + cur.menu.price.toNumber() * cur.count, 0).toString(),
+      mileageId: Math.floor(Math.random() * 5)>2?mileages[Math.floor(Math.random() * 20)].id:undefined,
+      useMileage: 0,
+      saveMileage: 0,
+      createdAt: getDateBeforeToday(Math.floor(Math.random() * 30),Math.floor(Math.random() * 9),Math.floor(Math.random() * 49)),
+      preOrderId: undefined as number | undefined
+    })).concat(
+      preOrders.map((order) => ({
+        storeId,
+        paymentStatus: 'PAID',
+        totalPrice: order.totalPrice.toString(),
+        mileageId: Math.floor(Math.random() * 5)>2?mileages[Math.floor(Math.random() * 20)].id:undefined,
+        useMileage: 0,
+        saveMileage: 0,
+        createdAt: order.orderedFor,
+        preOrderId: order.id
+      }))
+    )
+  });
+
+  const orders = await prisma.order.findMany({
+    where: {
+      storeId
+    }
+  });
+
+  const orderItemsWithPreOrder = orderItems.concat(preOrderItems);
+
+  await prisma.orderItem.createMany({
+    data: orders.flatMap((order,index) => orderItemsWithPreOrder[index].map((orderItem) => ({
+      orderId: order.id,
+      menuId: orderItem.menu.id,
+      count: orderItem.count
+    })))
+  });
+
+  await prisma.payment.createMany({
+    data: orders.map((order) => ({
+      orderId: order.id,
+      paymentMethod: ['CARD', 'CASH', 'BANK'][Math.floor(Math.random() * 3)],
+      price: order.totalPrice,
+      createdAt: order.createdAt,
+    }))
+  });
 }
