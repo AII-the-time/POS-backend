@@ -194,7 +194,10 @@ export default {
       return acc;
     }, [{ date: initDate, price: initPrice }]);
     
-    return accumulatedHistory.filter(({date}) => date.localeCompare(initDate)>=0).map(({date,price})=>({date,price:price.toFixed(2)}));
+    return accumulatedHistory.filter(({date}) => date.localeCompare(initDate)>=0).map(({date,price})=>({
+      date:`${date}T00:00:00.000Z`,
+      price:price.toFixed(2)
+    }));
   },
 
   async getMenu(
