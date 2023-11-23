@@ -9,7 +9,7 @@ const materialData = materialRawData.split('\n').slice(2).map((row) => {
       name,
       amount: parseInt(amount),
       unit,
-      price:price===""?Math.floor(Math.random() * 10000+2000).toString():price
+      price:price===""?undefined:price
   };
 });
 
