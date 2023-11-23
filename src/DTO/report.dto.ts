@@ -98,34 +98,40 @@ export const reportSchema = {
       properties: {
         responseData: {
           type: 'object',
-          required: ['screenName', 'viewContetns'],
+          required: ['screenName', 'viewContents'],
           properties: {
             screenName: { type: 'string' },
-            viewContetns: { 
+            viewContents: { 
               type: 'array',
               items: {
-                type: 'object',
-                required: ['viewType', 'content'],
                 anyOf: [
                   {
+                      type: 'object',
+                      required: ['viewType', 'content'],
                       properties: {
                         viewType: { const: 'CALENDAR' },
                         content: calendarSchema,
                       },
                   },
                   {
+                    type: 'object',
+                    required: ['viewType', 'content'],
                     properties: {
                       viewType: { const: 'PIECHART' },
                       content: pieChartSchema,
                     },
                   },
                   {
+                    type: 'object',
+                    required: ['viewType', 'content'],
                     properties: {
                       viewType: { const: 'GRAPH' },
                       content: graphSchema,
                     },
                   },
                   {
+                    type: 'object',
+                    required: ['viewType', 'content'],
                     properties: {
                       viewType: { const: 'TEXT' },
                       content: textSchema,
