@@ -7,10 +7,36 @@ const prisma = new PrismaClient();
 
 export default {
     async createReport({ storeId }: Report.reportInterface['Body']): Promise<Report.reportInterface['Reply']['200']>{
+        const totalPriceByDate = await this.getTotalPriceByDate(storeId);
+        if(Object.keys(totalPriceByDate).length < 3){
+            return {
+                responseData: {
+                    screenName: 'report',
+                    viewContents: [
+                        {
+                            viewType:"TEXT",
+                            content: {
+                                align: "CENTER",
+                                textItems: [
+                                    {
+                                        text: "최소 3일 이상의 주문 데이터가 필요합니다.",
+                                        color: "#000000",
+                                        size: 20,
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+
+        
         const reportList = [] as Report.reportInterface['Reply']['200']['responseData']['viewContents'];
-        reportList.push(await this.recentSalesReport(storeId));
+        reportList.push(await this.recentSalesReport(totalPriceByDate));
         reportList.push(await this.salesReportByTime(storeId));
         reportList.push(await this.returnRateReport(storeId));
+        reportList.push(await this.reservedSalesReport(storeId));
 
         return {
             responseData: {
@@ -19,8 +45,7 @@ export default {
             }
         }
     },
-
-    async recentSalesReport(storeId: number): Promise<{viewType:"GRAPH",content:Report.graphInterface}>{
+    async getTotalPriceByDate(storeId: number) {
         const orderList = await prisma.order.findMany({
             where: {
                 storeId,
@@ -44,13 +69,15 @@ export default {
             }
             return acc;
         }, {} as {[key:string]:Decimal});
+        return totalPriceByDate;
+    },
+    async recentSalesReport(totalPriceByDate: {[key:string]:Decimal}): Promise<{viewType:"GRAPH",content:Report.graphInterface}>{
         const graphItems = Object.keys(totalPriceByDate).sort().map(date => {
             return {
                 graphKey: date,
                 graphValue: totalPriceByDate[date].toNumber()
             }
         });
-
 
         return {
             viewType:"GRAPH",
@@ -154,6 +181,56 @@ export default {
                         categoryCount: returnCountOver5,
                         charColor: "#b54d16"
                     }
+                ],
+            }
+        }
+    },
+
+    async reservedSalesReport(storeId: number): Promise<{viewType:"PIECHART",content:Report.pieChartInterface}>{
+        const orderList = await prisma.order.findMany({
+            where: {
+                storeId,
+                createdAt: {
+                    gte: new Date(new Date().setDate(new Date().getDate() - 30))
+                },
+                paymentStatus: "PAID"
+            },
+            select: {
+                createdAt: true,
+                preOrderId: true,
+                totalPrice: true
+            }
+        });
+
+        const nonReservedPrice = orderList.reduce((acc, cur) => {
+            if(!cur.preOrderId){
+                acc = acc.add(cur.totalPrice);
+            }
+            return acc;
+        }, new Decimal(0));
+        const reservedPrice = orderList.reduce((acc, cur) => {
+            if(cur.preOrderId){
+                acc = acc.add(cur.totalPrice);
+            }
+            return acc;
+        }, new Decimal(0));
+
+        return {
+            viewType:"PIECHART",
+            content: {
+                pieChartTitle: "예약 매출",
+                totalCount: reservedPrice.add(nonReservedPrice).toNumber(),
+                pieChartItems: [
+                    {
+                        categoryName: "예약",
+                        categoryCount: reservedPrice.toNumber(),
+                        charColor: "#1cbeff",
+                    },
+                    {
+                        categoryName: "비예약",
+                        categoryCount: nonReservedPrice.toNumber(),
+                        charColor: "#a1e4ff",
+                    },
                 ],
             }
         }

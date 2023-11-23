@@ -32,4 +32,20 @@ export default (app: FastifyInstance) => () => {
         expect(returnRateReport.totalCount).toBe(250);
         expect(returnRateReport.pieChartItems.length).toBe(6);
     });
+
+    test('get report', async () => {
+        const response = await app.inject({
+            method: 'GET',
+            url: `/api/report`,
+            headers: testValues.storeHeader,
+        });
+        expect(response.statusCode).toBe(200);
+        const body = JSON.parse(response.body) as Report.reportInterface['Reply']['200'];
+        expect(body.responseData.viewContents.length).toBe(1);
+        const textReport = body.responseData.viewContents[0].content as unknown as Report.textInterface;
+        expect(body.responseData.viewContents[0].viewType).toBe('TEXT');
+        expect(textReport).toHaveProperty('textItems');
+        expect(textReport.textItems.length).toBe(1);
+        expect(textReport.textItems[0].text).toBe('최소 3일 이상의 주문 데이터가 필요합니다.');
+    });
 };

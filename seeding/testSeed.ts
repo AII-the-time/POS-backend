@@ -236,7 +236,7 @@ export default async (prisma: PrismaClient, storeId: number) => {
 
   const preOrderItems = new Array(50).fill(0).map((_, index) => new Array(Math.floor(Math.random() * 5)+1).fill(0).map((_, index) => ({
     menu: menus[Math.floor(Math.random() * menus.length)],
-    count: Math.floor(Math.random() * 3)+1,
+    count: Math.floor(Math.random() * 20)+5,
   })));
 
   await prisma.preOrder.createMany({
