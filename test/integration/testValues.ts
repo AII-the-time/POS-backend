@@ -21,6 +21,10 @@ class Values {
         authorization: this.accessToken,
         storeid: 1,
     };
+    public testStoreHeader = {
+        authorization: this.accessToken,
+        storeid: 2,
+    };
     //stocks
     public waterId: number = 1;
     public coffeeBeanId: number = 2;

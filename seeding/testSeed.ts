@@ -9,7 +9,7 @@ const materialData = materialRawData.split('\n').slice(2).map((row) => {
       name,
       amount: parseInt(amount),
       unit,
-      price
+      price:price===""?Math.floor(Math.random() * 10000+2000).toString():price
   };
 });
 
@@ -49,6 +49,11 @@ const menuData = menuRawData.split('\n').slice(3).join('\n').split('\n,,,,,,,\n'
 
 const categoryData = [...new Set(menuData.map((menu) => menu.category))];
 
+const getDateBeforeToday = (days: number, time: number,minites: number):Date => {
+  const date = new Date(new Date().getTime() - days * 24 * 60 * 60 * 1000);
+  return new Date(`${date.toISOString().split('T')[0]}T0${time}:${minites+10}:00.000Z`);
+}
+
 export const printAllStocks = () => {
   const stocks = [...new Set([...new Set(menuData.flatMap((menu) => menu.materials.map((material) => material.name)))].flatMap((name) => {
     const materials = mixedMaterialData.find((material) => material.name === name)?.materials;
@@ -64,10 +69,10 @@ export default async (prisma: PrismaClient, storeId: number) => {
     data: materialData.map((material) => ({
       name: material.name,
       amount: isNaN(material.amount)?undefined:material.amount,
-      currentAmount: Math.floor(Math.random() * 2500+500),
+      currentAmount: material.name=="물"?-1:Math.floor(Math.random() * 2500+500),
       noticeThreshold: Math.floor(Math.random() * 500+500),
-      unit: material.unit===""?undefined:material.unit,
-      price: material.price===""?undefined:material.price,
+      unit: material.unit,
+      price: material.price,
       storeId
     }))
   });
@@ -77,9 +82,29 @@ export default async (prisma: PrismaClient, storeId: number) => {
     }
   });
 
+  await prisma.stockHistory.createMany({
+    data: materials.filter(({name})=>name!="물").map((material) => ({
+      stockId: material.id,
+      amount: material.amount!,
+      price: Math.floor(material.price!.toNumber()-Math.random() * 1800).toString(),
+      createdAt: new Date(new Date().getTime() - 48 * 24 * 60 * 60 * 1000),
+    })).concat(materials.filter(({name})=>name!="물").map((material) => ({
+      stockId: material.id,
+      amount: material.amount!,
+      price: Math.floor(material.price!.toNumber()-Math.random() * 1000).toString(),
+      createdAt: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
+    }))).concat(materials.filter(({name})=>name!="물").map((material) => ({
+      stockId: material.id,
+      amount: material.amount!,
+      price: material.price!.toString(),
+      createdAt: new Date(new Date().getTime() - 2 * 24 * 60 * 60 * 1000),
+    })))
+  });
+
   const mixedMaterialDataWithMaterials = mixedMaterialData.map((material) => {
     return {
       name: material.name,
+      totalAmount: material.materials.reduce((acc, cur) => acc + parseInt(cur.amount), 0),
       materials: material.materials.map((material) => {
         const stock = materials.find((stock) => stock.name === material.name);
         if(!stock) throw new Error(`Stock not found: ${material.name}`);
@@ -94,6 +119,8 @@ export default async (prisma: PrismaClient, storeId: number) => {
   await prisma.mixedStock.createMany({
     data: mixedMaterialDataWithMaterials.map((material,index) => ({
       name: material.name,
+      unit: 'g',
+      totalAmount: material.totalAmount,
       storeId
     }))
   });
@@ -191,5 +218,103 @@ export default async (prisma: PrismaClient, storeId: number) => {
       stockId: material.stockId,
       mixedStockId: material.mixedStockId
     })))
+  });
+
+  await prisma.mileage.createMany({
+    data: new Array(20).fill(0).map((_, index) => ({
+      storeId,
+      mileage: 0,
+      phone: `010100000${10+index}`,
+    }))
+  });
+
+  const mileages = await prisma.mileage.findMany({
+    where: {
+      storeId
+    }
+  });
+
+  const preOrderItems = new Array(20).fill(0).map((_, index) => new Array(Math.floor(Math.random() * 5)+1).fill(0).map((_, index) => ({
+    menu: menus[Math.floor(Math.random() * menus.length)],
+    count: Math.floor(Math.random() * 3)+1,
+  })));
+
+  await prisma.preOrder.createMany({
+    data: preOrderItems.map((orderItem, index) => ({
+      storeId,
+      totalPrice: orderItem.reduce((acc, cur) => acc + cur.menu.price.toNumber() * cur.count, 0).toString(),
+      createdAt: getDateBeforeToday(30,0,0),
+      phone: `010${Math.floor(Math.random() * 100000000).toString().padStart(10, '0')}`,
+      orderedFor: getDateBeforeToday(Math.floor(Math.random() * 30),Math.floor(Math.random() * 9),Math.floor(Math.random() * 49)),
+      deletedAt: new Date()
+    }))
+  });
+
+  await prisma.preOrderItem.createMany({
+    data: preOrderItems.flatMap((orderItem, index) => orderItem.map((orderItem) => ({
+      preOrderId: index+1,
+      menuId: orderItem.menu.id,
+      count: orderItem.count
+    })))
+  });
+
+  const preOrders = await prisma.preOrder.findMany({
+    where: {
+      storeId
+    }
+  });
+
+  const orderItems = new Array(80).fill(0).map((_, index) => new Array(Math.floor(Math.random() * 5)+1).fill(0).map((_, index) => ({
+    menu: menus[Math.floor(Math.random() * menus.length)],
+    count: Math.floor(Math.random() * 3)+1,
+  })));
+
+  await prisma.order.createMany({
+    data: orderItems.map((orderItem, index) => ({
+      storeId,
+      paymentStatus: 'PAID',
+      totalPrice: orderItem.reduce((acc, cur) => acc + cur.menu.price.toNumber() * cur.count, 0).toString(),
+      mileageId: Math.floor(Math.random() * 5)>2?mileages[Math.floor(Math.random() * 20)].id:undefined,
+      useMileage: 0,
+      saveMileage: 0,
+      createdAt: getDateBeforeToday(Math.floor(Math.random() * 30),Math.floor(Math.random() * 9),Math.floor(Math.random() * 49)),
+      preOrderId: undefined as number | undefined
+    })).concat(
+      preOrders.map((order) => ({
+        storeId,
+        paymentStatus: 'PAID',
+        totalPrice: order.totalPrice.toString(),
+        mileageId: Math.floor(Math.random() * 5)>2?mileages[Math.floor(Math.random() * 20)].id:undefined,
+        useMileage: 0,
+        saveMileage: 0,
+        createdAt: order.orderedFor,
+        preOrderId: order.id
+      }))
+    )
+  });
+
+  const orders = await prisma.order.findMany({
+    where: {
+      storeId
+    }
+  });
+
+  const orderItemsWithPreOrder = orderItems.concat(preOrderItems);
+
+  await prisma.orderItem.createMany({
+    data: orders.flatMap((order,index) => orderItemsWithPreOrder[index].map((orderItem) => ({
+      orderId: order.id,
+      menuId: orderItem.menu.id,
+      count: orderItem.count
+    })))
+  });
+
+  await prisma.payment.createMany({
+    data: orders.map((order) => ({
+      orderId: order.id,
+      paymentMethod: ['CARD', 'CASH', 'BANK'][Math.floor(Math.random() * 3)],
+      price: order.totalPrice,
+      createdAt: order.createdAt,
+    }))
   });
 }
