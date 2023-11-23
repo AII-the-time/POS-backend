@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
 export default async (prisma: PrismaClient, storeId: number) => {
-    await prisma.category.create({
+    const category = await prisma.category.create({
         data: {
             name: '커피',
             sort: 1,
@@ -39,7 +39,7 @@ export default async (prisma: PrismaClient, storeId: number) => {
             name: '아메리카노(예시)',
             sort: 1,
             price: 2500,
-            categoryId: 1,
+            categoryId: category.id,
             storeId,
             optionMenu: {
                 create: [1, 2, 3, 4, 5, 6].map((optionId) => ({ optionId }))
@@ -62,7 +62,7 @@ export default async (prisma: PrismaClient, storeId: number) => {
             name: '카페라떼(예시)',
             price: 3000,
             sort: 2,
-            categoryId: 1,
+            categoryId: category.id,
             storeId,
             optionMenu: {
                 create: [1, 2, 3, 4, 5, 6].map((optionId) => ({ optionId }))

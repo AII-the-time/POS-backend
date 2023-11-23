@@ -19,7 +19,7 @@ export default (app: FastifyInstance) => () => {
                 {
                     id: testValues.waterId,
                     name: '물',
-                    status: 'UNKNOWN',
+                    status: 'ENOUGH',
                     usingMenuCount: 1,
                 },
                 {

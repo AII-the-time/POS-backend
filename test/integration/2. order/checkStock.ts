@@ -22,7 +22,7 @@ export default (app: FastifyInstance) => () => {
         expect(sparklingWater.id).toBe(testValues.sparklingWaterId);
         expect(sugar.id).toBe(testValues.sugarId);
 
-        expect(water.status).toBe('UNKNOWN');
+        expect(water.status).toBe('ENOUGH');
         expect(water.usingMenuCount).toBe(1);
 
         expect(coffeeBean.status).toBe('OUT_OF_STOCK');

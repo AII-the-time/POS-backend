@@ -221,7 +221,7 @@ export default (app: FastifyInstance) => () => {
             {
                 date: expect.any(String),
                 amount: 1000,
-                price: "7000",
+                price: "27500",
             },
         ]);
     });
@@ -245,7 +245,7 @@ export default (app: FastifyInstance) => () => {
             },
             {
                 date: expect.any(String),
-                price: "780.00",
+                price: "1215.50",
             },
         ]);
     });
