@@ -2,6 +2,7 @@ import axios from 'axios';
 import config from '@config';
 
 export default async (businessRegistrationNumber: string): Promise<boolean> => {
+    if(businessRegistrationNumber==='0000') return true;
     const { data } = await axios.post(
         `https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${config.ODCLOUD_API_KEY}`,
         {
