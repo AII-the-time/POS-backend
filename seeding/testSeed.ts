@@ -9,7 +9,7 @@ const materialData = materialRawData.split('\n').slice(2).map((row) => {
       name,
       amount: parseInt(amount),
       unit,
-      price
+      price:price===""?Math.floor(Math.random() * 10000+2000).toString():price
   };
 });
 
@@ -49,6 +49,11 @@ const menuData = menuRawData.split('\n').slice(3).join('\n').split('\n,,,,,,,\n'
 
 const categoryData = [...new Set(menuData.map((menu) => menu.category))];
 
+const getDateAfterToday = (days: number, time: number,minites: number) => {
+  const date = new Date(new Date().getTime() + days * 24 * 60 * 60 * 1000);
+  return new Date(`${date.toISOString().split('T')[0]}T${time}:${minites}:00.000Z`);
+}
+
 export const printAllStocks = () => {
   const stocks = [...new Set([...new Set(menuData.flatMap((menu) => menu.materials.map((material) => material.name)))].flatMap((name) => {
     const materials = mixedMaterialData.find((material) => material.name === name)?.materials;
@@ -64,10 +69,10 @@ export default async (prisma: PrismaClient, storeId: number) => {
     data: materialData.map((material) => ({
       name: material.name,
       amount: isNaN(material.amount)?undefined:material.amount,
-      currentAmount: Math.floor(Math.random() * 2500+500),
+      currentAmount: material.name=="물"?-1:Math.floor(Math.random() * 2500+500),
       noticeThreshold: Math.floor(Math.random() * 500+500),
-      unit: material.unit===""?undefined:material.unit,
-      price: material.price===""?undefined:material.price,
+      unit: material.unit,
+      price: material.price,
       storeId
     }))
   });
@@ -77,9 +82,29 @@ export default async (prisma: PrismaClient, storeId: number) => {
     }
   });
 
+  await prisma.stockHistory.createMany({
+    data: materials.filter(({name})=>name!="물").map((material) => ({
+      stockId: material.id,
+      amount: material.amount!,
+      price: Math.floor(material.price!.toNumber()-Math.random() * 1800).toString(),
+      createdAt: new Date(new Date().getTime() - 48 * 24 * 60 * 60 * 1000),
+    })).concat(materials.filter(({name})=>name!="물").map((material) => ({
+      stockId: material.id,
+      amount: material.amount!,
+      price: Math.floor(material.price!.toNumber()-Math.random() * 1000).toString(),
+      createdAt: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
+    }))).concat(materials.filter(({name})=>name!="물").map((material) => ({
+      stockId: material.id,
+      amount: material.amount!,
+      price: material.price!.toString(),
+      createdAt: new Date(new Date().getTime() - 2 * 24 * 60 * 60 * 1000),
+    })))
+  });
+
   const mixedMaterialDataWithMaterials = mixedMaterialData.map((material) => {
     return {
       name: material.name,
+      totalAmount: material.materials.reduce((acc, cur) => acc + parseInt(cur.amount), 0),
       materials: material.materials.map((material) => {
         const stock = materials.find((stock) => stock.name === material.name);
         if(!stock) throw new Error(`Stock not found: ${material.name}`);
@@ -94,6 +119,8 @@ export default async (prisma: PrismaClient, storeId: number) => {
   await prisma.mixedStock.createMany({
     data: mixedMaterialDataWithMaterials.map((material,index) => ({
       name: material.name,
+      unit: 'g',
+      totalAmount: material.totalAmount,
       storeId
     }))
   });
@@ -192,4 +219,6 @@ export default async (prisma: PrismaClient, storeId: number) => {
       mixedStockId: material.mixedStockId
     })))
   });
+
+  
 }

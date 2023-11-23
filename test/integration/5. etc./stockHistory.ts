@@ -4,12 +4,12 @@ import testValues from '../testValues';
 import * as Stock from '@DTO/stock.dto';
 import * as Menu from '@DTO/menu.dto';
 import { PrismaClient } from '@prisma/client';
-import { expect, test } from '@jest/globals';
+import { expect, test, beforeAll } from '@jest/globals';
 
 const prisma = new PrismaClient();
 
 export default (app: FastifyInstance) => () => {
-    test('set history', async () => {
+    beforeAll(async () => {
         await prisma.stockHistory.create({
             data: {
               stockId: testValues.coffeeBeanId,
@@ -197,5 +197,57 @@ export default (app: FastifyInstance) => () => {
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body) as Menu.getMenuInterface['Reply']['200'];
         expect(body.history).toEqual([]);
+    });
+
+    test('check stock history', async () => {
+        const response = await app.inject({
+            method: 'GET',
+            url: `/api/stock/5`,
+            headers: testValues.testStoreHeader,
+        });
+        expect(response.statusCode).toBe(200);
+        const body = JSON.parse(response.body) as Stock.getStockInterface['Reply']['200'];
+        expect(body.history).toEqual([
+            {
+                date: expect.any(String),
+                amount: 1000,
+                price: expect.any(String),
+            },
+            {
+                date: expect.any(String),
+                amount: 1000,
+                price: expect.any(String),
+            },
+            {
+                date: expect.any(String),
+                amount: 1000,
+                price: "7000",
+            },
+        ]);
+    });
+
+    test('check menu history', async () => {
+        const response = await app.inject({
+            method: 'GET',
+            url: `/api/menu/8`,
+            headers: testValues.testStoreHeader,
+        });
+        expect(response.statusCode).toBe(200);
+        const body = JSON.parse(response.body) as Menu.getMenuInterface['Reply']['200'];
+        console.log(body.history);
+        expect(body.history).toEqual([
+            {
+                date: expect.any(String),
+                price: expect.any(String),
+            },
+            {
+                date: expect.any(String),
+                price: expect.any(String),
+            },
+            {
+                date: expect.any(String),
+                price: "780.00",
+            },
+        ]);
     });
 };

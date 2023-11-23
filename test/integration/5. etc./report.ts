@@ -2,7 +2,10 @@ import { FastifyInstance } from 'fastify';
 import { ErrorInterface } from '@DTO/index.dto';
 import * as Report from '@DTO/report.dto';
 import testValues from '../testValues';
-import { expect, test } from '@jest/globals';
+import { PrismaClient } from '@prisma/client';
+import { expect, test, beforeAll } from '@jest/globals';
+
+const prisma = new PrismaClient();
 
 export default (app: FastifyInstance) => () => {
     test('get report', async () => {
