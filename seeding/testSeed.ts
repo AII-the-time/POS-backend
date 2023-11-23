@@ -69,8 +69,14 @@ export default async (prisma: PrismaClient, storeId: number) => {
     data: materialData.map((material) => ({
       name: material.name,
       amount: isNaN(material.amount)?undefined:material.amount,
-      currentAmount: material.name=="물"?-1:Math.floor(Math.random() * 2500+500),
-      noticeThreshold: Math.floor(Math.random() * 500+500),
+      currentAmount:
+        material.name=="물"
+        ? undefined
+        : material.amount * Math.floor(Math.random() * 100)/10,
+      noticeThreshold: 
+        material.name=="물"
+        ? -1
+        : material.amount * Math.floor(Math.random() * 10 + 20)/10,
       unit: material.unit,
       price: material.price,
       storeId
