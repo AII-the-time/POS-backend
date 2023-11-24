@@ -50,6 +50,9 @@ const menuData = menuRawData.split('\n').slice(3).join('\n').split('\n,,,,,,,\n'
 const categoryData = [...new Set(menuData.map((menu) => menu.category))];
 
 const getDateBeforeToday = (days: number, time: number,minites: number):Date => {
+  if(days === 0){
+    time = Math.floor(Math.random() * 2);
+  }
   const date = new Date(new Date().getTime() - days * 24 * 60 * 60 * 1000);
   return new Date(`${date.toISOString().split('T')[0]}T0${time}:${minites+10}:00.000Z`);
 }
