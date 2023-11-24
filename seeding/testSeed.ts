@@ -198,6 +198,50 @@ export default async (prisma: PrismaClient, storeId: number) => {
       storeId
     }
   });
+
+  await prisma.option.createMany({
+    data: [
+      {
+        optionName: 'ice',
+        optionPrice: 0,
+        optionCategory: '온도',
+      },
+      {
+        optionName: 'hot',
+        optionPrice: 0,
+        optionCategory: '온도',
+      },
+      {
+        optionName: '원두1',
+        optionPrice: 0,
+        optionCategory: '원두',
+      },
+      {
+        optionName: '원두2',
+        optionPrice: 300,
+        optionCategory: '원두',
+      },
+      {
+        optionName: '1샷 추가',
+        optionPrice: 500,
+        optionCategory: '샷',
+      },
+      {
+        optionName: '샷 빼기',
+        optionPrice: 0,
+        optionCategory: '샷',
+      },
+    ].map((option) => ({
+      ...option,
+      storeId,
+    })),
+  });
+  const options = await prisma.option.findMany({
+    where: {
+      storeId
+    }
+  });
+
   await prisma.menu.createMany({
     data: menuDataWithMaterials.map((menu,index) => ({
       name: menu.name,
@@ -212,6 +256,13 @@ export default async (prisma: PrismaClient, storeId: number) => {
     where: {
       storeId
     }
+  });
+
+  await prisma.optionMenu.createMany({
+    data: menus.flatMap((menu) => options.map((option) => ({
+      menuId: menu.id,
+      optionId: option.id
+    })))
   });
 
   await prisma.recipe.createMany({
